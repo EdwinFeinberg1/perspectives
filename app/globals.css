@@ -16,7 +16,6 @@ body {
 main {
     width: 80vw;
     height: 80vh;
-    background: linear-gradient(to bottom, #f8f8f8, #cfcfcf);
     border-radius: 15px;
     display: flex;
     align-items: center;
@@ -98,17 +97,25 @@ input:focus{
 }
 .prompt-suggestion-row{
     width: 100%;
+    display: flex;
+    overflow-x: auto;
+    -ms-overflow-style: none;  /* Hide scrollbar in IE and Edge */
+    scrollbar-width: none;     /* Hide scrollbar in Firefox */
+}
+.prompt-suggestion-row::-webkit-scrollbar {
+    display: none;  /* Hide scrollbar in Chrome, Safari, and Opera */
 }
 .prompt-suggestion-button {
     margin: 8px;
-    padding: 8px;
+    padding: 8px 16px;
     font-size: 15px;
     border: none;
     background-color: #fff;
     border-radius: 10px;
     color: #383838;
     box-shadow: #959da533 0 8px 24px;
-    
+    cursor: pointer;
+    flex-shrink: 0;
 }
 .loader{
 margin:10px;
