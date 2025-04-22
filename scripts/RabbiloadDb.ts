@@ -9,7 +9,7 @@ type SimilarityMetric = "cosine" | "euclidean" | "dot_product";
 
 const {
     ASTRADB_DB_KEYSPACE,
-    ASTRADB_DB_COLLECTION,
+    ASTRADB_DB_COLLECTION_JEWISH,
     ASTRA_DB_APPLICATION_TOKEN,
     ASTRADB_API_ENDPOINT,
     OPENAI_API_KEY,
@@ -83,7 +83,7 @@ const splitter = new RecursiveCharacterTextSplitter({
 const createCollection = async (
   similarityMetric: SimilarityMetric = "dot_product"
 ) => {
-  const res = await db.createCollection(ASTRADB_DB_COLLECTION, {
+  const res = await db.createCollection(ASTRADB_DB_COLLECTION_JEWISH, {
     vector: {
       dimension: 1536,
       metric: similarityMetric,
@@ -93,7 +93,7 @@ const createCollection = async (
 };
 
 const loadSampleData = async () => {
-  const collection = await db.collection(ASTRADB_DB_COLLECTION);
+  const collection = await db.collection(ASTRADB_DB_COLLECTION_JEWISH);
   for await (const url of rabbiData) {
     const content = await scrapePage(url);
     const chunks = await splitter.splitText(content);

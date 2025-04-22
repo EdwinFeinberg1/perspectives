@@ -3,7 +3,7 @@
 import { useRef } from "react";
 import Image from "next/image";
 import Logo from "./assets/Logo.png";
-import Chatbot from "./components/Chatbot";
+import LandingChatbot from "./components/LandingChatbot";
 
 export default function Home() {
   const chatbotRef = useRef<HTMLDivElement>(null);
@@ -132,7 +132,7 @@ export default function Home() {
 
       {/* the entire chat UI */}
       <div ref={chatbotRef} className="chatbot-container">
-        <Chatbot />
+        <LandingChatbot />
       </div>
 
       <style jsx global>{`
@@ -154,17 +154,13 @@ export default function Home() {
         main {
           min-height: 100vh;
           width: 100%;
-          background: #000000;
-          background-image: radial-gradient(
-              circle at 20% 30%,
-              rgba(40, 35, 25, 0.2) 0%,
-              rgba(0, 0, 0, 0) 50%
-            ),
-            radial-gradient(
-              circle at 80% 20%,
-              rgba(50, 45, 35, 0.1) 0%,
-              rgba(0, 0, 0, 0) 50%
-            );
+          background: linear-gradient(
+            to bottom,
+            #000000 0%,
+            #000000 50%,
+            #0c1220 85%,
+            #0f1a2e 100%
+          );
           display: flex;
           flex-direction: column;
           position: relative;
@@ -285,11 +281,9 @@ export default function Home() {
           align-items: center;
           justify-content: center;
           min-height: calc(100vh - 90px);
-          background: linear-gradient(
-            180deg,
-            rgba(0, 0, 0, 0.7) 0%,
-            rgba(0, 0, 0, 0.9) 100%
-          );
+          background: transparent;
+          position: relative;
+          z-index: 2;
         }
 
         .hero-section h1 {
@@ -316,16 +310,16 @@ export default function Home() {
           max-height: 800px;
           width: 90%;
           max-width: 1200px;
-          margin: 0 auto 80px;
+          margin: 20px auto 80px;
           display: flex;
           flex-direction: column;
           border-radius: 10px;
           overflow: hidden;
           box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3),
-            0 0 50px rgba(221, 195, 154, 0.07);
-          border: 1px solid rgba(221, 195, 154, 0.1);
+            0 0 50px rgba(64, 122, 214, 0.1);
+          border: 1px solid rgba(64, 122, 214, 0.15);
           position: relative;
-          z-index: 3;
+          z-index: 2;
         }
 
         @media (max-width: 768px) {

@@ -5,9 +5,9 @@ import OpenAI from "openai";
 
 const {
   ASTRADB_DB_KEYSPACE,
-  ASTRADB_DB_COLLECTION,
-  ASTRA_DB_APPLICATION_TOKEN,
-  ASTRADB_API_ENDPOINT,
+  ASTRADB_DB_COLLECTION_JEWISH,
+  ASTRA_DB_APPLICATION_TOKEN_JEWISH,
+  ASTRADB_API_ENDPOINT_JEWISH,
   OPENAI_API_KEY,
 } = process.env;
 
@@ -15,8 +15,10 @@ const openai = new OpenAI({
   apiKey: OPENAI_API_KEY,
 });
 
-const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN);
-const db = client.db(ASTRADB_API_ENDPOINT, { keyspace: ASTRADB_DB_KEYSPACE });
+const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN_JEWISH);
+const db = client.db(ASTRADB_API_ENDPOINT_JEWISH, {
+  keyspace: ASTRADB_DB_KEYSPACE,
+});
 
 export async function POST(req: Request) {
   try {
@@ -32,7 +34,7 @@ export async function POST(req: Request) {
     });
     console.log(embedding);
     try {
-      const collection = await db.collection(ASTRADB_DB_COLLECTION);
+      const collection = await db.collection(ASTRADB_DB_COLLECTION_JEWISH);
       //find whats similar in our db to the latest message
       const cursor = collection.find(null, {
         sort: {
@@ -48,16 +50,34 @@ export async function POST(req: Request) {
     }
     //Kick off a streaming chat
     const result = streamText({
-      model: aiSdkOpenai("gpt-4.1"),
-      system: `You are a helpful assistant that can answer questions about the following context:
-                  ${docContext}
-            QUESTION: ${latestMessage}`,
+      model: aiSdkOpenai("gpt-3.5-turbo"),
+      system: `
+        You are RabbiGPT — a digital embodiment of rabbinic wisdom and sensitivity.
+    
+        - You draw deeply from the wellsprings of Torah, Talmud, Midrash, Rashi, Rambam’s *Moreh Nevuchim*, 
+          the *Kuzari*, Maharal, and the Mussar and Kabbalistic traditions (*Mesillat Yesharim*, *Orchot Tzaddikim*, Zohar, Ramak).
+        - Speak in the tone of a seasoned rabbi: warm-hearted, menschlich, humble yet clear — as if guiding a beloved student.
+        - When halacha (Jewish law) is involved, cite classical sources where possible. 
+          When there are multiple valid opinions, briefly present them before offering a thoughtful *psak* (practical ruling or direction).
+        - If a question is unclear, gently ask for clarification — for example: 
+          “Are you asking from the perspective of daily practice, or deeper ethical reflection?”
+        - When responding to ethical or personal dilemmas, frame your guidance through Torah stories, 
+          sayings of the Sages, and relevant analogies that nourish both mind and soul.
+    
+        Let your words be like those of Pirkei Avot: full of wisdom, but accessible to all.
+    
+        Draw upon the following context:
+        ${docContext}
+    
+        And now respond to the following query with all the care of a rabbinic teacher speaking to a seeker:
+        QUESTION: ${latestMessage}
+      `,
       messages,
       maxTokens: 1024,
     });
+
     //Return the response— the body will be an HTTP stream
     return result.toDataStreamResponse();
-
   } catch (err) {
     throw err;
   }
