@@ -17,13 +17,9 @@ export default function Home() {
     <main className="w-full min-h-screen flex flex-col relative">
       <header className="flex justify-between items-center px-[7%] h-[90px] w-full bg-black/70 backdrop-blur-md border-b border-[#ddc39a]/10 fixed top-0 left-0 z-50">
         <div className="h-10 flex items-center">
-          <Image
-            src={Logo}
-            alt="Perspectives.ai Logo"
-            height={40}
-            className="h-auto w-auto max-h-10 object-contain"
-            priority
-          />
+          <span className="text-2xl font-bold text-[#ddc39a]">
+            Perspectives.ai
+          </span>
         </div>
 
         <div className="flex items-center gap-9">
@@ -113,71 +109,129 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="pt-[160px] px-[7%] pb-[100px] text-center w-full flex flex-col items-center justify-center min-h-[85vh] z-10 bg-gradient-to-b from-black/40 to-transparent backdrop-blur-sm">
-        <h1 className="text-[3.5rem] md:text-[4.5rem] font-bold mb-12 text-[#ddc39a] leading-tight shadow-md max-w-[900px]">
+      {/* Hero Section - Simplified */}
+      <section className="pt-[160px] px-[7%] pb-[80px] text-center w-full flex flex-col items-center justify-center min-h-[70vh] z-10 bg-gradient-to-b from-black/40 to-transparent backdrop-blur-sm">
+        <h1 className="text-[3.5rem] md:text-[4.5rem]  mb-12 text-[#ddc39a] leading-tight shadow-md max-w-[900px]">
           Ask the big questions.{" "}
-          <span className="text-white/90">
-            Hear how different traditions have answered.
-          </span>
         </h1>
-        <div className="text-[1.1rem] md:text-[1.3rem] text-[#ddc39a]/90 max-w-[800px] mx-auto leading-[1.8] shadow-md mb-16">
-          <p className="mb-6">
-            Perspectives.ai is your space to explore spiritual questions—without
-            pressure, dogma, or judgment.
-          </p>
-          <p className="mb-6">
-            Talk with RabbiGPT, BuddhaGPT, ImamGPT, and more.
-          </p>
-          <p>
-            Discover how different paths wrestle with the same human longing.
-          </p>
-        </div>
 
-        <div className="flex flex-col md:flex-row gap-8 items-center">
-          <a
-            href="#"
-            className="text-[#ddc39a] text-lg font-medium hover:text-white transition-colors duration-300 flex items-center gap-2"
-          >
-            🔍 Explore Perspectives <span className="text-xl">→</span>
-          </a>
-        </div>
-      </div>
-
-      {/* Cards Section */}
-      <section className="my-24 grid grid-cols-1 md:grid-cols-3 gap-8 px-[7%]">
-        <Card className="h-full">
-          <CardHeader>Feature One</CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Description of feature one goes here.
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="h-full">
-          <CardHeader>Feature Two</CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Description of feature two goes here.
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="h-full">
-          <CardHeader>Feature Three</CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              Description of feature three goes here.
-            </p>
-          </CardContent>
-        </Card>
+        <a
+          href="#explore"
+          className="text-[#ddc39a] text-lg font-medium hover:text-white transition-colors duration-300 flex items-center gap-2"
+        >
+          🔍 Explore Perspectives <span className="text-xl">→</span>
+        </a>
       </section>
 
+      {/* Mission Section */}
+      <section
+        id="explore"
+        className="py-24 px-[7%] bg-black/30 backdrop-blur-sm border-y border-[#ddc39a]/10"
+      >
+        <div className="max-w-[1000px] mx-auto">
+          <h2 className="text-[2.5rem] font-semibold mb-10 text-[#ddc39a] text-center">
+            Our Mission
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-[#ddc39a]/20 flex items-center justify-center mb-6">
+                <span className="text-3xl">🔍</span>
+              </div>
+              <h3 className="text-xl font-medium mb-4 text-[#ddc39a]">
+                Safe Exploration
+              </h3>
+              <p className="text-[#ddc39a]/90 leading-relaxed">
+                Your space to explore spiritual questions—without pressure,
+                dogma, or judgment.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-[#ddc39a]/20 flex items-center justify-center mb-6">
+                <span className="text-3xl">🗣️</span>
+              </div>
+              <h3 className="text-xl font-medium mb-4 text-[#ddc39a]">
+                Multiple Perspectives
+              </h3>
+              <p className="text-[#ddc39a]/90 leading-relaxed">
+                Talk with RabbiGPT, BuddhaGPT, ImamGPT, and more to get varied
+                insights.
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center text-center">
+              <div className="w-16 h-16 rounded-full bg-[#ddc39a]/20 flex items-center justify-center mb-6">
+                <span className="text-3xl">💫</span>
+              </div>
+              <h3 className="text-xl font-medium mb-4 text-[#ddc39a]">
+                Shared Wisdom
+              </h3>
+              <p className="text-[#ddc39a]/90 leading-relaxed">
+                Discover how different paths wrestle with the same human
+                longing.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-24 px-[7%] bg-gradient-to-b from-transparent to-black/30">
+        <h2 className="text-[2.5rem] font-semibold mb-10 text-[#ddc39a] text-center">
+          Features
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Card className="h-full border-[#ddc39a]/20 bg-black/40 backdrop-blur-sm">
+            <CardHeader className="text-[#ddc39a]">
+              Multiple Traditions
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-[#ddc39a]/70">
+                Access wisdom from various religious and philosophical
+                traditions in one place.
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="h-full border-[#ddc39a]/20 bg-black/40 backdrop-blur-sm">
+            <CardHeader className="text-[#ddc39a]">
+              Personal Exploration
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-[#ddc39a]/70">
+                Ask questions that matter to you without commitment to any
+                single tradition.
+              </p>
+            </CardContent>
+          </Card>
+          <Card className="h-full border-[#ddc39a]/20 bg-black/40 backdrop-blur-sm">
+            <CardHeader className="text-[#ddc39a]">
+              Comparative Insights
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-[#ddc39a]/70">
+                See how different traditions approach similar questions about
+                life, death, and meaning.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      </section>
+
+      {/* Chatbot Section */}
       <div
         ref={chatbotRef}
-        className="flex-1 min-h-[500px] h-[70vh] w-full px-[7%] mb-12 relative z-10 bg-transparent"
+        className="py-24 px-[7%] relative z-10 bg-transparent"
       >
-        <LandingChatbot />
+        <h2 className="text-[2.5rem] font-semibold mb-10 text-[#ddc39a] text-center">
+          Experience Now
+        </h2>
+        <div className="flex-1 min-h-[500px] h-[70vh] w-full">
+          <LandingChatbot />
+        </div>
       </div>
 
+      {/* Footer */}
       <footer className="w-full px-[7%] py-8 bg-black/70 backdrop-blur-md border-t border-[#ddc39a]/10 text-[#ddc39a]/80">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="flex flex-col">
