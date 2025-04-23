@@ -4,6 +4,7 @@ import { useRef } from "react";
 import Image from "next/image";
 import Logo from "./assets/Logo.png";
 import LandingChatbot from "./components/LandingChatbot";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   const chatbotRef = useRef<HTMLDivElement>(null);
@@ -13,21 +14,24 @@ export default function Home() {
   };
 
   return (
-    <main>
-      <header className="site-header">
-        <div className="logo-container">
+    <main className="w-full min-h-screen flex flex-col relative">
+      <header className="flex justify-between items-center px-[7%] h-[90px] w-full bg-black/70 backdrop-blur-md border-b border-[#ddc39a]/10 fixed top-0 left-0 z-50">
+        <div className="h-10 flex items-center">
           <Image
             src={Logo}
             alt="Perspectives.ai Logo"
             height={40}
-            className="logo-image"
+            className="h-auto w-auto max-h-10 object-contain"
             priority
           />
         </div>
 
-        <div className="header-buttons">
-          <div className="social-buttons">
-            <button className="social-button" aria-label="Facebook">
+        <div className="flex items-center gap-9">
+          <div className="flex gap-[18px]">
+            <button
+              className="w-10 h-10 rounded-full bg-[rgba(13,12,8,0.3)] border border-[#ddc39a]/15 text-[#ddc39a] flex items-center justify-center cursor-pointer transition-all duration-300 shadow-md hover:bg-[#ddc39a]/5 hover:-translate-y-[3px] hover:border-[#ddc39a]/40 hover:shadow-lg"
+              aria-label="Facebook"
+            >
               <svg
                 width="16"
                 height="16"
@@ -44,7 +48,10 @@ export default function Home() {
                 />
               </svg>
             </button>
-            <button className="social-button" aria-label="Twitter">
+            <button
+              className="w-10 h-10 rounded-full bg-[rgba(13,12,8,0.3)] border border-[#ddc39a]/15 text-[#ddc39a] flex items-center justify-center cursor-pointer transition-all duration-300 shadow-md hover:bg-[#ddc39a]/5 hover:-translate-y-[3px] hover:border-[#ddc39a]/40 hover:shadow-lg"
+              aria-label="Twitter"
+            >
               <svg
                 width="16"
                 height="16"
@@ -61,7 +68,10 @@ export default function Home() {
                 />
               </svg>
             </button>
-            <button className="social-button" aria-label="LinkedIn">
+            <button
+              className="w-10 h-10 rounded-full bg-[rgba(13,12,8,0.3)] border border-[#ddc39a]/15 text-[#ddc39a] flex items-center justify-center cursor-pointer transition-all duration-300 shadow-md hover:bg-[#ddc39a]/5 hover:-translate-y-[3px] hover:border-[#ddc39a]/40 hover:shadow-lg"
+              aria-label="LinkedIn"
+            >
               <svg
                 width="16"
                 height="16"
@@ -94,267 +104,173 @@ export default function Home() {
             </button>
           </div>
 
-          <button className="try-now-button" onClick={scrollToChatbot}>
-            <span>Experience Now</span>
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M12 5V19"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M19 12L12 19L5 12"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+          <button
+            className="py-3 px-7 bg-[#ddc39a]/90 text-black border-none rounded-[30px] font-medium text-base cursor-pointer transition-all duration-300 tracking-wider flex items-center gap-2.5 shadow-lg hover:-translate-y-[3px] hover:shadow-xl hover:bg-[#ddc39a]"
+            onClick={scrollToChatbot}
+          >
+            <span>🗣️ Start Asking</span>
           </button>
         </div>
       </header>
 
-      <div className="hero-section">
-        <h1>Perspectives.ai</h1>
-        <p>
-          Experience profound insights from the world&apos;s spiritual
-          traditions through our sophisticated AI assistants
-        </p>
+      <div className="pt-[160px] px-[7%] pb-[100px] text-center w-full flex flex-col items-center justify-center min-h-[85vh] z-10 bg-gradient-to-b from-black/40 to-transparent backdrop-blur-sm">
+        <h1 className="text-[3.5rem] md:text-[4.5rem] font-bold mb-12 text-[#ddc39a] leading-tight shadow-md max-w-[900px]">
+          Ask the big questions.{" "}
+          <span className="text-white/90">
+            Hear how different traditions have answered.
+          </span>
+        </h1>
+        <div className="text-[1.1rem] md:text-[1.3rem] text-[#ddc39a]/90 max-w-[800px] mx-auto leading-[1.8] shadow-md mb-16">
+          <p className="mb-6">
+            Perspectives.ai is your space to explore spiritual questions—without
+            pressure, dogma, or judgment.
+          </p>
+          <p className="mb-6">
+            Talk with RabbiGPT, BuddhaGPT, ImamGPT, and more.
+          </p>
+          <p>
+            Discover how different paths wrestle with the same human longing.
+          </p>
+        </div>
+
+        <div className="flex flex-col md:flex-row gap-8 items-center">
+          <a
+            href="#"
+            className="text-[#ddc39a] text-lg font-medium hover:text-white transition-colors duration-300 flex items-center gap-2"
+          >
+            🔍 Explore Perspectives <span className="text-xl">→</span>
+          </a>
+        </div>
       </div>
 
-      {/* the entire chat UI */}
-      <div ref={chatbotRef} className="chatbot-container">
+      {/* Cards Section */}
+      <section className="my-24 grid grid-cols-1 md:grid-cols-3 gap-8 px-[7%]">
+        <Card className="h-full">
+          <CardHeader>Feature One</CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Description of feature one goes here.
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="h-full">
+          <CardHeader>Feature Two</CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Description of feature two goes here.
+            </p>
+          </CardContent>
+        </Card>
+        <Card className="h-full">
+          <CardHeader>Feature Three</CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground">
+              Description of feature three goes here.
+            </p>
+          </CardContent>
+        </Card>
+      </section>
+
+      <div
+        ref={chatbotRef}
+        className="flex-1 min-h-[500px] h-[70vh] w-full px-[7%] mb-12 relative z-10 bg-transparent"
+      >
         <LandingChatbot />
       </div>
 
-      <style jsx global>{`
-        @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Raleway:wght@300;400;500;600&display=swap");
+      <footer className="w-full px-[7%] py-8 bg-black/70 backdrop-blur-md border-t border-[#ddc39a]/10 text-[#ddc39a]/80">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <div className="flex flex-col">
+            <Image
+              src={Logo}
+              alt="Perspectives.ai Logo"
+              height={40}
+              className="h-auto w-auto max-h-10 object-contain mb-4"
+            />
+            <p className="text-sm">Exploring spiritual wisdom through AI.</p>
+          </div>
 
-        html,
-        body {
-          margin: 0;
-          padding: 0;
-          background-color: #000000;
-          color: #ddc39a;
-          height: 100%;
-          width: 100%;
-          font-family: "Raleway", sans-serif;
-          line-height: 1.6;
-          font-weight: 300;
-        }
+          <div className="flex flex-col">
+            <h3 className="font-medium mb-4">Explore</h3>
+            <a
+              href="#"
+              className="text-sm mb-2 hover:text-[#ddc39a] transition-colors"
+            >
+              Home
+            </a>
+            <a
+              href="#"
+              className="text-sm mb-2 hover:text-[#ddc39a] transition-colors"
+            >
+              About
+            </a>
+            <a
+              href="#"
+              className="text-sm mb-2 hover:text-[#ddc39a] transition-colors"
+            >
+              Features
+            </a>
+            <a
+              href="#"
+              className="text-sm hover:text-[#ddc39a] transition-colors"
+            >
+              Contact
+            </a>
+          </div>
 
-        main {
-          min-height: 100vh;
-          width: 100%;
-          background: linear-gradient(
-            to bottom,
-            #000000 0%,
-            #000000 50%,
-            #0c1220 85%,
-            #0f1a2e 100%
-          );
-          display: flex;
-          flex-direction: column;
-          position: relative;
-        }
+          <div className="flex flex-col">
+            <h3 className="font-medium mb-4">Legal</h3>
+            <a
+              href="#"
+              className="text-sm mb-2 hover:text-[#ddc39a] transition-colors"
+            >
+              Terms of Service
+            </a>
+            <a
+              href="#"
+              className="text-sm mb-2 hover:text-[#ddc39a] transition-colors"
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="#"
+              className="text-sm hover:text-[#ddc39a] transition-colors"
+            >
+              Cookie Policy
+            </a>
+          </div>
 
-        * {
-          box-sizing: border-box;
-        }
+          <div className="flex flex-col">
+            <h3 className="font-medium mb-4">Connect</h3>
+            <div className="flex flex-col gap-2">
+              <a
+                href="mailto:edwinfeinberg@gmail.com"
+                className="text-sm hover:text-[#ddc39a] transition-colors"
+              >
+                edwinfeinberg@gmail.com
+              </a>
+              <a
+                href="mailto:shepherdvitelaalyssa@gmail.com"
+                className="text-sm hover:text-[#ddc39a] transition-colors"
+              >
+                shepherdvitelaalyssa@gmail.com
+              </a>
+              <a
+                href="mailto:bellawynne8@gmail.com"
+                className="text-sm hover:text-[#ddc39a] transition-colors"
+              >
+                bellawynne8@gmail.com
+              </a>
+            </div>
+          </div>
+        </div>
 
-        h1,
-        h2,
-        h3,
-        h4,
-        h5,
-        h6 {
-          margin: 0;
-          line-height: 1.2;
-          font-family: "Playfair Display", serif;
-          font-weight: 600;
-        }
-
-        .site-header {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 20px 7%;
-          height: 90px;
-          width: 100%;
-          background-color: rgba(0, 0, 0, 0.7);
-          backdrop-filter: blur(10px);
-          border-bottom: 1px solid rgba(221, 195, 154, 0.1);
-          position: fixed;
-          top: 0;
-          left: 0;
-          z-index: 100;
-        }
-
-        .logo-container {
-          height: 40px;
-          display: flex;
-          align-items: center;
-        }
-
-        .logo-image {
-          height: auto;
-          width: auto;
-          max-height: 40px;
-          object-fit: contain;
-        }
-
-        .header-buttons {
-          display: flex;
-          align-items: center;
-          gap: 36px;
-        }
-
-        .social-buttons {
-          display: flex;
-          gap: 18px;
-        }
-
-        .social-button {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background-color: rgba(13, 12, 8, 0.3);
-          border: 1px solid rgba(221, 195, 154, 0.15);
-          color: #ddc39a;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-
-        .social-button:hover {
-          background-color: rgba(221, 195, 154, 0.05);
-          transform: translateY(-3px);
-          border-color: rgba(221, 195, 154, 0.4);
-          box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15),
-            0 0 10px rgba(221, 195, 154, 0.1);
-        }
-
-        .try-now-button {
-          padding: 12px 28px;
-          background-color: rgba(221, 195, 154, 0.9);
-          color: #000000;
-          border: none;
-          border-radius: 30px;
-          font-weight: 500;
-          font-size: 16px;
-          cursor: pointer;
-          transition: all 0.3s ease;
-          letter-spacing: 0.6px;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15),
-            0 0 15px rgba(221, 195, 154, 0.1);
-        }
-
-        .try-now-button:hover {
-          transform: translateY(-3px);
-          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2),
-            0 0 20px rgba(221, 195, 154, 0.2);
-          background-color: #ddc39a;
-        }
-
-        .hero-section {
-          padding: 180px 7% 100px;
-          text-align: center;
-          margin: 0 auto;
-          width: 100%;
-          position: relative;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: calc(100vh - 90px);
-          background: transparent;
-          position: relative;
-          z-index: 2;
-        }
-
-        .hero-section h1 {
-          font-size: 4.5rem;
-          font-weight: 700;
-          margin-bottom: 24px;
-          color: #ddc39a;
-          line-height: 1.1;
-          text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-        }
-
-        .hero-section p {
-          font-size: 1.3rem;
-          color: rgba(221, 195, 154, 0.9);
-          max-width: 700px;
-          margin: 0 auto;
-          line-height: 1.7;
-          text-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-        }
-
-        .chatbot-container {
-          flex: 1;
-          min-height: 600px;
-          max-height: 800px;
-          width: 90%;
-          max-width: 1200px;
-          margin: 20px auto 80px;
-          display: flex;
-          flex-direction: column;
-          border-radius: 10px;
-          overflow: hidden;
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3),
-            0 0 50px rgba(64, 122, 214, 0.1);
-          border: 1px solid rgba(64, 122, 214, 0.15);
-          position: relative;
-          z-index: 2;
-        }
-
-        @media (max-width: 768px) {
-          .site-header {
-            padding: 16px 5%;
-            height: 70px;
-          }
-
-          .social-buttons {
-            gap: 10px;
-          }
-
-          .social-button {
-            width: 36px;
-            height: 36px;
-          }
-
-          .try-now-button {
-            padding: 10px 20px;
-            font-size: 14px;
-          }
-
-          .hero-section {
-            padding: 130px 5% 80px;
-          }
-
-          .hero-section h1 {
-            font-size: 3.4rem;
-          }
-
-          .hero-section p {
-            font-size: 1.1rem;
-          }
-        }
-      `}</style>
+        <div className="mt-8 pt-6 border-t border-[#ddc39a]/10 text-center">
+          <p className="text-sm">
+            © {new Date().getFullYear()} Perspectives.ai. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </main>
   );
 }

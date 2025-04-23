@@ -8,12 +8,28 @@ import LoadingBubble from "./LoadingBubble";
 import PromptSuggestionRow from "./PromptSuggestionRow";
 import { useRouter } from "next/navigation";
 
+export type ModelType = "RabbiGPT" | "BuddhaGPT" | "ImamGPT";
+
+const modelToApi = (model: ModelType) => {
+  if (model === "RabbiGPT") return "/api/chat";
+  if (model === "BuddhaGPT") return "/api/chat/buddha";
+  if (model === "ImamGPT") return "/api/chat/imam";
+  return "/api/chat";
+};
+
 interface ChatbotProps {
   initialMessages?: Message[];
+  initialModel?: ModelType;
 }
 
-const FullChat: React.FC<ChatbotProps> = ({ initialMessages }) => {
+const FullChat: React.FC<ChatbotProps> = ({
+  initialMessages,
+  initialModel = "RabbiGPT",
+}) => {
   const router = useRouter();
+  const [selectedModel, setSelectedModel] = useState<ModelType>(initialModel);
+  const [showDropdown, setShowDropdown] = useState<boolean>(false);
+
   const {
     messages,
     isLoading,
@@ -21,9 +37,10 @@ const FullChat: React.FC<ChatbotProps> = ({ initialMessages }) => {
     handleInputChange,
     handleSubmit,
     append,
-  } = useChat();
-  const [selectedModel, setSelectedModel] = useState<string>("RabbiGPT");
-  const [showDropdown, setShowDropdown] = useState<boolean>(false);
+  } = useChat({
+    id: `chat-${selectedModel.toLowerCase()}`,
+    api: modelToApi(selectedModel),
+  });
 
   useEffect(() => {
     if (initialMessages && initialMessages.length > 0) {
@@ -40,51 +57,60 @@ const FullChat: React.FC<ChatbotProps> = ({ initialMessages }) => {
     append(msg);
   };
 
-  const handleModelSelect = (model: string) => {
+  const handleModelSelect = (model: ModelType) => {
     setSelectedModel(model);
     setShowDropdown(false);
   };
 
   const handleNewChat = () => {
     sessionStorage.setItem("chatHistory", JSON.stringify(messages));
+    sessionStorage.setItem("chatModel", selectedModel);
     router.push("/chats");
   };
 
   return (
-    <div className="chatbot">
-      <div className="menubar">
-        <div className="menubar-content">
-          <div className="app-branding">
-            <span className="app-name">Perspectives</span>
+    <div className="flex flex-col h-full w-full flex-1 bg-[#1a1e2d] overflow-hidden font-[Inter,system-ui,sans-serif] font-medium tracking-normal relative transition-all duration-300">
+      <div className="flex justify-between items-center p-0 h-[60px] bg-[#0f1117] border-b border-white/10">
+        <div className="w-full max-w-[1024px] px-4 mx-auto flex justify-between items-center">
+          <div className="flex items-center">
+            <span className="text-lg font-semibold text-[#e6c682] tracking-wider">
+              Perspectives
+            </span>
           </div>
-          <div className="model-selector">
+          <div className="relative">
             <button
-              className="model-button"
+              className="py-2 px-4 bg-[#293040] text-[#e6c682] border border-[rgba(255,215,125,0.2)] rounded-md font-semibold text-sm cursor-pointer tracking-wider transition-all duration-200 shadow-sm hover:bg-[#353f54] hover:border-[rgba(255,215,125,0.5)] hover:-translate-y-0.5 hover:shadow-md"
               onClick={() => setShowDropdown(!showDropdown)}
             >
               {selectedModel}
             </button>
             {showDropdown && (
-              <div className="model-dropdown">
+              <div className="absolute top-[110%] left-1/2 -translate-x-1/2 mt-[5px] bg-[#293040] border border-[rgba(255,215,125,0.15)] rounded-lg overflow-hidden z-10 shadow-lg animate-fadeIn min-w-[160px]">
                 <button
-                  className={`dropdown-item ${
-                    selectedModel === "RabbiGPT" ? "active" : ""
+                  className={`block w-full py-3 px-5 text-left bg-black border-none text-[#e6c682] cursor-pointer tracking-wide transition-all duration-200 relative font-medium hover:bg-[rgba(255,215,125,0.08)] ${
+                    selectedModel === "RabbiGPT"
+                      ? "bg-[rgba(255,215,125,0.15)] font-semibold"
+                      : ""
                   }`}
                   onClick={() => handleModelSelect("RabbiGPT")}
                 >
                   RabbiGPT
                 </button>
                 <button
-                  className={`dropdown-item ${
-                    selectedModel === "BuddaGPT" ? "active" : ""
+                  className={`block w-full py-3 px-5 text-left bg-black border-none text-[#e6c682] cursor-pointer tracking-wide transition-all duration-200 relative font-medium hover:bg-[rgba(255,215,125,0.08)] ${
+                    selectedModel === "BuddhaGPT"
+                      ? "bg-[rgba(255,215,125,0.15)] font-semibold"
+                      : ""
                   }`}
-                  onClick={() => handleModelSelect("BuddaGPT")}
+                  onClick={() => handleModelSelect("BuddhaGPT")}
                 >
-                  BuddaGPT
+                  BuddhaGPT
                 </button>
                 <button
-                  className={`dropdown-item ${
-                    selectedModel === "ImamGPT" ? "active" : ""
+                  className={`block w-full py-3 px-5 text-left bg-black border-none text-[#e6c682] cursor-pointer tracking-wide transition-all duration-200 relative font-medium hover:bg-[rgba(255,215,125,0.08)] ${
+                    selectedModel === "ImamGPT"
+                      ? "bg-[rgba(255,215,125,0.15)] font-semibold"
+                      : ""
                   }`}
                   onClick={() => handleModelSelect("ImamGPT")}
                 >
@@ -95,34 +121,62 @@ const FullChat: React.FC<ChatbotProps> = ({ initialMessages }) => {
           </div>
         </div>
       </div>
-      <div className={`chat-body ${messages.length === 0 ? "empty" : ""}`}>
+
+      <div
+        className={`flex-1 overflow-y-auto py-4 pb-[100px] max-w-[768px] w-full mx-auto scroll-smooth relative ${
+          messages.length === 0 ? "flex justify-center items-center" : ""
+        }`}
+      >
         {messages.map((message, index) => (
-          <Bubble key={message.id || index} message={message} />
+          <Bubble
+            key={message.id || index}
+            message={{
+              content: message.content,
+              role: message.role as "user" | "assistant",
+            }}
+            model={selectedModel}
+          />
         ))}
         {isLoading && (
-          <div className="loading-container">
+          <div className="flex justify-center my-4">
             <LoadingBubble />
           </div>
         )}
       </div>
+
       <div
-        className={`input-container ${messages.length === 0 ? "centered" : ""}`}
+        className={`fixed bottom-0 left-0 right-0 flex flex-col bg-[#1a1e2d] z-10 max-w-[800px] mx-auto overflow-hidden transition-all duration-300 shadow-lg border-t border-white/10 ${
+          messages.length === 0
+            ? "relative rounded-xl border border-[rgba(255,215,125,0.12)] shadow-xl mb-[20vh] bg-[#1f2535]"
+            : ""
+        }`}
       >
-        <div className="suggestions">
-          <PromptSuggestionRow onPromptClick={handlePromptClick} />
+        <div className="py-3 px-4 bg-[#161c28] border-t border-[rgba(255,215,125,0.08)]">
+          <PromptSuggestionRow
+            model={selectedModel}
+            onPromptClick={handlePromptClick}
+          />
         </div>
-        <form className="input-form" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-nowrap p-4 w-full bg-[#1f2535] items-center border-t border-white/5"
+          onSubmit={handleSubmit}
+        >
           <input
-            className="input-box"
+            className="flex-1 min-w-0 py-3 px-4 bg-[#293040] h-[50px] text-[#f0f0f0] border border-[rgba(255,215,125,0.15)] rounded-[10px] font-normal text-[15px] transition-all duration-300 shadow-sm focus:outline-none focus:border-[rgba(255,215,125,0.5)] focus:shadow-[0_0_0_2px_rgba(255,215,125,0.1)] placeholder:text-[#f0f0f0]/50 placeholder:font-normal"
             value={input}
             onChange={handleInputChange}
             placeholder="Ask me anything..."
           />
-          <div className="input-actions">
-            <button type="submit">Send</button>
+          <div className="flex gap-2.5 items-center ml-3 flex-shrink-0">
+            <button
+              type="submit"
+              className="py-0 px-4 bg-[#4e4a36] text-[#e6c682] border-none rounded-[10px] h-[50px] cursor-pointer font-medium text-sm tracking-wide transition-all duration-200 shadow-sm whitespace-nowrap hover:-translate-y-0.5 hover:shadow-md hover:bg-[#5a573e] active:translate-y-0"
+            >
+              Send
+            </button>
             <button
               type="button"
-              className="new-chat-button"
+              className="py-0 px-4 bg-[#293040] text-[#e6c682] border border-[rgba(255,215,125,0.15)] rounded-[10px] h-[50px] cursor-pointer font-medium text-sm tracking-wide transition-all duration-200 shadow-sm whitespace-nowrap min-w-[100px] hover:-translate-y-0.5 hover:shadow-md hover:bg-[#36425a] active:translate-y-0"
               onClick={handleNewChat}
             >
               New Chat
@@ -130,352 +184,6 @@ const FullChat: React.FC<ChatbotProps> = ({ initialMessages }) => {
           </div>
         </form>
       </div>
-      <style jsx global>{`
-        .chatbot {
-          display: flex;
-          flex-direction: column;
-          height: 100%;
-          width: 100%;
-          flex: 1;
-          background: #1a1e2d;
-          overflow: hidden;
-          font-family: "Inter", "SF Pro Display", "Roboto", system-ui,
-            sans-serif;
-          font-weight: 500;
-          letter-spacing: 0;
-          position: relative;
-          transition: all 0.3s ease;
-        }
-        .menubar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 0;
-          height: 60px;
-          background: #0f1117;
-          backdrop-filter: none;
-          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .menubar-content {
-          width: 100%;
-          max-width: 1024px;
-          padding: 0 16px;
-          margin: 0 auto;
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-        }
-        .app-branding {
-          display: flex;
-          align-items: center;
-        }
-        .app-name {
-          font-size: 18px;
-          font-weight: 600;
-          color: #e6c682;
-          letter-spacing: 0.5px;
-        }
-        .model-selector {
-          position: relative;
-        }
-        .model-button {
-          padding: 8px 16px;
-          background: #293040;
-          color: #e6c682;
-          border: 1px solid rgba(255, 215, 125, 0.2);
-          border-radius: 6px;
-          font-weight: 600;
-          font-size: 14px;
-          cursor: pointer;
-          letter-spacing: 0.3px;
-          transition: all 0.2s ease;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .model-button:hover {
-          background: #353f54;
-          border-color: rgba(255, 215, 125, 0.5);
-          transform: translateY(-2px);
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-        }
-        .model-dropdown {
-          position: absolute;
-          top: 110%;
-          left: 50%;
-          transform: translateX(-50%);
-          margin-top: 5px;
-          background: #293040;
-          backdrop-filter: none;
-          border: 1px solid rgba(255, 215, 125, 0.15);
-          border-radius: 8px;
-          overflow: hidden;
-          z-index: 10;
-          box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-          animation: fadeIn 0.2s ease;
-          min-width: 160px;
-        }
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-            transform: translateX(-50%) translateY(-10px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(-50%) translateY(0);
-          }
-        }
-        .dropdown-item {
-          display: block;
-          width: 100%;
-          padding: 12px 20px;
-          text-align: left;
-          background-color: #000000;
-          border: none;
-          color: #e6c682;
-          cursor: pointer;
-          letter-spacing: 0.02em;
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          position: relative;
-          font-weight: 500;
-        }
-        .dropdown-item:after {
-          content: "";
-          position: absolute;
-          bottom: 0;
-          left: 50%;
-          width: 0;
-          height: 1px;
-          background: #ddc39a;
-          transition: all 0.2s ease;
-          transform: translateX(-50%);
-        }
-        .dropdown-item:hover {
-          background: rgba(255, 215, 125, 0.08);
-        }
-        .dropdown-item:hover:after {
-          width: 80%;
-        }
-        .dropdown-item.active {
-          background: rgba(255, 215, 125, 0.15);
-          font-weight: 600;
-        }
-        .chat-body {
-          flex: 1;
-          overflow-y: auto;
-          padding: 16px 0 100px 0;
-          max-width: 768px;
-          width: 100%;
-          margin: 0 auto;
-          scroll-behavior: smooth;
-          position: relative;
-        }
-        .chat-body.empty {
-          display: flex;
-          justify-content: center;
-          align-items: center;
-        }
-        .chat-body::-webkit-scrollbar {
-          width: 6px;
-        }
-        .chat-body::-webkit-scrollbar-track {
-          background: rgba(221, 195, 154, 0.05);
-          border-radius: 6px;
-        }
-        .chat-body::-webkit-scrollbar-thumb {
-          background: rgba(255, 215, 125, 0.3);
-          border-radius: 10px;
-        }
-        .bubble {
-          background: #293040;
-          color: #f0f0f0;
-          border-radius: 12px;
-          padding: 16px 24px;
-          margin: 14px 16px;
-          line-height: 1.5;
-          letter-spacing: 0.01em;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          border: none;
-          position: relative;
-          max-width: 85%;
-          font-weight: 400;
-          font-family: "Roboto", sans-serif;
-        }
-        .bubble.user {
-          align-self: flex-end;
-          background: #4e4a36;
-          color: #f0f0f0;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-          border: none;
-          border-bottom-right-radius: 3px;
-          margin-left: auto;
-        }
-        .bubble.assistant {
-          align-self: flex-start;
-          background: #293040;
-          color: #f0f0f0;
-          border-bottom-left-radius: 3px;
-          margin-right: auto;
-        }
-        .loading-container {
-          display: flex;
-          justify-content: center;
-          margin: 16px 0;
-        }
-        .suggestions {
-          padding: 12px 16px;
-          background: #161c28;
-          border-top: 1px solid rgba(255, 215, 125, 0.08);
-        }
-        .prompt-suggestion-row {
-          display: flex;
-          gap: 10px;
-          overflow-x: auto;
-          padding: 4px 0;
-          scrollbar-width: none;
-          justify-content: flex-start;
-        }
-        .prompt-suggestion-row::-webkit-scrollbar {
-          display: none;
-        }
-        .prompt-suggestion-button {
-          background: #2c3447;
-          color: #e6c682;
-          border: 1px solid rgba(255, 215, 125, 0.15);
-          border-radius: 8px;
-          padding: 8px 14px;
-          font-size: 13px;
-          font-weight: 500;
-          letter-spacing: 0.01em;
-          cursor: pointer;
-          transition: all 0.2s ease;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          flex-shrink: 0;
-          font-family: "Roboto", sans-serif;
-          height: 36px;
-          display: flex;
-          align-items: center;
-        }
-        .prompt-suggestion-button:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-          background: #3b4357;
-          border-color: rgba(255, 215, 125, 0.3);
-        }
-        .input-container {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          display: flex;
-          flex-direction: column;
-          background: #1a1e2d;
-          z-index: 10;
-          max-width: 800px;
-          margin: 0 auto;
-          overflow: hidden;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.2);
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .input-container.centered {
-          position: relative;
-          border-radius: 12px;
-          border: 1px solid rgba(255, 215, 125, 0.12);
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
-          margin-bottom: 20vh;
-          background: #1f2535;
-          overflow: hidden;
-        }
-
-        .input-form {
-          display: flex;
-          flex-wrap: nowrap;
-          padding: 16px;
-          width: 100%;
-          background: #1f2535;
-          align-items: center;
-          border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        .input-box {
-          flex: 1;
-          min-width: 0;
-          padding: 12px 16px;
-          background: #293040;
-          height: 50px;
-          color: #f0f0f0;
-          border: 1px solid rgba(255, 215, 125, 0.15);
-          border-radius: 10px;
-          font-family: inherit;
-          font-weight: 400;
-          font-size: 15px;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        .input-box:focus {
-          outline: none;
-          border-color: rgba(255, 215, 125, 0.5);
-          box-shadow: 0 0 0 2px rgba(255, 215, 125, 0.1);
-        }
-        .input-box::placeholder {
-          color: rgba(240, 240, 240, 0.5);
-          font-weight: 400;
-        }
-        .input-actions {
-          display: flex;
-          gap: 10px;
-          align-items: center;
-          margin-left: 12px;
-          flex-shrink: 0;
-        }
-        .input-form button {
-          padding: 0 16px;
-          background: #4e4a36;
-          color: #e6c682;
-          border: none;
-          border-radius: 10px;
-          height: 50px;
-          cursor: pointer;
-          font-weight: 500;
-          font-size: 14px;
-          letter-spacing: 0.01em;
-          transition: all 0.2s ease;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-          white-space: nowrap;
-        }
-        .input-form button:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-          background: #5a573e;
-        }
-        .input-form button:active {
-          transform: translateY(0);
-        }
-        .new-chat-button {
-          background: #293040 !important;
-          color: #e6c682;
-          border: 1px solid rgba(255, 215, 125, 0.15) !important;
-          min-width: 100px;
-        }
-        .new-chat-button:hover {
-          background: #36425a !important;
-        }
-
-        @media (max-width: 640px) {
-          .input-actions {
-            gap: 6px;
-            margin-left: 8px;
-          }
-
-          .input-form button {
-            padding: 0 12px;
-            font-size: 13px;
-          }
-
-          .new-chat-button {
-            min-width: auto;
-          }
-        }
-      `}</style>
     </div>
   );
 };

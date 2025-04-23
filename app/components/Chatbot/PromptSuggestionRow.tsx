@@ -1,25 +1,37 @@
 import PromptSuggestionButton from "./PromptSuggestionButton";
 
 interface Props {
+  model: "RabbiGPT" | "BuddhaGPT" | "ImamGPT";
   onPromptClick: (prompt: string) => void;
 }
 
-const PromptSuggestionRow: React.FC<Props> = ({ onPromptClick }) => {
-  const prompts = [
+const SUGGESTIONS: Record<Props["model"], string[]> = {
+  RabbiGPT: [
     "What is Judaism?",
-    "Why do my prayers sometimes feel unanswered?",
-    "Is free will real if an all-knowing deity already knows my choices?",
-    "How can I forgive someone who has deeply hurt me?",
-    "How should I balance worldly success with spiritual growth?",
     "What is the meaning of life?",
-    "What is the purpose of suffering?",
-  ];
+    "How can I forgive someone who hurt me?",
+    "Why do my prayers feel unanswered?",
+  ],
+  BuddhaGPT: [
+    "What are the Four Noble Truths?",
+    "How do I begin meditating?",
+    "What is non-attachment in daily life?",
+    "Why is suffering unavoidable?",
+  ],
+  ImamGPT: [
+    "What is the essence of Islam?",
+    "How do the Five Pillars shape life?",
+    "Why is charity (zakah) so important?",
+    "How do I strengthen my faith when I feel distant?",
+  ],
+};
 
+const PromptSuggestionRow: React.FC<Props> = ({ model, onPromptClick }) => {
   return (
-    <div className="prompt-suggestion-row">
-      {prompts.map((prompt, index) => (
+    <div className="w-full flex overflow-x-auto scrollbar-hide">
+      {SUGGESTIONS[model].map((prompt, i) => (
         <PromptSuggestionButton
-          key={`suggestion-${index}`}
+          key={`suggestion-${i}`}
           text={prompt}
           onClick={() => onPromptClick(prompt)}
         />
@@ -27,4 +39,5 @@ const PromptSuggestionRow: React.FC<Props> = ({ onPromptClick }) => {
     </div>
   );
 };
+
 export default PromptSuggestionRow;
