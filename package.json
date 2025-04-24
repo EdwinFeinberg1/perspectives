@@ -8,6 +8,7 @@
     "start": "next start",
     "seed": "ts-node ./scripts/RabbiloadDb.ts",
     "seedBuddha": "ts-node ./scripts/buddhaLoadDb.ts",
+    "seedchrist": "ts-node ./scripts/ChristLoadDb.ts",
     "lint": "next lint"
   },
   "dependencies": {

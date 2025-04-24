@@ -15,7 +15,7 @@ export default function ChatsPage() {
     if (
       storedModel === "RabbiGPT" ||
       storedModel === "BuddhaGPT" ||
-      storedModel === "ImamGPT"
+      storedModel === "PastorGPT"
     ) {
       setInitialModel(storedModel as ModelType);
     }

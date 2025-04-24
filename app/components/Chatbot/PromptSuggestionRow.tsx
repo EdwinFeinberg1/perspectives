@@ -1,7 +1,7 @@
 import PromptSuggestionButton from "./PromptSuggestionButton";
 
 interface Props {
-  model: "RabbiGPT" | "BuddhaGPT" | "ImamGPT";
+  model: "RabbiGPT" | "BuddhaGPT" | "PastorGPT";
   onPromptClick: (prompt: string) => void;
 }
 
@@ -18,11 +18,11 @@ const SUGGESTIONS: Record<Props["model"], string[]> = {
     "What is non-attachment in daily life?",
     "Why is suffering unavoidable?",
   ],
-  ImamGPT: [
-    "What is the essence of Islam?",
-    "How do the Five Pillars shape life?",
-    "Why is charity (zakah) so important?",
-    "How do I strengthen my faith when I feel distant?",
+  PastorGPT: [
+    "What does Christianity teach about love?",
+    "How can I strengthen my faith?",
+    "What does the Bible say about forgiveness?",
+    "How should I pray as a Christian?",
   ],
 };
 

@@ -1,12 +1,12 @@
 interface BubbleProps {
   message: { content: string; role: "user" | "assistant" };
-  model: "RabbiGPT" | "BuddhaGPT" | "ImamGPT";
+  model: "RabbiGPT" | "BuddhaGPT" | "PastorGPT";
 }
 
 const BADGE: Record<BubbleProps["model"], string> = {
   RabbiGPT: "✡️",
   BuddhaGPT: "☸️",
-  ImamGPT: "☪️",
+  PastorGPT: "✝️",
 };
 
 const Bubble: React.FC<BubbleProps> = ({ message, model }) => {

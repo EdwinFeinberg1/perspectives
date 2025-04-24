@@ -23,14 +23,14 @@ import Bubble from "./Chatbot/Bubble";
 import LoadingBubble from "./Chatbot/LoadingBubble";
 import PromptSuggestionRow from "./Chatbot/PromptSuggestionRow";
 
-type ModelName = "RabbiGPT" | "BuddhaGPT" | "ImamGPT";
+type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT";
 
 const apiRoute = (m: ModelName) =>
   m === "RabbiGPT"
-    ? "/api/chat"
+    ? "/api/chat/judaism"
     : m === "BuddhaGPT"
     ? "/api/chat/buddha"
-    : "/api/chat/imam";
+    : "/api/chat/christianity";
 
 const LandingChatbot: React.FC = () => {
   const router = useRouter();
@@ -89,8 +89,8 @@ const LandingChatbot: React.FC = () => {
               <DropdownMenuItem onClick={() => setSelectedModel("BuddhaGPT")}>
                 BuddhaGPT
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setSelectedModel("ImamGPT")}>
-                ImamGPT
+              <DropdownMenuItem onClick={() => setSelectedModel("PastorGPT")}>
+                PastorGPT
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -8,13 +8,13 @@ import LoadingBubble from "./LoadingBubble";
 import PromptSuggestionRow from "./PromptSuggestionRow";
 import { useRouter } from "next/navigation";
 
-export type ModelType = "RabbiGPT" | "BuddhaGPT" | "ImamGPT";
+export type ModelType = "RabbiGPT" | "BuddhaGPT" | "PastorGPT";
 
 const modelToApi = (model: ModelType) => {
-  if (model === "RabbiGPT") return "/api/chat";
+  if (model === "RabbiGPT") return "/api/chat/judaism";
   if (model === "BuddhaGPT") return "/api/chat/buddha";
-  if (model === "ImamGPT") return "/api/chat/imam";
-  return "/api/chat";
+  if (model === "PastorGPT") return "/api/chat/christianity";
+  return "/api/chat/judaism";
 };
 
 interface ChatbotProps {
@@ -108,13 +108,13 @@ const FullChat: React.FC<ChatbotProps> = ({
                 </button>
                 <button
                   className={`block w-full py-3 px-5 text-left bg-black border-none text-[#e6c682] cursor-pointer tracking-wide transition-all duration-200 relative font-medium hover:bg-[rgba(255,215,125,0.08)] ${
-                    selectedModel === "ImamGPT"
+                    selectedModel === "PastorGPT"
                       ? "bg-[rgba(255,215,125,0.15)] font-semibold"
                       : ""
                   }`}
-                  onClick={() => handleModelSelect("ImamGPT")}
+                  onClick={() => handleModelSelect("PastorGPT")}
                 >
-                  ImamGPT
+                  PastorGPT
                 </button>
               </div>
             )}
