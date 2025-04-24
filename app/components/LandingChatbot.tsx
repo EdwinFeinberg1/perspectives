@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useChat } from "ai/react";
 import { useRouter } from "next/navigation";
+import { Send } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -126,22 +127,25 @@ const LandingChatbot: React.FC = () => {
         )}
       </CardContent>
 
-      <CardFooter className="flex flex-col  p-0 bg-slate-950">
-        <div className="w-full p-2 ">
+      <CardFooter className="flex flex-col p-0 bg-slate-950">
+        <div className="w-full p-2 h-16 overflow-hidden">
           <PromptSuggestionRow
             model={selectedModel}
             onPromptClick={sendPrompt}
           />
         </div>
-        <form onSubmit={handleSubmit} className="flex w-full p-3  bg-slate-950">
+        <form
+          onSubmit={handleSubmit}
+          className="flex w-full px-4 py-4 mb-2 bg-slate-950 rounded-lg shadow-sm mx-2 my-2"
+        >
           <Input
             value={input}
             onChange={handleInputChange}
             placeholder="Ask me anything..."
-            className="flex-1 bg-slate-950 border-none text-white"
+            className="flex-1 bg-slate-950 border-none text-white rounded-md"
           />
-          <Button type="submit" className="bg-slate-950">
-            Send
+          <Button type="submit" className="ml-2 bg-slate-950" size="icon">
+            <Send size={18} />
           </Button>
         </form>
       </CardFooter>

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { useChat } from "ai/react";
 import { Message } from "ai";
+import { Send } from "lucide-react";
 import Bubble from "./Bubble";
 import LoadingBubble from "./LoadingBubble";
 import PromptSuggestionRow from "./PromptSuggestionRow";
@@ -161,27 +162,27 @@ const FullChat: React.FC<ChatbotProps> = ({
           className="flex flex-nowrap p-4 w-full bg-[#1f2535] items-center border-t border-white/5"
           onSubmit={handleSubmit}
         >
-          <input
-            className="flex-1 min-w-0 py-3 px-4 bg-[#293040] h-[50px] text-[#f0f0f0] border border-[rgba(255,215,125,0.15)] rounded-[10px] font-normal text-[15px] transition-all duration-300 shadow-sm focus:outline-none focus:border-[rgba(255,215,125,0.5)] focus:shadow-[0_0_0_2px_rgba(255,215,125,0.1)] placeholder:text-[#f0f0f0]/50 placeholder:font-normal"
-            value={input}
-            onChange={handleInputChange}
-            placeholder="Ask me anything..."
-          />
-          <div className="flex gap-2.5 items-center ml-3 flex-shrink-0">
+          <div className="flex flex-1 bg-[#1f2535] rounded-lg shadow-md p-1.5 mx-2">
+            <input
+              className="flex-1 min-w-0 py-3 px-4 bg-[#293040] h-[50px] text-[#f0f0f0] border border-[rgba(255,215,125,0.15)] rounded-[10px] font-normal text-[15px] transition-all duration-300 shadow-sm focus:outline-none focus:border-[rgba(255,215,125,0.5)] focus:shadow-[0_0_0_2px_rgba(255,215,125,0.1)] placeholder:text-[#f0f0f0]/50 placeholder:font-normal"
+              value={input}
+              onChange={handleInputChange}
+              placeholder="Ask me anything..."
+            />
             <button
               type="submit"
-              className="py-0 px-4 bg-[#4e4a36] text-[#e6c682] border-none rounded-[10px] h-[50px] cursor-pointer font-medium text-sm tracking-wide transition-all duration-200 shadow-sm whitespace-nowrap hover:-translate-y-0.5 hover:shadow-md hover:bg-[#5a573e] active:translate-y-0"
+              className="ml-2 flex items-center justify-center w-[50px] h-[50px] bg-[#4e4a36] text-[#e6c682] border-none rounded-[10px] cursor-pointer shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md hover:bg-[#5a573e] active:translate-y-0"
             >
-              Send
-            </button>
-            <button
-              type="button"
-              className="py-0 px-4 bg-[#293040] text-[#e6c682] border border-[rgba(255,215,125,0.15)] rounded-[10px] h-[50px] cursor-pointer font-medium text-sm tracking-wide transition-all duration-200 shadow-sm whitespace-nowrap min-w-[100px] hover:-translate-y-0.5 hover:shadow-md hover:bg-[#36425a] active:translate-y-0"
-              onClick={handleNewChat}
-            >
-              New Chat
+              <Send size={18} />
             </button>
           </div>
+          <button
+            type="button"
+            className="ml-2 py-0 px-4 bg-[#293040] text-[#e6c682] border border-[rgba(255,215,125,0.15)] rounded-[10px] h-[50px] cursor-pointer font-medium text-sm tracking-wide transition-all duration-200 shadow-sm whitespace-nowrap min-w-[100px] hover:-translate-y-0.5 hover:shadow-md hover:bg-[#36425a] active:translate-y-0"
+            onClick={handleNewChat}
+          >
+            New Chat
+          </button>
         </form>
       </div>
     </div>
