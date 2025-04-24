@@ -221,12 +221,16 @@ export default function Home() {
       {/* Chatbot Section */}
       <div
         ref={chatbotRef}
-        className="py-24 px-[7%] relative z-10 bg-transparent"
+        className="py-24 px-[5%] relative z-10 bg-transparent"
       >
-        <h2 className="text-[2.5rem] font-semibold mb-10 text-[#ddc39a] text-center">
+        <h2 className="text-[2.5rem] font-semibold mb-6 text-[#ddc39a] text-center">
           Experience Now
         </h2>
-        <div className="flex-1 min-h-[500px] h-[70vh] w-full">
+        <p className="text-center text-[#ddc39a]/80 mb-8 max-w-[800px] mx-auto">
+          Explore different religious perspectives side by side. Ask a question
+          and see how different traditions respond.
+        </p>
+        <div className="flex-1 min-h-[600px] h-[75vh] w-full max-w-[1400px] mx-auto">
           <LandingChatbot />
         </div>
       </div>
