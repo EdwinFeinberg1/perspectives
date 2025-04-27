@@ -4,25 +4,25 @@ import React from "react";
 
 const Header = () => {
   return (
-    <header className="grid grid-cols-3 items-center px-[7%] h-[90px] w-full bg-black/70 backdrop-blur-md border-b border-[#ddc39a]/10 fixed top-0 left-0 z-50">
+    <header className="grid grid-cols-3 items-center px-[7%] h-[90px] w-full bg-gradient-to-r from-black/80 via-black/70 to-black/80 backdrop-blur-md border-b border-[#ddc39a]/20 fixed top-0 left-0 z-50 shadow-lg">
       <div className="flex justify-start">
-        <button className="px-4 py-2 bg-[#ddc39a] text-black font-medium rounded hover:opacity-90">
+        <button className="px-5 py-2.5 bg-black border-2 border-[#ddc39a]/70 text-[#ddc39a] font-medium rounded-lg hover:bg-[#ddc39a]/10 transition-all duration-300 shadow-md">
           View Perspectives
         </button>
       </div>
       <div className="flex justify-center">
-        <span className="text-2xl font-bold text-[#ddc39a]">
-          Perspectives.ai
+        <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#ddc39a] via-[#e6d3a3] to-[#ddc39a] tracking-wide">
+          PERSPECTIVES<span className="text-[#ddc39a]">.ai</span>
         </span>
       </div>
       <div className="flex justify-end">
         <button
           aria-label="Open menu"
-          className="flex flex-col justify-center items-center p-2 space-y-1"
+          className="flex flex-col justify-center items-center p-2 space-y-1.5 rounded-full hover:bg-black/40 transition-all duration-300"
         >
-          <span className="block w-6 h-0.5 bg-[#ddc39a]"></span>
-          <span className="block w-6 h-0.5 bg-[#ddc39a]"></span>
-          <span className="block w-6 h-0.5 bg-[#ddc39a]"></span>
+          <span className="block w-7 h-0.5 bg-gradient-to-r from-[#ddc39a]/70 to-[#ddc39a] rounded-full transform origin-left transition-all"></span>
+          <span className="block w-5 h-0.5 bg-gradient-to-r from-[#ddc39a]/70 to-[#ddc39a] rounded-full transition-all"></span>
+          <span className="block w-7 h-0.5 bg-gradient-to-r from-[#ddc39a]/70 to-[#ddc39a] rounded-full transform origin-left transition-all"></span>
         </button>
       </div>
     </header>
