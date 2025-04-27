@@ -6,20 +6,45 @@ import { useChat } from "ai/react";
 import Bubble from "./Chatbot/Bubble";
 import LoadingBubble from "./Chatbot/LoadingBubble";
 import ChatInputFooter from "./Chatbot/ChatInputFooter";
+import PromptSuggestionButton from "./Chatbot/PromptSuggestionButton";
 
-type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT";
+type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | null;
 
 const apiRoute = (m: ModelName) =>
-  m === "RabbiGPT"
+  !m
+    ? "/api/chat/empty" // Add an empty API route
+    : m === "RabbiGPT"
     ? "/api/chat/judaism"
     : m === "BuddhaGPT"
     ? "/api/chat/buddha"
     : "/api/chat/christianity";
 
-const BADGE: Record<ModelName, string> = {
-  RabbiGPT: "✡️",
-  BuddhaGPT: "☸️",
-  PastorGPT: "✝️",
+// Prompt suggestions for each model
+const SUGGESTIONS: Record<NonNullable<ModelName>, string[]> = {
+  RabbiGPT: [
+    "Make me a spiritual growth routine",
+    "What is the meaning of life?",
+    "How can I forgive someone?",
+    "Why do prayers feel unanswered?",
+    "How to resolve scriptural contradictions?",
+    "What is God?",
+  ],
+  BuddhaGPT: [
+    "What are the Four Noble Truths?",
+    "How do I begin meditating?",
+    "What is non-attachment in daily life?",
+    "Why is suffering unavoidable?",
+    "Explain the concept of karma",
+    "What is enlightenment?",
+  ],
+  PastorGPT: [
+    "What does Christianity teach about love?",
+    "How can I strengthen my faith?",
+    "What does the Bible say about forgiveness?",
+    "How should I pray as a Christian?",
+    "Explain the Holy Trinity",
+    "What is salvation?",
+  ],
 };
 
 interface LandingChatbotProps {
@@ -35,28 +60,42 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
     handleSubmit,
     append,
   } = useChat({
-    id: `landing-${selectedModel.toLowerCase()}`,
+    id: `landing-${selectedModel?.toLowerCase() || "default"}`,
     api: apiRoute(selectedModel),
   });
 
-  const sendPrompt = (p: string) =>
-    append({ id: crypto.randomUUID(), role: "user", content: p });
+  const sendPrompt = (p: string) => {
+    if (selectedModel) {
+      append({ id: crypto.randomUUID(), role: "user", content: p });
+    }
+  };
+
+  // Render empty container when no model is selected
+  if (!selectedModel) {
+    return (
+      <div className="h-full flex flex-col overflow-hidden relative">
+        <div className="h-full overflow-y-auto space-y-4 bg-black/40 backdrop-blur-sm pb-32 w-full"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
-      <div className="px-4 py-3 flex flex-row justify-between items-center space-y-0 bg-black/60 backdrop-blur-sm rounded-t-lg">
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-2 px-4 py-2 rounded-md bg-black/60">
-            <span className="text-xl">{BADGE[selectedModel]}</span>
-            <span className="font-medium">{selectedModel}</span>
-          </div>
-        </div>
-      </div>
-
-      <div className="h-full overflow-y-auto p-4 space-y-4 bg-black/40 backdrop-blur-sm pb-32">
+      <div className="h-full overflow-y-auto space-y-4 bg-black/40 backdrop-blur-sm pb-32 w-full">
         {messages.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-muted-foreground">
-            <p>Ask a question to {selectedModel}</p>
+          <div className="flex flex-col items-center justify-center mt-0">
+            <p className="text-[#ddc39a] mb-10 text-xl font-medium">
+              Ask <span className="font-bold">{selectedModel}</span> about:
+            </p>
+            <div className="flex flex-wrap justify-center gap-4 w-full px-[5%]">
+              {SUGGESTIONS[selectedModel].map((prompt, i) => (
+                <PromptSuggestionButton
+                  key={`suggestion-${i}`}
+                  text={prompt}
+                  onClick={() => sendPrompt(prompt)}
+                />
+              ))}
+            </div>
           </div>
         ) : (
           <>
@@ -85,7 +124,6 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
         isLoading={isLoading}
         handleInputChange={handleInputChange}
         handleSubmit={handleSubmit}
-        sendPrompt={sendPrompt}
       />
     </div>
   );

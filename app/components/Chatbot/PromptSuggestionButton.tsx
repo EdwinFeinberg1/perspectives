@@ -9,7 +9,7 @@ const PromptSuggestionButton: React.FC<PromptSuggestionButtonProps> = ({
 }) => {
   return (
     <button
-      className="m-1 py-1.5 px-3 text-[13px] border-none bg-white rounded-[10px] text-[#383838] shadow-md cursor-pointer flex-shrink-0 whitespace-nowrap overflow-hidden text-ellipsis max-w-[170px]"
+      className="m-2 py-2 px-4 text-sm border border-[#ddc39a]/30 bg-black/60 rounded-lg text-[#ddc39a] shadow-md hover:bg-black/80 hover:border-[#ddc39a] transition-all duration-200 cursor-pointer"
       onClick={onClick}
       title={text}
     >
