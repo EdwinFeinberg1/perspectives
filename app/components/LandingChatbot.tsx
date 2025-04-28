@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { useChat } from "ai/react";
 
 import Bubble from "./Chatbot/Bubble";
@@ -52,6 +52,8 @@ interface LandingChatbotProps {
 }
 
 const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
+  console.log(`LandingChatbot initializing with model: ${selectedModel}`);
+  
   const {
     messages,
     isLoading,
@@ -59,13 +61,57 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
     handleInputChange,
     handleSubmit,
     append,
+    error,
+    status
   } = useChat({
     id: `landing-${selectedModel?.toLowerCase() || "default"}`,
     api: apiRoute(selectedModel),
+    onResponse: (response) => {
+      console.log(`API Response received:`, {
+        status: response.status,
+        ok: response.ok,
+        headers: Array.from(response.headers.entries()).reduce((acc, [key, value]) => {
+          acc[key] = value;
+          return acc;
+        }, {} as Record<string, string>)
+      });
+    },
+    onFinish: (message) => {
+      console.log(`Message stream finished:`, message);
+    },
+    onError: (err) => {
+      console.error(`Chat error:`, err);
+    }
   });
+  
+  // Log current status
+  useEffect(() => {
+    console.log(`Chat status changed: ${status}`);
+  }, [status]);
+  
+  // Log messages when they update
+  useEffect(() => {
+    if (messages.length > 0) {
+      console.log(`Messages updated (${messages.length}):`, messages);
+      // Log the last message
+      const lastMessage = messages[messages.length - 1];
+      console.log(`Last message (${lastMessage.role}):`, {
+        content: lastMessage.content,
+        id: lastMessage.id
+      });
+    }
+  }, [messages]);
+  
+  // Log error state
+  useEffect(() => {
+    if (error) {
+      console.error(`Chat error detected:`, error);
+    }
+  }, [error]);
 
   const sendPrompt = (p: string) => {
     if (selectedModel) {
+      console.log(`Sending prompt: "${p}" to ${selectedModel}`);
       append({ id: crypto.randomUUID(), role: "user", content: p });
     }
   };
@@ -99,16 +145,19 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
           </div>
         ) : (
           <>
-            {messages.map((m, index) => (
-              <Bubble
-                key={m.id || index}
-                message={{
-                  content: m.content,
-                  role: m.role as "user" | "assistant",
-                }}
-                model={selectedModel}
-              />
-            ))}
+            {messages.map((m, index) => {
+              console.log(`Rendering message ${index}:`, m);
+              return (
+                <Bubble
+                  key={m.id || index}
+                  message={{
+                    content: m.content,
+                    role: m.role as "user" | "assistant",
+                  }}
+                  model={selectedModel}
+                />
+              );
+            })}
             {isLoading && (
               <div className="flex justify-center">
                 <LoadingBubble />
@@ -123,7 +172,10 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
         input={input}
         isLoading={isLoading}
         handleInputChange={handleInputChange}
-        handleSubmit={handleSubmit}
+        handleSubmit={(e) => {
+          console.log(`Form submitted with input: "${input}"`);
+          handleSubmit(e);
+        }}
       />
     </div>
   );
