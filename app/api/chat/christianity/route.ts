@@ -3,8 +3,7 @@ import { streamText } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import OpenAI from "openai";
 
-
-console.log (process.env.NEXT_PUBLIC_OPENAI_API_KEY)
+console.log(process.env.NEXT_PUBLIC_OPENAI_API_KEY);
 const {
   ASTRADB_DB_KEYSPACE,
   ASTRADB_DB_COLLECTION_CHRISTIANITY,
@@ -14,14 +13,13 @@ const {
 } = process.env;
 
 const openai = new OpenAI({
-  apiKey:OPENAI_API_KEY,
+  apiKey: OPENAI_API_KEY,
 });
 
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN_CHRISTIANITY);
 const db = client.db(ASTRADB_API_ENDPOINT_CHRISTIANITY, {
   keyspace: ASTRADB_DB_KEYSPACE,
 });
-
 
 export async function POST(req: Request) {
   try {
@@ -66,7 +64,7 @@ export async function POST(req: Request) {
       console.error("OpenAI embedding generation error:", embeddingErr);
       return new Response("Error generating embeddings", { status: 500 });
     }
-    
+
     //Kick off a streaming chat
     console.log("Starting OpenAI stream response");
     try {
@@ -75,7 +73,16 @@ export async function POST(req: Request) {
         system: `
          You are **PastorGPT**, an AI Christian minister who speaks with wisdom and compassion. 
          Use the context JSON of biblical excerpts below when answering. If the context is insufficient, 
-         rely on core Christian teachings and biblical knowledge. Always answer in Markdown.
+         rely on core Christian teachings and biblical knowledge. 
+         
+         FORMAT YOUR RESPONSES FOR READABILITY:
+         - Use ### headings for main sections or topics
+         - Add blank lines between paragraphs
+         - Keep paragraphs concise (3-4 lines maximum)
+         - If using bullet points, add spacing between items
+         - Use markdown formatting consistently
+         - Use > for scripture quotations
+         - Format citations [like this]
 
          CONTEXT:
          ${docContext}
@@ -98,7 +105,7 @@ export async function POST(req: Request) {
             return error.message;
           }
           return String(error);
-        }
+        },
       });
     } catch (streamErr) {
       console.error("Error creating stream:", streamErr);

@@ -2,27 +2,16 @@
 
 import React, { useEffect } from "react";
 import { useChat } from "ai/react";
+import MultiModelChat from "./MultiModelChat";
 
 import Bubble from "./Chatbot/Bubble";
 import LoadingBubble from "./Chatbot/LoadingBubble";
 import ChatInputFooter from "./Chatbot/ChatInputFooter";
 import PromptSuggestionButton from "./Chatbot/PromptSuggestionButton";
-
-type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | "ImamGPT" | null;
-
-const apiRoute = (m: ModelName) =>
-  !m
-    ? "/api/chat/empty" // Add an empty API route
-    : m === "RabbiGPT"
-    ? "/api/chat/judaism"
-    : m === "BuddhaGPT"
-    ? "/api/chat/buddha"
-    : m === "ImamGPT"
-    ? "/api/chat/islam"
-    : "/api/chat/christianity";
+import { ModelName, ComparisonData } from "../types";
 
 // Prompt suggestions for each model
-const SUGGESTIONS: Record<NonNullable<ModelName>, string[]> = {
+const SUGGESTIONS = {
   RabbiGPT: [
     "Make me a spiritual growth routine",
     "What is the meaning of life?",
@@ -58,11 +47,18 @@ const SUGGESTIONS: Record<NonNullable<ModelName>, string[]> = {
 };
 
 interface LandingChatbotProps {
-  selectedModel: ModelName;
+  selectedModels: ModelName[];
+  setComparisonData: (data: ComparisonData) => void;
 }
 
-const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
-  console.log(`LandingChatbot initializing with model: ${selectedModel}`);
+const LandingChatbot: React.FC<LandingChatbotProps> = ({
+  selectedModels,
+  setComparisonData,
+}) => {
+  const isSingleModelMode = selectedModels.length === 1;
+  const selectedModel = isSingleModelMode ? selectedModels[0] : null;
+
+  console.log(`LandingChatbot initializing with models:`, selectedModels);
 
   const {
     messages,
@@ -130,7 +126,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
   };
 
   // Render empty container when no model is selected
-  if (!selectedModel) {
+  if (selectedModels.length === 0) {
     return (
       <div className="h-full flex flex-col overflow-hidden relative">
         <div className="h-full overflow-y-auto space-y-4 bg-black/40 backdrop-blur-sm pb-32 w-full"></div>
@@ -138,6 +134,17 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
     );
   }
 
+  // Render the multi-model chat when multiple models are selected
+  if (selectedModels.length > 1) {
+    return (
+      <MultiModelChat
+        selectedModels={selectedModels}
+        setComparisonData={setComparisonData}
+      />
+    );
+  }
+
+  // Single model mode
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
       <div className="h-full overflow-y-auto space-y-4 bg-black/40 backdrop-blur-sm pb-32 w-full">
@@ -147,13 +154,17 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
               Ask <span className="font-bold">{selectedModel}</span> about:
             </p>
             <div className="flex flex-wrap justify-center gap-4 w-full px-[5%]">
-              {SUGGESTIONS[selectedModel].map((prompt, i) => (
-                <PromptSuggestionButton
-                  key={`suggestion-${i}`}
-                  text={prompt}
-                  onClick={() => sendPrompt(prompt)}
-                />
-              ))}
+              {selectedModel &&
+                selectedModel in SUGGESTIONS &&
+                SUGGESTIONS[selectedModel as keyof typeof SUGGESTIONS].map(
+                  (prompt, i) => (
+                    <PromptSuggestionButton
+                      key={`suggestion-${i}`}
+                      text={prompt}
+                      onClick={() => sendPrompt(prompt)}
+                    />
+                  )
+                )}
             </div>
           </div>
         ) : (
@@ -193,5 +204,18 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
     </div>
   );
 };
+
+const apiRoute = (m: ModelName) =>
+  !m
+    ? "/api/chat/empty" // Add an empty API route
+    : m === "RabbiGPT"
+    ? "/api/chat/judaism"
+    : m === "BuddhaGPT"
+    ? "/api/chat/buddha"
+    : m === "ImamGPT"
+    ? "/api/chat/islam"
+    : m === "ComparisonGPT"
+    ? "/api/chat/compare"
+    : "/api/chat/christianity";
 
 export default LandingChatbot;

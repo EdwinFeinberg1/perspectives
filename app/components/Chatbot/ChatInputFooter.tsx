@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | "ImamGPT" | null;
+// Allow any model name for better compatibility
+type ModelType = string | null;
 
 // Prompt suggestions for each model
-const SUGGESTIONS: Record<NonNullable<ModelName>, string[]> = {
+const SUGGESTIONS: Record<string, string[]> = {
   RabbiGPT: [
     "Make me a spiritual growth routine",
     "What is the meaning of life?",
@@ -42,10 +43,18 @@ const SUGGESTIONS: Record<NonNullable<ModelName>, string[]> = {
     "How can I practice mindfulness in Islam?",
     "What is the Islamic view on faith and good deeds?",
   ],
+  ComparisonGPT: [
+    "What happens after death?",
+    "How should we treat others?",
+    "What is the purpose of prayer?",
+    "How does one find meaning in suffering?",
+    "What does your tradition say about forgiveness?",
+    "How should we balance tradition and modernity?",
+  ],
 };
 
 interface ChatInputFooterProps {
-  selectedModel: ModelName;
+  selectedModel: ModelType;
   input: string;
   isLoading?: boolean;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -101,10 +110,13 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
     return null;
   }
 
+  // Get suggestions for the current model
+  const modelSuggestions = SUGGESTIONS[selectedModel] || [];
+
   return (
     <CardFooter className="flex flex-col p-0 bg-gradient-to-t from-black via-black/95 to-black/80 fixed bottom-0 left-0 right-0 z-10 border-t border-[#ddc39a]/20 py-8 backdrop-blur-md shadow-[0_-10px_30px_rgba(0,0,0,0.4)]">
       {/* Suggestion Panel Overlay */}
-      {showSuggestions && (
+      {showSuggestions && modelSuggestions.length > 0 && (
         <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-end justify-center pb-36 animate-fadeIn">
           <div
             ref={suggestionsRef}
@@ -123,7 +135,7 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
               </button>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-[40vh] overflow-y-auto pr-2">
-              {SUGGESTIONS[selectedModel].map((suggestion, i) => (
+              {modelSuggestions.map((suggestion, i) => (
                 <button
                   key={`suggestion-modal-${i}`}
                   type="button"
