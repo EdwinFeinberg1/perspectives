@@ -5,7 +5,7 @@ import LandingChatbot from "./components/LandingChatbot";
 import PersonalitiesSection from "./components/PersonalitiesSection";
 import Header from "./components/Header";
 
-type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | null;
+type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | "ImamGPT" | null;
 
 export default function Home() {
   const chatbotRef = useRef<HTMLDivElement>(null);

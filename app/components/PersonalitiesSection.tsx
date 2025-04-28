@@ -6,8 +6,9 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import TheRabbi from "../assets/TheRabbi.png";
 import ThePastor from "../assets/ThePastor.png";
 import TheBuddha from "../assets/TheBuddha.png";
+import TheImam from "../assets/Imam.png";
 
-type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | null;
+type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | "ImamGPT" | null;
 
 interface PersonalitiesSectionProps {
   selectedModel: ModelName;
@@ -40,7 +41,7 @@ const PersonalitiesSection = forwardRef<
       ref={ref}
       className="mt-10  px-[7%] bg-gradient-to-b from-transparent to-black/30 mb-10"
     >
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <Card
           className={`h-full border-2 ${
             selectedModel === "RabbiGPT"
@@ -129,6 +130,37 @@ const PersonalitiesSection = forwardRef<
               Inspired by the Buddha&apos;s teachings, this perspective draws
               from the Dhammapada and sutras to offer mindful, reflective
               insight.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card
+          className={`h-full border-2 ${
+            selectedModel === "ImamGPT"
+              ? "border-[#ddc39a]"
+              : "border-[#ddc39a]/20"
+          } bg-black/40 backdrop-blur-sm overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg`}
+          onClick={() => toggleModelSelection("ImamGPT")}
+        >
+          <div className="h-80 relative flex items-center justify-center overflow-hidden pt-6">
+            <Image
+              src={TheImam}
+              alt="ImamGPT"
+              width={256}
+              height={256}
+              className="object-contain object-center"
+              priority
+            />
+          </div>
+          <CardHeader className="text-[#ddc39a] flex flex-row items-center gap-2">
+            <span className="text-xl">☪️</span>
+            <span>ImamGPT</span>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-[#ddc39a]/70">
+              Grounded in Islamic tradition and the teachings of the Quran,
+              ImamGPT provides thoughtful guidance from the perspective of
+              Islamic wisdom.
             </p>
           </CardContent>
         </Card>
