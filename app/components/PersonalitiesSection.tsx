@@ -7,44 +7,45 @@ import TheRabbi from "../assets/TheRabbi.png";
 import ThePastor from "../assets/ThePastor.png";
 import TheBuddha from "../assets/TheBuddha.png";
 import TheImam from "../assets/Imam.png";
-
-type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | "ImamGPT" | null;
+import { ModelName } from "../types";
 
 interface PersonalitiesSectionProps {
-  selectedModel: ModelName;
-  setSelectedModel: (model: ModelName) => void;
+  selectedModels: ModelName[];
+  setSelectedModels: (models: ModelName[]) => void;
 }
 
 const PersonalitiesSection = forwardRef<
   HTMLDivElement,
   PersonalitiesSectionProps
->(({ selectedModel, setSelectedModel }, ref) => {
+>(({ selectedModels, setSelectedModels }, ref) => {
   // Function to toggle model selection
   const toggleModelSelection = (model: NonNullable<ModelName>) => {
-    if (selectedModel === model) {
-      setSelectedModel(null); // Unselect if already selected
+    if (selectedModels.includes(model)) {
+      // Remove the model if already selected
+      setSelectedModels(selectedModels.filter((m) => m !== model));
     } else {
-      setSelectedModel(model); // Select otherwise
-
-      // Scroll to chatbot section after a short delay to allow state update
-      setTimeout(() => {
-        const chatbotSection = document.getElementById("chatbot-section");
-        if (chatbotSection) {
-          chatbotSection.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100);
+      // Add the model to selection
+      setSelectedModels([...selectedModels, model]);
     }
+
+    // Scroll to chatbot section after a short delay to allow state update
+    setTimeout(() => {
+      const chatbotSection = document.getElementById("chatbot-section");
+      if (chatbotSection && selectedModels.length > 0) {
+        chatbotSection.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
   };
 
   return (
     <section
       ref={ref}
-      className="mt-10  px-[7%] bg-gradient-to-b from-transparent to-black/30 mb-10"
+      className="mt-10 px-[7%] bg-gradient-to-b from-transparent to-black/30 mb-10"
     >
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <Card
           className={`h-full border-2 ${
-            selectedModel === "RabbiGPT"
+            selectedModels.includes("RabbiGPT")
               ? "border-[#ddc39a]"
               : "border-[#ddc39a]/20"
           } bg-black/40 backdrop-blur-sm overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg`}
@@ -74,7 +75,7 @@ const PersonalitiesSection = forwardRef<
 
         <Card
           className={`h-full border-2 ${
-            selectedModel === "PastorGPT"
+            selectedModels.includes("PastorGPT")
               ? "border-[#ddc39a]"
               : "border-[#ddc39a]/20"
           } bg-black/40 backdrop-blur-sm overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg`}
@@ -105,7 +106,7 @@ const PersonalitiesSection = forwardRef<
 
         <Card
           className={`h-full border-2 ${
-            selectedModel === "BuddhaGPT"
+            selectedModels.includes("BuddhaGPT")
               ? "border-[#ddc39a]"
               : "border-[#ddc39a]/20"
           } bg-black/40 backdrop-blur-sm overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg`}
@@ -136,7 +137,7 @@ const PersonalitiesSection = forwardRef<
 
         <Card
           className={`h-full border-2 ${
-            selectedModel === "ImamGPT"
+            selectedModels.includes("ImamGPT")
               ? "border-[#ddc39a]"
               : "border-[#ddc39a]/20"
           } bg-black/40 backdrop-blur-sm overflow-hidden cursor-pointer transition-all duration-300 hover:shadow-lg`}

@@ -1,0 +1,364 @@
+"use client";
+
+import React, { useState, useMemo } from "react";
+import { useChat, Message } from "ai/react";
+import ReactMarkdown from "react-markdown";
+import Bubble from "./Chatbot/Bubble";
+import LoadingBubble from "./Chatbot/LoadingBubble";
+import ChatInputFooter from "./Chatbot/ChatInputFooter";
+import PromptSuggestionButton from "./Chatbot/PromptSuggestionButton";
+import { ModelName, ComparisonData } from "../types";
+
+// Extended Message type that includes our custom properties
+interface ExtendedMessage extends Message {
+  model?: ModelName;
+  isComparison?: boolean;
+  followupSuggestions?: string[];
+}
+
+// Prompt suggestions for multi-model comparison
+const MULTI_MODEL_SUGGESTIONS = [
+  "What happens after death?",
+  "How should we treat others?",
+  "What is the purpose of prayer?",
+  "How does one find meaning in suffering?",
+  "What does your tradition say about forgiveness?",
+  "How should we balance tradition and modernity?",
+];
+
+// Default follow-ups if none are extracted from the response
+const DEFAULT_FOLLOW_UPS = [
+  "Can you elaborate on the similarities?",
+  "Tell me more about the differences",
+  "How do these perspectives approach moral dilemmas?",
+];
+
+interface MultiModelChatProps {
+  selectedModels: ModelName[];
+  setComparisonData: (data: ComparisonData) => void;
+}
+
+const MultiModelChat: React.FC<MultiModelChatProps> = ({
+  selectedModels,
+  setComparisonData,
+}) => {
+  // Simple state for UI
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Always initialize all chat hooks at the top level
+  const rabbiChat = useChat({
+    id: "single-rabbigpt",
+    api: "/api/chat/judaism",
+  });
+  const pastorChat = useChat({
+    id: "single-pastorgpt",
+    api: "/api/chat/christianity",
+  });
+  const buddhaChat = useChat({
+    id: "single-buddhagpt",
+    api: "/api/chat/buddha",
+  });
+  const imamChat = useChat({ id: "single-imamgpt", api: "/api/chat/islam" });
+
+  // Initialize comparison chat with custom handler
+  const comparisonChat = useChat({
+    id: "comparison-chat",
+    api: "/api/chat/compare",
+    body: { selectedModels },
+    onFinish: (message) => {
+      try {
+        // Extract JSON data from the response
+        const jsonMatch = message.content.match(/```json\s*([\s\S]*?)\s*```/);
+
+        if (jsonMatch && jsonMatch[1]) {
+          const jsonData = JSON.parse(jsonMatch[1]);
+
+          if (jsonData.uniquePoints && jsonData.similarities) {
+            // Update comparison data in parent component
+            setComparisonData({
+              uniquePoints: jsonData.uniquePoints,
+              similarities: jsonData.similarities,
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Failed to parse comparison data", error);
+      }
+    },
+  });
+
+  // Create a map of model chats after all hooks are initialized
+  const modelChats = useMemo(
+    () => ({
+      RabbiGPT: rabbiChat,
+      PastorGPT: pastorChat,
+      BuddhaGPT: buddhaChat,
+      ImamGPT: imamChat,
+    }),
+    [rabbiChat, pastorChat, buddhaChat, imamChat]
+  );
+
+  // Determine which chat instance to use based on selection mode
+  const activeChat = useMemo(() => {
+    if (selectedModels.length > 1) {
+      return comparisonChat;
+    } else if (selectedModels.length === 1 && selectedModels[0]) {
+      return modelChats[selectedModels[0]] || null;
+    }
+    return null;
+  }, [selectedModels, comparisonChat, modelChats]);
+
+  // Handle submitting a prompt
+  const handleSubmit = async (prompt: string) => {
+    if (!activeChat || selectedModels.length === 0 || isProcessing) return;
+
+    setIsProcessing(true);
+
+    try {
+      // Create user message with proper typing
+      const userMessage: Message = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: prompt,
+      };
+
+      // In multi-select mode, submit to individual models first, then to comparison
+      if (selectedModels.length > 1) {
+        // Submit to each selected model first
+        for (const model of selectedModels) {
+          if (!model) continue;
+          if (modelChats[model]) {
+            await modelChats[model]?.append(userMessage);
+          }
+        }
+
+        // Wait a moment for the model responses to be processed
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+
+        // Then submit to comparison API
+        await comparisonChat.append(userMessage);
+      } else if (selectedModels[0]) {
+        // In single-select mode, just submit to the selected model
+        const selectedModel = selectedModels[0];
+        if (modelChats[selectedModel]) {
+          await modelChats[selectedModel]?.append(userMessage);
+        }
+      }
+    } catch (error) {
+      console.error("Error submitting message:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Function to extract follow-up questions from message content
+  const extractFollowUpQuestions = (content: string): string[] => {
+    try {
+      // Match the section heading for "Follow-up Questions"
+      const sectionRegex =
+        /##?\s*Follow-up Questions\s*\n([\s\S]*?)(?:\n##|$)/i;
+      const sectionMatch = content.match(sectionRegex);
+
+      if (sectionMatch && sectionMatch[1]) {
+        // Extract numbered questions (1. Question text?)
+        const numberedQuestionsRegex = /\d+\.\s+(.+?\?)/g;
+        const section = sectionMatch[1];
+
+        const matches = Array.from(section.matchAll(numberedQuestionsRegex));
+        if (matches && matches.length > 0) {
+          return matches.map((match) => match[1].trim());
+        }
+      }
+
+      return DEFAULT_FOLLOW_UPS;
+    } catch (error) {
+      console.error("Error extracting follow-up questions:", error);
+      return DEFAULT_FOLLOW_UPS;
+    }
+  };
+
+  // Get messages to display based on current mode
+  const getDisplayMessages = (): ExtendedMessage[] => {
+    if (!activeChat) return [];
+
+    const messages = [...activeChat.messages];
+
+    // Format comparison messages to remove JSON
+    if (selectedModels.length > 1) {
+      return messages.map((msg) => {
+        if (msg.role === "assistant") {
+          // Clean up JSON from comparison response
+          const cleanContent = msg.content
+            .replace(/```json\s*[\s\S]*?```\s*/m, "")
+            .trim();
+
+          // Extract follow-up questions
+          const followupSuggestions = extractFollowUpQuestions(cleanContent);
+
+          // Remove the follow-up section from the displayed content
+          const contentWithoutFollowups = cleanContent
+            .replace(/##?\s*Follow-up Questions[\s\S]*?(?=##|$)/i, "")
+            .trim();
+
+          return {
+            ...msg,
+            content: contentWithoutFollowups,
+            isComparison: true,
+            followupSuggestions,
+          } as ExtendedMessage;
+        }
+        return msg as ExtendedMessage;
+      });
+    }
+
+    // For single model, just add model info
+    return messages.map((msg) => {
+      if (msg.role === "assistant") {
+        return {
+          ...msg,
+          model: selectedModels[0],
+        } as ExtendedMessage;
+      }
+      return msg as ExtendedMessage;
+    });
+  };
+
+  // Get loading state
+  const isLoading = (activeChat?.isLoading || isProcessing) ?? false;
+
+  // Get messages to display
+  const displayMessages = getDisplayMessages();
+
+  // Get appropriate suggestions
+  const suggestions = selectedModels.length > 1 ? MULTI_MODEL_SUGGESTIONS : [];
+
+  // Render comparison message with markdown
+  const renderComparisonMessage = (message: ExtendedMessage, index: number) => {
+    const followups = message.followupSuggestions || DEFAULT_FOLLOW_UPS;
+
+    return (
+      <div
+        key={`comparison-${message.id || index}`}
+        className="comparison-message w-full max-w-[90%] mx-auto"
+      >
+        <div className="flex flex-col">
+          <div className="bg-black/60 border-2 border-[#ddc39a]/20 text-[#ddc39a]/90 rounded-[20px] mx-6 my-3 p-5 text-[16px] shadow-lg backdrop-blur-sm text-left">
+            <div className="flex items-center mb-4 pb-2 border-b border-[#ddc39a]/20">
+              <span className="mr-2 text-xl">🔄</span>
+              <span className="font-medium">ComparisonGPT</span>
+            </div>
+            <div className="markdown-content prose prose-invert prose-headings:text-[#ddc39a] prose-p:text-[#ddc39a]/90 prose-li:text-[#ddc39a]/90 max-w-none">
+              <ReactMarkdown>{message.content}</ReactMarkdown>
+            </div>
+
+            {/* Follow-up suggestions section */}
+            {!isLoading && followups.length > 0 && (
+              <div className="mt-5 pt-4 border-t border-[#ddc39a]/20">
+                <p className="text-[#ddc39a]/80 text-sm mb-3">
+                  Follow-up questions:
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {followups.map((suggestion, i) => (
+                    <button
+                      key={`follow-up-${i}`}
+                      onClick={() => handleSubmit(suggestion)}
+                      className="px-3 py-1.5 rounded-full bg-[#ddc39a]/10 text-[#ddc39a] text-sm hover:bg-[#ddc39a]/20 transition-colors border border-[#ddc39a]/30"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="h-full flex flex-col overflow-hidden relative">
+      <div className="h-full overflow-y-auto space-y-4 bg-black/40 backdrop-blur-sm pb-32 w-full">
+        {displayMessages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center mt-0">
+            <p className="text-[#ddc39a] mb-10 text-xl font-medium">
+              {selectedModels.length > 1
+                ? "Compare perspectives on:"
+                : selectedModels[0]
+                ? `Ask ${selectedModels[0]} about:`
+                : "Select at least one perspective to begin"}
+            </p>
+            {selectedModels.length > 0 && suggestions.length > 0 && (
+              <div className="flex flex-wrap justify-center gap-4 w-full px-[5%]">
+                {suggestions.map((prompt, i) => (
+                  <PromptSuggestionButton
+                    key={`suggestion-${i}`}
+                    text={prompt}
+                    onClick={() => handleSubmit(prompt)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        ) : (
+          <>
+            {displayMessages.map((message, index) => {
+              if (message.role === "user") {
+                return (
+                  <Bubble
+                    key={`user-${message.id || index}`}
+                    message={{
+                      content: message.content,
+                      role: "user",
+                    }}
+                    model={null}
+                  />
+                );
+              } else if (message.role === "assistant") {
+                // In multi-select mode, show formatted comparison message
+                if (selectedModels.length > 1) {
+                  return renderComparisonMessage(message, index);
+                }
+                // In single-select mode, show normal message
+                return (
+                  <Bubble
+                    key={`model-${message.id || index}`}
+                    message={{
+                      content: message.content,
+                      role: "assistant",
+                    }}
+                    model={message.model || selectedModels[0]}
+                  />
+                );
+              }
+              return null;
+            })}
+
+            {isLoading && (
+              <div className="flex justify-center">
+                <LoadingBubble />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+
+      <ChatInputFooter
+        selectedModel={
+          selectedModels.length > 1 ? "ComparisonGPT" : selectedModels[0]
+        }
+        input={activeChat?.input || ""}
+        isLoading={isLoading}
+        handleInputChange={activeChat?.handleInputChange || (() => {})}
+        handleSubmit={(e) => {
+          e.preventDefault();
+          if (activeChat) {
+            handleSubmit(activeChat.input);
+          }
+        }}
+      />
+    </div>
+  );
+};
+
+export default MultiModelChat;
