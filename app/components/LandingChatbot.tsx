@@ -8,7 +8,7 @@ import LoadingBubble from "./Chatbot/LoadingBubble";
 import ChatInputFooter from "./Chatbot/ChatInputFooter";
 import PromptSuggestionButton from "./Chatbot/PromptSuggestionButton";
 
-type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | null;
+type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | "ImamGPT" | null;
 
 const apiRoute = (m: ModelName) =>
   !m
@@ -17,6 +17,8 @@ const apiRoute = (m: ModelName) =>
     ? "/api/chat/judaism"
     : m === "BuddhaGPT"
     ? "/api/chat/buddha"
+    : m === "ImamGPT"
+    ? "/api/chat/islam"
     : "/api/chat/christianity";
 
 // Prompt suggestions for each model
@@ -45,6 +47,14 @@ const SUGGESTIONS: Record<NonNullable<ModelName>, string[]> = {
     "Explain the Holy Trinity",
     "What is salvation?",
   ],
+  ImamGPT: [
+    "What are the Five Pillars of Islam?",
+    "How should I pray as a Muslim?",
+    "Explain the concept of Ramadan",
+    "What does the Quran teach about compassion?",
+    "How can I practice mindfulness in Islam?",
+    "What is the Islamic view on faith and good deeds?",
+  ],
 };
 
 interface LandingChatbotProps {
@@ -53,7 +63,7 @@ interface LandingChatbotProps {
 
 const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
   console.log(`LandingChatbot initializing with model: ${selectedModel}`);
-  
+
   const {
     messages,
     isLoading,
@@ -62,7 +72,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
     handleSubmit,
     append,
     error,
-    status
+    status,
   } = useChat({
     id: `landing-${selectedModel?.toLowerCase() || "default"}`,
     api: apiRoute(selectedModel),
@@ -70,10 +80,13 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
       console.log(`API Response received:`, {
         status: response.status,
         ok: response.ok,
-        headers: Array.from(response.headers.entries()).reduce((acc, [key, value]) => {
-          acc[key] = value;
-          return acc;
-        }, {} as Record<string, string>)
+        headers: Array.from(response.headers.entries()).reduce(
+          (acc, [key, value]) => {
+            acc[key] = value;
+            return acc;
+          },
+          {} as Record<string, string>
+        ),
       });
     },
     onFinish: (message) => {
@@ -81,14 +94,14 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
     },
     onError: (err) => {
       console.error(`Chat error:`, err);
-    }
+    },
   });
-  
+
   // Log current status
   useEffect(() => {
     console.log(`Chat status changed: ${status}`);
   }, [status]);
-  
+
   // Log messages when they update
   useEffect(() => {
     if (messages.length > 0) {
@@ -97,11 +110,11 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({ selectedModel }) => {
       const lastMessage = messages[messages.length - 1];
       console.log(`Last message (${lastMessage.role}):`, {
         content: lastMessage.content,
-        id: lastMessage.id
+        id: lastMessage.id,
       });
     }
   }, [messages]);
-  
+
   // Log error state
   useEffect(() => {
     if (error) {

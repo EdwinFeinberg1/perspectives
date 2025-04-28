@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
-type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | null;
+type ModelName = "RabbiGPT" | "BuddhaGPT" | "PastorGPT" | "ImamGPT" | null;
 
 // Prompt suggestions for each model
 const SUGGESTIONS: Record<NonNullable<ModelName>, string[]> = {
@@ -33,6 +33,14 @@ const SUGGESTIONS: Record<NonNullable<ModelName>, string[]> = {
     "How should I pray as a Christian?",
     "Explain the Holy Trinity",
     "What is salvation?",
+  ],
+  ImamGPT: [
+    "What are the Five Pillars of Islam?",
+    "How should I pray as a Muslim?",
+    "Explain the concept of Ramadan",
+    "What does the Quran teach about compassion?",
+    "How can I practice mindfulness in Islam?",
+    "What is the Islamic view on faith and good deeds?",
   ],
 };
 
