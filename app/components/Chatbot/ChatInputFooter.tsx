@@ -151,17 +151,15 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
       )}
 
       <div className="w-full max-w-3xl mx-auto px-4 flex flex-col items-center">
-        <div className="text-xs text-[#ddc39a]/60 mb-2 tracking-wider uppercase font-medium">
-          {selectedModel} is listening...
-        </div>
         <form
           onSubmit={handleSubmit}
-          className={`flex items-center w-full px-6 py-4 rounded-2xl 
+          className={`flex items-center w-full px-6 py-3 rounded-2xl 
             ${isFocused ? "bg-black/90" : "bg-black/80"} 
             border-2 ${
               isFocused ? "border-[#ddc39a]/70" : "border-[#ddc39a]/30"
             } 
-            shadow-[0_0_15px_rgba(221,195,154,0.15)] transition-all duration-300 backdrop-blur-sm`}
+            shadow-[0_0_15px_rgba(221,195,154,0.15)] transition-all duration-300 backdrop-blur-sm
+            hover:shadow-[0_0_18px_rgba(221,195,154,0.25)]`}
         >
           <div
             ref={sparklesRef}
@@ -182,23 +180,21 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             placeholder={`Ask ${selectedModel} anything`}
-            className="flex-1 bg-transparent border-none text-[#ddc39a] rounded-md text-lg mr-4 placeholder:text-[#ddc39a]/40 focus:outline-none"
+            className="flex-1 bg-transparent border-none text-[#ddc39a] rounded-md text-lg mr-4 placeholder:text-[#ddc39a]/40 focus:outline-none font-light tracking-wide"
             disabled={isLoading}
           />
           <Button
             type="submit"
-            className={`rounded-full 
-              ${
-                isLoading
-                  ? "bg-[#ddc39a]/40"
-                  : "bg-gradient-to-r from-[#ddc39a] to-[#e6d3a3]"
-              } 
-              hover:shadow-[0_0_15px_rgba(221,195,154,0.4)] text-black w-14 h-14 p-0 flex items-center justify-center
-              transition-all duration-300 transform hover:scale-105 active:scale-95`}
+            className={`
+              bg-transparent p-0 h-12 w-12 flex items-center justify-center
+              transition-all duration-300 transform hover:scale-110 active:scale-95
+              hover:shadow-none border-none text-[#ddc39a] ${
+                isLoading ? "opacity-40" : "opacity-100"
+              }`}
             size="icon"
             disabled={isLoading}
           >
-            <Send size={24} className="drop-shadow-md" />
+            <Send size={26} className="drop-shadow-md hover:drop-shadow-lg" />
           </Button>
         </form>
       </div>

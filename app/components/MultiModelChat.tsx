@@ -36,14 +36,17 @@ const DEFAULT_FOLLOW_UPS = [
 interface MultiModelChatProps {
   selectedModels: ModelName[];
   setComparisonData: (data: ComparisonData) => void;
+  onFirstMessage?: (models: ModelName[]) => void;
 }
 
 const MultiModelChat: React.FC<MultiModelChatProps> = ({
   selectedModels,
   setComparisonData,
+  onFirstMessage,
 }) => {
   // Simple state for UI
   const [isProcessing, setIsProcessing] = useState(false);
+  const [hasNotifiedFirst, setHasNotifiedFirst] = useState(false);
 
   // Always initialize all chat hooks at the top level
   const rabbiChat = useChat({
@@ -62,7 +65,10 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
   // Initialize comparison chat with custom handler
   const comparisonChat = useChat({
-    id: "comparison-chat",
+    // Use a unique ID based on the selected models combination so each
+    // comparison chat instance has its own independent message history.
+    // Sort the model names for deterministic ordering, then join with "&".
+    id: `comparison-${selectedModels.slice().sort().join("&")}`,
     api: "/api/chat/compare",
     body: { selectedModels },
     onFinish: (message) => {
@@ -111,6 +117,11 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
   // Handle submitting a prompt
   const handleSubmit = async (prompt: string) => {
     if (!activeChat || selectedModels.length === 0 || isProcessing) return;
+
+    if (!hasNotifiedFirst) {
+      onFirstMessage?.(selectedModels);
+      setHasNotifiedFirst(true);
+    }
 
     setIsProcessing(true);
 
@@ -170,10 +181,31 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         }
       }
 
+      // Fallback: Try to find any numbered questions anywhere in the text
+      // This helps with inconsistently formatted responses
+      const anyNumberedQuestionsRegex = /\d+\.\s+(.+?\?)/g;
+      const anyMatches = Array.from(
+        content.matchAll(anyNumberedQuestionsRegex)
+      );
+      if (anyMatches && anyMatches.length > 0) {
+        return anyMatches.map((match) => match[1].trim());
+      }
+
       return DEFAULT_FOLLOW_UPS;
     } catch (error) {
       console.error("Error extracting follow-up questions:", error);
       return DEFAULT_FOLLOW_UPS;
+    }
+  };
+
+  // Function to remove the follow-up questions section from message content
+  const removeFollowUpSection = (content: string): string => {
+    try {
+      // Remove the "Follow-up Questions" section and everything after it
+      return content.replace(/##?\s*Follow-up Questions[\s\S]*$/, "").trim();
+    } catch (error) {
+      console.error("Error removing follow-up section:", error);
+      return content;
     }
   };
 
@@ -196,9 +228,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
           const followupSuggestions = extractFollowUpQuestions(cleanContent);
 
           // Remove the follow-up section from the displayed content
-          const contentWithoutFollowups = cleanContent
-            .replace(/##?\s*Follow-up Questions[\s\S]*?(?=##|$)/i, "")
-            .trim();
+          const contentWithoutFollowups = removeFollowUpSection(cleanContent);
 
           return {
             ...msg,
@@ -214,9 +244,17 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
     // For single model, just add model info
     return messages.map((msg) => {
       if (msg.role === "assistant") {
+        // Extract follow-up questions from single model responses too
+        const followupSuggestions = extractFollowUpQuestions(msg.content);
+
+        // Remove the follow-up section from the displayed content
+        const contentWithoutFollowups = removeFollowUpSection(msg.content);
+
         return {
           ...msg,
+          content: contentWithoutFollowups,
           model: selectedModels[0],
+          followupSuggestions,
         } as ExtendedMessage;
       }
       return msg as ExtendedMessage;
@@ -283,13 +321,13 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
           <div className="flex flex-col items-center justify-center mt-0">
             <p className="text-[#ddc39a] mb-10 text-xl font-medium">
               {selectedModels.length > 1
-                ? "Compare perspectives on:"
+                ? "Explore questions like:"
                 : selectedModels[0]
                 ? `Ask ${selectedModels[0]} about:`
                 : "Select at least one perspective to begin"}
             </p>
             {selectedModels.length > 0 && suggestions.length > 0 && (
-              <div className="flex flex-wrap justify-center gap-4 w-full px-[5%]">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full px-[5%]">
                 {suggestions.map((prompt, i) => (
                   <PromptSuggestionButton
                     key={`suggestion-${i}`}
@@ -326,8 +364,13 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
                     message={{
                       content: message.content,
                       role: "assistant",
+                      followupSuggestions: extractFollowUpQuestions(
+                        message.content
+                      ),
                     }}
                     model={message.model || selectedModels[0]}
+                    onFollowupClick={(question) => handleSubmit(question)}
+                    isLoading={isLoading}
                   />
                 );
               }
