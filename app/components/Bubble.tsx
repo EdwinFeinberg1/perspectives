@@ -40,24 +40,85 @@ const Bubble: React.FC<BubbleProps> = ({
     (role === "assistant" && followupSuggestions) ||
     (role === "assistant" ? DEFAULT_FOLLOW_UPS : []);
 
+  // Share functionality
+  const handleShare = async () => {
+    if (role === "assistant" && content && model) {
+      // Create shareable text
+      const shareText = `${model}'s perspective:\n\n${content}`;
+
+      // Check if Web Share API is available
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `${model}'s Perspective`,
+            text: shareText,
+            url: window.location.href,
+          });
+        } catch (error) {
+          console.error("Error sharing content:", error);
+          // Fallback to clipboard
+          copyToClipboard(shareText);
+        }
+      } else {
+        // Fallback for browsers that don't support sharing
+        copyToClipboard(shareText);
+      }
+    }
+  };
+
+  // Helper function to copy content to clipboard
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard
+      .writeText(text)
+      .then(() => alert("Content copied to clipboard!"))
+      .catch((err) => console.error("Failed to copy: ", err));
+  };
+
   return (
     <div className="flex flex-col">
       <div
         className={`${
           role === "user"
-            ? "bg-black/70 border-2 border-[#ddc39a]/40 text-[#ddc39a] rounded-[20px_20px_0_20px] ml-auto"
-            : "bg-black/60 border-2 border-[#ddc39a]/20 text-[#ddc39a]/90 rounded-[20px_20px_20px_0]"
+            ? "bg-black/80 border-2 border-[#e6d3a3]/60 text-[#f0e4c3] rounded-[20px_20px_0_20px] ml-auto"
+            : "bg-black/80 border-2 border-[#e6d3a3]/40 text-[#f0e4c3] rounded-[20px_20px_20px_0]"
         } mx-6 my-3 p-5 text-[16px] shadow-lg backdrop-blur-sm max-w-[85%] text-left`}
       >
         {role === "assistant" && model && (
-          <div className="flex items-center mb-4 pb-2 border-b border-[#ddc39a]/20">
-            <span className="mr-2 text-xl">{BADGE[model] || "🔹"}</span>
-            <span className="font-medium">{model}</span>
+          <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#e6d3a3]/30">
+            <div className="flex items-center">
+              <span className="mr-2 text-xl">{BADGE[model] || "🔹"}</span>
+              <span className="font-medium">{model}</span>
+            </div>
+
+            {/* Share button */}
+            <button
+              onClick={handleShare}
+              className="text-[#e6d3a3] hover:text-[#ffffff] transition-colors"
+              title="Share this response"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="18" cy="5" r="3"></circle>
+                <circle cx="6" cy="12" r="3"></circle>
+                <circle cx="18" cy="19" r="3"></circle>
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+              </svg>
+            </button>
           </div>
         )}
         {role === "assistant" ? (
           <>
-            <div className="markdown-content prose prose-invert prose-headings:text-[#ddc39a] prose-p:text-[#ddc39a]/90 prose-li:text-[#ddc39a]/90 max-w-none">
+            <div className="markdown-content prose prose-invert prose-headings:text-[#f0e4c3] prose-p:text-[#f0e4c3] prose-li:text-[#f0e4c3] max-w-none">
               <ReactMarkdown
                 components={{
                   h1: (props) => (
@@ -75,7 +136,7 @@ const Bubble: React.FC<BubbleProps> = ({
                   li: (props) => <li className="ml-5" {...props} />,
                   blockquote: (props) => (
                     <blockquote
-                      className="border-l-4 border-[#ddc39a]/30 pl-4 italic my-4"
+                      className="border-l-4 border-[#e6d3a3]/50 pl-4 italic my-4"
                       {...props}
                     />
                   ),
@@ -87,8 +148,8 @@ const Bubble: React.FC<BubbleProps> = ({
 
             {/* Follow-up suggestions section */}
             {onFollowupClick && !isLoading && followups.length > 0 && (
-              <div className="mt-5 pt-4 border-t border-[#ddc39a]/20">
-                <p className="text-[#ddc39a]/80 text-sm mb-3">
+              <div className="mt-5 pt-4 border-t border-[#e6d3a3]/30">
+                <p className="text-[#e6d3a3] text-sm mb-3">
                   Follow-up questions:
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -96,7 +157,7 @@ const Bubble: React.FC<BubbleProps> = ({
                     <button
                       key={`follow-up-${i}`}
                       onClick={() => onFollowupClick(suggestion)}
-                      className="px-3 py-1.5 rounded-full bg-[#ddc39a]/10 text-[#ddc39a] text-sm hover:bg-[#ddc39a]/20 transition-colors border border-[#ddc39a]/30"
+                      className="px-3 py-1.5 rounded-full bg-[#e6d3a3]/20 text-[#f0e4c3] text-sm hover:bg-[#e6d3a3]/30 transition-colors border border-[#e6d3a3]/50"
                     >
                       {suggestion}
                     </button>

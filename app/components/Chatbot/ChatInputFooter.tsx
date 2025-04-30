@@ -114,22 +114,22 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
   const modelSuggestions = SUGGESTIONS[selectedModel] || [];
 
   return (
-    <CardFooter className="flex flex-col p-0 bg-gradient-to-t from-black via-black/95 to-black/80 fixed bottom-0 left-0 right-0 z-10 border-t border-[#ddc39a]/20 py-8 backdrop-blur-md shadow-[0_-10px_30px_rgba(0,0,0,0.4)]">
+    <CardFooter className="flex flex-col p-0 bg-gradient-to-t from-black via-black/95 to-black/80 fixed bottom-0 left-0 right-0 z-10 border-t border-[#e6d3a3]/30 py-8 backdrop-blur-md shadow-[0_-10px_30px_rgba(0,0,0,0.4)]">
       {/* Suggestion Panel Overlay */}
       {showSuggestions && modelSuggestions.length > 0 && (
-        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-end justify-center pb-36 animate-fadeIn">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-end justify-center pb-36 animate-fadeIn">
           <div
             ref={suggestionsRef}
-            className="w-[95%] max-w-2xl bg-black/95 border-2 border-[#ddc39a]/60 rounded-xl shadow-[0_0_30px_rgba(221,195,154,0.3)] p-4 animate-slideUp"
+            className="w-[95%] max-w-2xl bg-black/95 border-2 border-[#e6d3a3]/70 rounded-xl shadow-[0_0_30px_rgba(230,211,163,0.3)] p-4 animate-slideUp"
           >
-            <div className="flex justify-between items-center mb-4 pb-2 border-b border-[#ddc39a]/20">
-              <div className="text-[#ddc39a] font-medium text-lg flex items-center">
-                <Sparkles size={18} className="mr-2 text-[#ddc39a]" />
+            <div className="flex justify-between items-center mb-4 pb-2 border-b border-[#e6d3a3]/30">
+              <div className="text-[#f0e4c3] font-medium text-lg flex items-center">
+                <Sparkles size={18} className="mr-2 text-[#f0e4c3]" />
                 <span>Suggested prompts for {selectedModel}</span>
               </div>
               <button
                 onClick={() => setShowSuggestions(false)}
-                className="text-[#ddc39a]/70 hover:text-[#ddc39a] p-1 rounded-full hover:bg-[#ddc39a]/10 transition-colors"
+                className="text-[#e6d3a3] hover:text-[#ffffff] p-1 rounded-full hover:bg-[#e6d3a3]/20 transition-colors"
               >
                 ✕
               </button>
@@ -140,7 +140,7 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
                   key={`suggestion-modal-${i}`}
                   type="button"
                   onClick={() => insertSuggestion(suggestion)}
-                  className="text-left py-3 px-4 text-[#ddc39a]/90 bg-black/60 hover:bg-[#ddc39a]/20 border border-[#ddc39a]/20 hover:border-[#ddc39a]/40 rounded-lg transition-all duration-150 text-sm shadow-sm"
+                  className="text-left py-3 px-4 text-[#f0e4c3] bg-black/80 hover:bg-[#e6d3a3]/30 border border-[#e6d3a3]/40 hover:border-[#e6d3a3]/60 rounded-lg transition-all duration-150 text-sm shadow-sm"
                 >
                   {suggestion}
                 </button>
@@ -151,17 +151,15 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
       )}
 
       <div className="w-full max-w-3xl mx-auto px-4 flex flex-col items-center">
-        <div className="text-xs text-[#ddc39a]/60 mb-2 tracking-wider uppercase font-medium">
-          {selectedModel} is listening...
-        </div>
         <form
           onSubmit={handleSubmit}
-          className={`flex items-center w-full px-6 py-4 rounded-2xl 
-            ${isFocused ? "bg-black/90" : "bg-black/80"} 
+          className={`flex items-center w-full px-6 py-3 rounded-2xl 
+            ${isFocused ? "bg-black" : "bg-black/90"} 
             border-2 ${
-              isFocused ? "border-[#ddc39a]/70" : "border-[#ddc39a]/30"
+              isFocused ? "border-[#e6d3a3]/80" : "border-[#e6d3a3]/50"
             } 
-            shadow-[0_0_15px_rgba(221,195,154,0.15)] transition-all duration-300 backdrop-blur-sm`}
+            shadow-[0_0_15px_rgba(230,211,163,0.2)] transition-all duration-300 backdrop-blur-sm
+            hover:shadow-[0_0_18px_rgba(230,211,163,0.3)]`}
         >
           <div
             ref={sparklesRef}
@@ -169,8 +167,8 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
             className={`cursor-pointer transform transition-all duration-300 p-2 -ml-2 rounded-full
               ${
                 showSuggestions
-                  ? "bg-[#ddc39a]/20 scale-110 text-[#ddc39a] rotate-12"
-                  : "text-[#ddc39a]/60 hover:text-[#ddc39a] hover:bg-black/40 hover:scale-105"
+                  ? "bg-[#e6d3a3]/30 scale-110 text-[#f0e4c3] rotate-12"
+                  : "text-[#e6d3a3] hover:text-[#ffffff] hover:bg-black/60 hover:scale-105"
               }`}
           >
             <Sparkles size={20} className="mr-3" />
@@ -182,23 +180,21 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
             placeholder={`Ask ${selectedModel} anything`}
-            className="flex-1 bg-transparent border-none text-[#ddc39a] rounded-md text-lg mr-4 placeholder:text-[#ddc39a]/40 focus:outline-none"
+            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-lg mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none font-light tracking-wide"
             disabled={isLoading}
           />
           <Button
             type="submit"
-            className={`rounded-full 
-              ${
-                isLoading
-                  ? "bg-[#ddc39a]/40"
-                  : "bg-gradient-to-r from-[#ddc39a] to-[#e6d3a3]"
-              } 
-              hover:shadow-[0_0_15px_rgba(221,195,154,0.4)] text-black w-14 h-14 p-0 flex items-center justify-center
-              transition-all duration-300 transform hover:scale-105 active:scale-95`}
+            className={`
+              bg-transparent p-0 h-12 w-12 flex items-center justify-center
+              transition-all duration-300 transform hover:scale-110 active:scale-95
+              hover:shadow-none border-none text-[#f0e4c3] ${
+                isLoading ? "opacity-60" : "opacity-100"
+              }`}
             size="icon"
             disabled={isLoading}
           >
-            <Send size={24} className="drop-shadow-md" />
+            <Send size={26} className="drop-shadow-md hover:drop-shadow-lg" />
           </Button>
         </form>
       </div>

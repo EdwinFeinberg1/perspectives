@@ -12,3 +12,11 @@ export interface ComparisonData {
   uniquePoints: Record<string, string[]>;
   similarities: string[];
 }
+
+// Conversation structure for sidebar management
+export interface Conversation {
+  id: string;
+  name: string;
+  selectedModels: ModelName[];
+  hasStarted: boolean;
+}

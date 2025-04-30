@@ -69,7 +69,13 @@ FORMAT YOUR RESPONSES FOR READABILITY:
 CONTEXT:
 ${docContext}
 
-QUESTION: ${latestMessage}`,
+QUESTION: ${latestMessage}
+
+## Follow-up Questions
+1. First suggested question?
+2. Second suggested question?
+3. Third suggested question?
+`,
       messages,
       maxTokens: 1024,
     });

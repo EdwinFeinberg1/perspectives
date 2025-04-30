@@ -46,17 +46,74 @@ const SUGGESTIONS = {
   ],
 };
 
+// Fallback follow-up questions if none can be extracted from responses
+const DEFAULT_FOLLOW_UPS = [
+  "Can you elaborate on that?",
+  "How would you explain this to a beginner?",
+  "What scriptural sources support this view?",
+];
+
+// Function to extract follow-up questions from message content
+const extractFollowUpQuestions = (content: string): string[] => {
+  try {
+    // Match the section heading for "Follow-up Questions"
+    const sectionRegex = /##?\s*Follow-up Questions\s*\n([\s\S]*?)(?:\n##|$)/i;
+    const sectionMatch = content.match(sectionRegex);
+
+    if (sectionMatch && sectionMatch[1]) {
+      // Extract numbered questions (1. Question text?)
+      const numberedQuestionsRegex = /\d+\.\s+(.+?\?)/g;
+      const section = sectionMatch[1];
+
+      const matches = Array.from(section.matchAll(numberedQuestionsRegex));
+      if (matches && matches.length > 0) {
+        return matches.map((match) => match[1].trim());
+      }
+    }
+
+    // Fallback: Try to find any numbered questions anywhere in the text
+    // This helps with inconsistently formatted responses
+    const anyNumberedQuestionsRegex = /\d+\.\s+(.+?\?)/g;
+    const anyMatches = Array.from(content.matchAll(anyNumberedQuestionsRegex));
+    if (anyMatches && anyMatches.length > 0) {
+      return anyMatches.map((match) => match[1].trim());
+    }
+
+    return DEFAULT_FOLLOW_UPS;
+  } catch (error) {
+    console.error("Error extracting follow-up questions:", error);
+    return DEFAULT_FOLLOW_UPS;
+  }
+};
+
+// Function to remove the follow-up questions section from message content
+const removeFollowUpSection = (content: string): string => {
+  try {
+    // Remove the "Follow-up Questions" section and everything after it
+    return content.replace(/##?\s*Follow-up Questions[\s\S]*$/, "").trim();
+  } catch (error) {
+    console.error("Error removing follow-up section:", error);
+    return content;
+  }
+};
+
 interface LandingChatbotProps {
+  conversationId: string;
   selectedModels: ModelName[];
   setComparisonData: (data: ComparisonData) => void;
+  onFirstMessage?: (models: ModelName[]) => void;
 }
 
 const LandingChatbot: React.FC<LandingChatbotProps> = ({
+  conversationId,
   selectedModels,
   setComparisonData,
+  onFirstMessage,
 }) => {
   const isSingleModelMode = selectedModels.length === 1;
   const selectedModel = isSingleModelMode ? selectedModels[0] : null;
+
+  const [hasNotifiedFirst, setHasNotifiedFirst] = React.useState(false);
 
   console.log(`LandingChatbot initializing with models:`, selectedModels);
 
@@ -70,7 +127,9 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
     error,
     status,
   } = useChat({
-    id: `landing-${selectedModel?.toLowerCase() || "default"}`,
+    id: `landing-${conversationId}-${
+      selectedModel?.toLowerCase() || "default"
+    }`,
     api: apiRoute(selectedModel),
     onResponse: (response) => {
       console.log(`API Response received:`, {
@@ -102,6 +161,15 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   useEffect(() => {
     if (messages.length > 0) {
       console.log(`Messages updated (${messages.length}):`, messages);
+
+      if (!hasNotifiedFirst) {
+        const hasUserMessage = messages.some((m) => m.role === "user");
+        if (hasUserMessage) {
+          onFirstMessage?.(selectedModels);
+          setHasNotifiedFirst(true);
+        }
+      }
+
       // Log the last message
       const lastMessage = messages[messages.length - 1];
       console.log(`Last message (${lastMessage.role}):`, {
@@ -109,7 +177,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
         id: lastMessage.id,
       });
     }
-  }, [messages]);
+  }, [messages, onFirstMessage, selectedModels]);
 
   // Log error state
   useEffect(() => {
@@ -138,8 +206,10 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   if (selectedModels.length > 1) {
     return (
       <MultiModelChat
+        conversationId={conversationId}
         selectedModels={selectedModels}
         setComparisonData={setComparisonData}
+        onFirstMessage={onFirstMessage}
       />
     );
   }
@@ -153,7 +223,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
             <p className="text-[#ddc39a] mb-10 text-xl font-medium">
               Ask <span className="font-bold">{selectedModel}</span> about:
             </p>
-            <div className="flex flex-wrap justify-center gap-4 w-full px-[5%]">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full px-[5%]">
               {selectedModel &&
                 selectedModel in SUGGESTIONS &&
                 SUGGESTIONS[selectedModel as keyof typeof SUGGESTIONS].map(
@@ -175,10 +245,19 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
                 <Bubble
                   key={m.id || index}
                   message={{
-                    content: m.content,
+                    content:
+                      m.role === "assistant"
+                        ? removeFollowUpSection(m.content)
+                        : m.content,
                     role: m.role as "user" | "assistant",
+                    followupSuggestions:
+                      m.role === "assistant"
+                        ? extractFollowUpQuestions(m.content)
+                        : undefined,
                   }}
                   model={selectedModel}
+                  onFollowupClick={(question) => sendPrompt(question)}
+                  isLoading={isLoading}
                 />
               );
             })}
