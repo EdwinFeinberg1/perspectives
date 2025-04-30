@@ -34,12 +34,14 @@ const DEFAULT_FOLLOW_UPS = [
 ];
 
 interface MultiModelChatProps {
+  conversationId: string;
   selectedModels: ModelName[];
   setComparisonData: (data: ComparisonData) => void;
   onFirstMessage?: (models: ModelName[]) => void;
 }
 
 const MultiModelChat: React.FC<MultiModelChatProps> = ({
+  conversationId,
   selectedModels,
   setComparisonData,
   onFirstMessage,
@@ -47,28 +49,35 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
   // Simple state for UI
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasNotifiedFirst, setHasNotifiedFirst] = useState(false);
+  const [hasPrompted, setHasPrompted] = useState(false);
 
   // Always initialize all chat hooks at the top level
   const rabbiChat = useChat({
-    id: "single-rabbigpt",
+    id: `single-${conversationId}-rabbigpt`,
     api: "/api/chat/judaism",
   });
   const pastorChat = useChat({
-    id: "single-pastorgpt",
+    id: `single-${conversationId}-pastorgpt`,
     api: "/api/chat/christianity",
   });
   const buddhaChat = useChat({
-    id: "single-buddhagpt",
+    id: `single-${conversationId}-buddhagpt`,
     api: "/api/chat/buddha",
   });
-  const imamChat = useChat({ id: "single-imamgpt", api: "/api/chat/islam" });
+  const imamChat = useChat({
+    id: `single-${conversationId}-imamgpt`,
+    api: "/api/chat/islam",
+  });
 
   // Initialize comparison chat with custom handler
   const comparisonChat = useChat({
     // Use a unique ID based on the selected models combination so each
     // comparison chat instance has its own independent message history.
     // Sort the model names for deterministic ordering, then join with "&".
-    id: `comparison-${selectedModels.slice().sort().join("&")}`,
+    id: `comparison-${conversationId}-${selectedModels
+      .slice()
+      .sort()
+      .join("&")}`,
     api: "/api/chat/compare",
     body: { selectedModels },
     onFinish: (message) => {
@@ -122,6 +131,9 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
       onFirstMessage?.(selectedModels);
       setHasNotifiedFirst(true);
     }
+
+    // Hide suggestions once user submits first prompt
+    if (!hasPrompted) setHasPrompted(true);
 
     setIsProcessing(true);
 
@@ -274,6 +286,40 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
   const renderComparisonMessage = (message: ExtendedMessage, index: number) => {
     const followups = message.followupSuggestions || DEFAULT_FOLLOW_UPS;
 
+    // Share functionality for comparison messages
+    const handleShare = async () => {
+      if (message.content) {
+        // Create shareable text
+        const shareText = `ComparisonGPT's perspective:\n\n${message.content}`;
+
+        // Check if Web Share API is available
+        if (navigator.share) {
+          try {
+            await navigator.share({
+              title: "ComparisonGPT's Perspective",
+              text: shareText,
+              url: window.location.href,
+            });
+          } catch (error) {
+            console.error("Error sharing content:", error);
+            // Fallback to clipboard
+            copyToClipboard(shareText);
+          }
+        } else {
+          // Fallback for browsers that don't support sharing
+          copyToClipboard(shareText);
+        }
+      }
+    };
+
+    // Helper function to copy content to clipboard
+    const copyToClipboard = (text: string) => {
+      navigator.clipboard
+        .writeText(text)
+        .then(() => alert("Content copied to clipboard!"))
+        .catch((err) => console.error("Failed to copy: ", err));
+    };
+
     return (
       <div
         key={`comparison-${message.id || index}`}
@@ -281,9 +327,36 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
       >
         <div className="flex flex-col">
           <div className="bg-black/60 border-2 border-[#ddc39a]/20 text-[#ddc39a]/90 rounded-[20px] mx-6 my-3 p-5 text-[16px] shadow-lg backdrop-blur-sm text-left">
-            <div className="flex items-center mb-4 pb-2 border-b border-[#ddc39a]/20">
-              <span className="mr-2 text-xl">🔄</span>
-              <span className="font-medium">ComparisonGPT</span>
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#ddc39a]/20">
+              <div className="flex items-center">
+                <span className="mr-2 text-xl">🔄</span>
+                <span className="font-medium">ComparisonGPT</span>
+              </div>
+
+              {/* Share button */}
+              <button
+                onClick={handleShare}
+                className="text-[#ddc39a]/70 hover:text-[#ddc39a] transition-colors"
+                title="Share this response"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <circle cx="18" cy="5" r="3"></circle>
+                  <circle cx="6" cy="12" r="3"></circle>
+                  <circle cx="18" cy="19" r="3"></circle>
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                </svg>
+              </button>
             </div>
             <div className="markdown-content prose prose-invert prose-headings:text-[#ddc39a] prose-p:text-[#ddc39a]/90 prose-li:text-[#ddc39a]/90 max-w-none">
               <ReactMarkdown>{message.content}</ReactMarkdown>
@@ -319,24 +392,19 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
       <div className="h-full overflow-y-auto space-y-4 bg-black/40 backdrop-blur-sm pb-32 w-full">
         {displayMessages.length === 0 ? (
           <div className="flex flex-col items-center justify-center mt-0">
-            <p className="text-[#ddc39a] mb-10 text-xl font-medium">
-              {selectedModels.length > 1
-                ? "Explore questions like:"
-                : selectedModels[0]
-                ? `Ask ${selectedModels[0]} about:`
-                : "Select at least one perspective to begin"}
-            </p>
-            {selectedModels.length > 0 && suggestions.length > 0 && (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full px-[5%]">
-                {suggestions.map((prompt, i) => (
-                  <PromptSuggestionButton
-                    key={`suggestion-${i}`}
-                    text={prompt}
-                    onClick={() => handleSubmit(prompt)}
-                  />
-                ))}
-              </div>
-            )}
+            {selectedModels.length > 0 &&
+              suggestions.length > 0 &&
+              !hasPrompted && (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full px-[5%]">
+                  {suggestions.map((prompt, i) => (
+                    <PromptSuggestionButton
+                      key={`suggestion-${i}`}
+                      text={prompt}
+                      onClick={() => handleSubmit(prompt)}
+                    />
+                  ))}
+                </div>
+              )}
           </div>
         ) : (
           <>

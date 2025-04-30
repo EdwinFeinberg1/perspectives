@@ -98,12 +98,14 @@ const removeFollowUpSection = (content: string): string => {
 };
 
 interface LandingChatbotProps {
+  conversationId: string;
   selectedModels: ModelName[];
   setComparisonData: (data: ComparisonData) => void;
   onFirstMessage?: (models: ModelName[]) => void;
 }
 
 const LandingChatbot: React.FC<LandingChatbotProps> = ({
+  conversationId,
   selectedModels,
   setComparisonData,
   onFirstMessage,
@@ -125,7 +127,9 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
     error,
     status,
   } = useChat({
-    id: `landing-${selectedModel?.toLowerCase() || "default"}`,
+    id: `landing-${conversationId}-${
+      selectedModel?.toLowerCase() || "default"
+    }`,
     api: apiRoute(selectedModel),
     onResponse: (response) => {
       console.log(`API Response received:`, {
@@ -202,6 +206,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   if (selectedModels.length > 1) {
     return (
       <MultiModelChat
+        conversationId={conversationId}
         selectedModels={selectedModels}
         setComparisonData={setComparisonData}
         onFirstMessage={onFirstMessage}

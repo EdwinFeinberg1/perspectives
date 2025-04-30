@@ -1,16 +1,24 @@
 "use client";
 
-import React from "react";
-import { Plus, Trash } from "lucide-react";
+import React, { useState } from "react";
+import { Plus, Trash, MessageSquare, Edit, Check } from "lucide-react";
 import { useConversations } from "../context/ConversationsContext";
 import { useRouter, useParams } from "next/navigation";
+import { SidebarBody, useSidebar } from "@/components/ui/sidebar";
 
 const Sidebar: React.FC = () => {
-  const { conversations, createConversation, deleteConversation } =
-    useConversations();
+  const {
+    conversations,
+    createConversation,
+    deleteConversation,
+    updateConversation,
+  } = useConversations();
   const router = useRouter();
   const params = useParams();
   const activeId = (params?.conversationId as string) || "";
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editName, setEditName] = useState("");
+  const { open } = useSidebar();
 
   const onSelect = (id: string) => {
     router.push(`/chat/${id}`);
@@ -34,39 +42,106 @@ const Sidebar: React.FC = () => {
     }
   };
 
+  const startEdit = (id: string, currentName: string) => {
+    setEditingId(id);
+    setEditName(currentName);
+  };
+
+  const saveEdit = (id: string) => {
+    if (editName.trim()) {
+      updateConversation(id, { name: editName.trim() });
+    }
+    setEditingId(null);
+  };
+
   return (
-    <aside className="w-64 bg-black/90 border-r border-[#ddc39a]/20 backdrop-blur-md flex flex-col h-screen fixed left-0 top-0 z-50 pt-24">
+    <SidebarBody className="fixed left-0 top-0 z-50 pt-24">
       <div className="flex-1 overflow-y-auto">
         {conversations.map((conv) => (
           <div
             key={conv.id}
-            className={`group flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-black/70 transition-colors ${
-              conv.id === activeId ? "bg-black/70" : ""
+            className={`group flex items-center justify-between px-4 py-3 cursor-pointer hover:bg-black/80 transition-colors ${
+              conv.id === activeId ? "bg-black/80" : ""
             }`}
             onClick={() => onSelect(conv.id)}
           >
-            <span className="text-[#ddc39a] text-sm whitespace-normal">
-              {conv.name}
-            </span>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(conv.id);
-              }}
-              className="text-[#ddc39a]/60 hover:text-[#ddc39a] p-1 rounded-full hover:bg-black/40 transition-colors opacity-0 group-hover:opacity-100"
-            >
-              <Trash size={16} />
-            </button>
+            {editingId === conv.id ? (
+              <div
+                className="flex-1 flex items-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MessageSquare
+                  size={16}
+                  className="text-[#e6d3a3] mr-2 flex-shrink-0"
+                />
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="flex-1 bg-transparent border-b border-[#e6d3a3] text-[#e6d3a3] text-sm focus:outline-none"
+                  autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") saveEdit(conv.id);
+                    if (e.key === "Escape") setEditingId(null);
+                  }}
+                />
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    saveEdit(conv.id);
+                  }}
+                  className="text-[#e6d3a3] p-1 ml-1"
+                >
+                  <Check size={16} />
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="flex items-center flex-1 overflow-hidden">
+                  <MessageSquare
+                    size={16}
+                    className="text-[#e6d3a3] mr-2 flex-shrink-0"
+                  />
+                  {open && (
+                    <span className="text-[#e6d3a3] text-sm whitespace-normal truncate">
+                      {conv.name}
+                    </span>
+                  )}
+                </div>
+                {open && (
+                  <div className="flex items-center">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        startEdit(conv.id, conv.name);
+                      }}
+                      className="text-[#e6d3a3] hover:text-[#ffffff] p-1 rounded-full hover:bg-black/60 transition-colors opacity-0 group-hover:opacity-100 mr-1"
+                    >
+                      <Edit size={16} />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDelete(conv.id);
+                      }}
+                      className="text-[#e6d3a3] hover:text-[#ffffff] p-1 rounded-full hover:bg-black/60 transition-colors opacity-0 group-hover:opacity-100"
+                    >
+                      <Trash size={16} />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         ))}
       </div>
       <button
         onClick={onCreate}
-        className="flex items-center justify-center gap-2 text-[#ddc39a] py-4 border-t border-[#ddc39a]/20 hover:bg-black/70 transition-colors text-sm"
+        className="flex items-center justify-center gap-2 text-[#e6d3a3] py-4 border-t border-[#e6d3a3]/30 hover:bg-black/80 transition-colors text-sm"
       >
-        <Plus size={18} /> New Chat
+        <Plus size={18} /> {open && "New Chat"}
       </button>
-    </aside>
+    </SidebarBody>
   );
 };
 

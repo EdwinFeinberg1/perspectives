@@ -18,13 +18,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // Retrieve any existing model responses from the messages
+    
     const modelResponses = messages.filter(
       (m) =>
         m.role === "assistant" && m.model && selectedModels.includes(m.model)
     );
 
-    // Build system prompt for comparison with information about model responses
+    
     const systemPrompt = `You are a comprehensive religious studies scholar with deep expertise in comparing religious traditions.
 
 You MUST analyze how different religious perspectives (${selectedModels.join(
