@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useChat, Message } from "ai/react";
 import ReactMarkdown from "react-markdown";
 import Bubble from "./Chatbot/Bubble";
 import LoadingBubble from "./Chatbot/LoadingBubble";
 import ChatInputFooter from "./Chatbot/ChatInputFooter";
-import PromptSuggestionButton from "./Chatbot/PromptSuggestionButton";
 import { ModelName, ComparisonData } from "../types";
 
 // Extended Message type that includes our custom properties
@@ -15,16 +14,6 @@ interface ExtendedMessage extends Message {
   isComparison?: boolean;
   followupSuggestions?: string[];
 }
-
-// Prompt suggestions for multi-model comparison
-const MULTI_MODEL_SUGGESTIONS = [
-  "What happens after death?",
-  "How should we treat others?",
-  "What is the purpose of prayer?",
-  "How does one find meaning in suffering?",
-  "What does your tradition say about forgiveness?",
-  "How should we balance tradition and modernity?",
-];
 
 // Default follow-ups if none are extracted from the response
 const DEFAULT_FOLLOW_UPS = [
@@ -38,6 +27,7 @@ interface MultiModelChatProps {
   selectedModels: ModelName[];
   setComparisonData: (data: ComparisonData) => void;
   onFirstMessage?: (models: ModelName[]) => void;
+  updateSelectedModels: (models: ModelName[]) => void;
 }
 
 const MultiModelChat: React.FC<MultiModelChatProps> = ({
@@ -45,11 +35,17 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
   selectedModels,
   setComparisonData,
   onFirstMessage,
+  updateSelectedModels,
 }) => {
   // Simple state for UI
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasNotifiedFirst, setHasNotifiedFirst] = useState(false);
   const [hasPrompted, setHasPrompted] = useState(false);
+
+  // Log when hasPrompted changes
+  useEffect(() => {
+    console.log(`MultiModelChat: hasPrompted state is now ${hasPrompted}`);
+  }, [hasPrompted]);
 
   // Always initialize all chat hooks at the top level
   const rabbiChat = useChat({
@@ -128,13 +124,19 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
     if (!activeChat || selectedModels.length === 0 || isProcessing) return;
 
     if (!hasNotifiedFirst) {
+      console.log(
+        `MultiModelChat: First message, notifying parent with models:`,
+        selectedModels
+      );
       onFirstMessage?.(selectedModels);
       setHasNotifiedFirst(true);
     }
 
-    // Hide suggestions once user submits first prompt
-    if (!hasPrompted) setHasPrompted(true);
+    // Mark that a prompt has been submitted
+    setHasPrompted(true);
+    console.log(`MultiModelChat: hasPrompted set to true`);
 
+    // Set processing state SYNCHRONOUSLY before any async operations
     setIsProcessing(true);
 
     try {
@@ -145,6 +147,9 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         content: prompt,
       };
 
+      // Run in a microtask to allow UI to update first
+      await Promise.resolve();
+
       // In multi-select mode, submit to individual models first, then to comparison
       if (selectedModels.length > 1) {
         // Submit to each selected model first
@@ -154,9 +159,6 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
             await modelChats[model]?.append(userMessage);
           }
         }
-
-        // Wait a moment for the model responses to be processed
-        await new Promise((resolve) => setTimeout(resolve, 1000));
 
         // Then submit to comparison API
         await comparisonChat.append(userMessage);
@@ -223,7 +225,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
   // Get messages to display based on current mode
   const getDisplayMessages = (): ExtendedMessage[] => {
-    if (!activeChat) return [];
+    if (!activeChat || !hasPrompted) return [];
 
     const messages = [...activeChat.messages];
 
@@ -278,9 +280,6 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
   // Get messages to display
   const displayMessages = getDisplayMessages();
-
-  // Get appropriate suggestions
-  const suggestions = selectedModels.length > 1 ? MULTI_MODEL_SUGGESTIONS : [];
 
   // Render comparison message with markdown
   const renderComparisonMessage = (message: ExtendedMessage, index: number) => {
@@ -392,19 +391,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
       <div className="h-full overflow-y-auto space-y-4 bg-black/40 backdrop-blur-sm pb-32 w-full">
         {displayMessages.length === 0 ? (
           <div className="flex flex-col items-center justify-center mt-0">
-            {selectedModels.length > 0 &&
-              suggestions.length > 0 &&
-              !hasPrompted && (
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 w-full px-[5%]">
-                  {suggestions.map((prompt, i) => (
-                    <PromptSuggestionButton
-                      key={`suggestion-${i}`}
-                      text={prompt}
-                      onClick={() => handleSubmit(prompt)}
-                    />
-                  ))}
-                </div>
-              )}
+            {/* Initial prompt suggestions removed */}
           </div>
         ) : (
           <>
@@ -461,9 +448,96 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         input={activeChat?.input || ""}
         isLoading={isLoading}
         handleInputChange={activeChat?.handleInputChange || (() => {})}
+        onModelSelect={(model) => {
+          if (model && typeof updateSelectedModels === "function") {
+            // Update the selected models array to only include this model
+            const modelName = model as ModelName;
+            if (
+              selectedModels.length !== 1 ||
+              selectedModels[0] !== modelName
+            ) {
+              updateSelectedModels([modelName]);
+            }
+          }
+        }}
         handleSubmit={(e) => {
           e.preventDefault();
           if (activeChat) {
+            // Force loading animation to appear immediately
+            const loadingContainer = document.createElement("div");
+            loadingContainer.className = "flex justify-center mb-4 mt-2";
+            loadingContainer.id = "instant-loading";
+
+            const loader = document.createElement("div");
+            loader.className = "loader";
+
+            // Add text element with the same style as in LoadingBubble
+            const text = document.createElement("p");
+            text.className = "text-[#ddc39a] text-sm mt-2";
+            text.textContent = "Comparing perspectives...";
+
+            // Create a wrapper for loader and text
+            const wrapper = document.createElement("div");
+            wrapper.className = "flex flex-col items-center py-4";
+            wrapper.appendChild(loader);
+            wrapper.appendChild(text);
+
+            loadingContainer.appendChild(wrapper);
+
+            // Find chat container and append loading animation
+            const chatContainer = document.querySelector(
+              ".h-full.overflow-y-auto"
+            );
+            if (chatContainer) {
+              chatContainer.appendChild(loadingContainer);
+              // Scroll to show loading animation
+              chatContainer.scrollTop = chatContainer.scrollHeight;
+
+              // Set up a mutation observer to watch for the appearance of the response bubble
+              const observer = new MutationObserver((mutations) => {
+                // Look for added nodes that might be response bubbles
+                for (const mutation of mutations) {
+                  if (
+                    mutation.type === "childList" &&
+                    mutation.addedNodes.length > 0
+                  ) {
+                    // Check if any of the added nodes is a response bubble (markdown-content class)
+                    const addedResponseBubble = Array.from(
+                      mutation.addedNodes
+                    ).some((node) => {
+                      if (node instanceof HTMLElement) {
+                        // Check if the node itself or any of its children has the markdown-content class
+                        return (
+                          node.querySelector(".markdown-content") ||
+                          node.classList.contains("markdown-content")
+                        );
+                      }
+                      return false;
+                    });
+
+                    if (addedResponseBubble) {
+                      // Remove the instant loading animation once a response is detected
+                      const instantLoader =
+                        document.getElementById("instant-loading");
+                      if (instantLoader) {
+                        instantLoader.remove();
+                      }
+                      // Disconnect the observer as we no longer need it
+                      observer.disconnect();
+                      break;
+                    }
+                  }
+                }
+              });
+
+              // Start observing the chat container for changes
+              observer.observe(chatContainer, {
+                childList: true,
+                subtree: true,
+              });
+            }
+
+            // Now submit the message
             handleSubmit(activeChat.input);
           }
         }}

@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { ConversationsProvider } from "./context/ConversationsContext";
+import { ThemeProvider } from "./components/ThemeContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,7 +18,9 @@ const RootLayout = ({ children }) => {
   return (
     <html lang="en" className={`${inter.variable} font-sans h-full`}>
       <body className="min-h-screen w-full bg-slate-950 flex overflow-x-hidden">
-        <ConversationsProvider>{children}</ConversationsProvider>
+        <ConversationsProvider>
+          <ThemeProvider>{children}</ThemeProvider>
+        </ConversationsProvider>
       </body>
     </html>
   );

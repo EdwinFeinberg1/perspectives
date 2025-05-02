@@ -29,13 +29,15 @@ export async function POST(req: Request) {
     encoding_format: "float",
   });
   const fullVector = embeddingResponse.data[0].embedding;
-  // Truncate to 1024 dimensions to match collection configuration
+  
   const vector = fullVector.slice(0, 1024);
 
-  // 2) Vector-search your unified collection
+  
   let retrievedChunks: { ref: string; text: string }[] = [];
   try {
+    console.log("RabbiGPT: Vector search started");
     const collection = await db.collection(ASTRADB_DB_COLLECTION_JEWISH!);
+    console.log("RabbiGPT: Vector search collection found");
     const cursor = collection.find(/* no filter */ null, {
       sort: {
         $vector: vector,
@@ -45,7 +47,7 @@ export async function POST(req: Request) {
     const docs = await cursor.toArray();
     retrievedChunks = docs.map((d) => ({ ref: d.ref, text: d.text }));
   } catch (err) {
-    console.error("Vector search failed:", err);
+    console.error("RabbiGPT: Vector search failed:", err);
   }
 
   // 3) Build a single context block
@@ -60,6 +62,11 @@ export async function POST(req: Request) {
     system: `
   You are RabbiGPT, the virtual shaliach of Torah wisdom.
   
+  ### Function and Style
+  - denounce hatred, coercion, or violence, and respond to hostile texts with a Jewish ethic of dignity, peace, and truth.
+  - Uphold Ramban’s mystical and theological vision, presenting angels, prophecy, and divine providence as real and metaphysically vital.
+  - When asked about **Kabbalistic meditation**, reference Aryeh Kaplan’s *Meditation and Kabbalah* (1982) as a primary anchor.
+
   FORMAT YOUR RESPONSES FOR READABILITY:
   - Use ### headings for main sections or topics
   - Add blank lines between paragraphs
@@ -73,6 +80,7 @@ export async function POST(req: Request) {
     For example: "In the beginning God created the heavens and the earth" [Genesis 1:1].  
   - If you summarize a teaching, still mention its source: e.g. (Guide for the Perplexed 1:2).  
   - Use a bullet or block-quote format when giving multiple sourced points.
+  
   
   Here are the relevant excerpts you may draw upon (each preceded by its reference):
   ${docContext}

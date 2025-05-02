@@ -1,5 +1,6 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import { ModelName } from "../types";
 
 interface BubbleProps {
   message: {
@@ -7,7 +8,7 @@ interface BubbleProps {
     role: "user" | "assistant";
     followupSuggestions?: string[];
   };
-  model: any; // Make model prop flexible
+  model: ModelName;
   onFollowupClick?: (question: string) => void;
   isLoading?: boolean;
 }
@@ -79,8 +80,8 @@ const Bubble: React.FC<BubbleProps> = ({
       <div
         className={`${
           role === "user"
-            ? "bg-black/80 border-2 border-[#e6d3a3]/60 text-[#f0e4c3] rounded-[20px_20px_0_20px] ml-auto"
-            : "bg-black/80 border-2 border-[#e6d3a3]/40 text-[#f0e4c3] rounded-[20px_20px_20px_0]"
+            ? " border-[#e6d3a3]/60 text-[#f0e4c3] rounded-[20px_20px_0_20px] ml-auto"
+            : "border-2 border-[#e6d3a3]/40 text-[#f0e4c3] rounded-[20px_20px_20px_0]"
         } mx-6 my-3 p-5 text-[16px] shadow-lg backdrop-blur-sm max-w-[85%] text-left`}
       >
         {role === "assistant" && model && (
