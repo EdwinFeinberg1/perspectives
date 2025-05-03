@@ -88,11 +88,12 @@ export async function POST(req: Request) {
          ${docContext}
       
          QUESTION: ${latestMessage}
+        IMPORTANT: Always end your response with a 'Follow-up Questions' section using exactly this format:
 
-         ## Follow-up Questions
-         1. First suggested question?
-         2. Second suggested question?
-         3. Third suggested question?
+          ## Follow-up Questions
+          1. First suggested question?
+          2. Second suggested question?
+          3. Third suggested question?
         `,
         messages,
         maxTokens: 1024,

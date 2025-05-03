@@ -3,6 +3,12 @@ import { streamText } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import OpenAI from "openai";
 
+// Define document structure
+interface BuddhaDocument {
+  text: string;
+  [key: string]: unknown; // For any other properties
+}
+
 // -----------------------------------------------------------------------------
 // Env vars (make sure ASTRADB_DB_COLLECTION points to your Db_buddist collection)
 // -----------------------------------------------------------------------------
@@ -37,16 +43,20 @@ export async function POST(req: Request) {
       encoding_format: "float",
     });
     const queryVector = embedResp.data[0].embedding;
+    console.log("queryVector", queryVector);
 
     // 3) Retrieve top‑k relevant chunks from AstraDB
     let docContext = "";
     try {
       const collection = await db.collection(ASTRADB_DB_COLLECTION_BUDDHA);
+      console.log("Buddha...");
       const cursor = collection.find(null, {
         sort: { $vector: queryVector },
         limit: 10,
       });
-      const docs = (await cursor.toArray()).map((d: any) => d.text);
+      const docs = (await cursor.toArray()).map(
+        (d) => (d as unknown as BuddhaDocument).text
+      );
       docContext = JSON.stringify(docs);
     } catch (err) {
       console.error("Vector search failed", err);
@@ -65,11 +75,11 @@ FORMAT YOUR RESPONSES FOR READABILITY:
 - Use markdown formatting consistently
 - If citing text, use > for blockquotes
 - Format citations [like this]
-
+QUESTION: ${latestMessage}
 CONTEXT:
 ${docContext}
 
-QUESTION: ${latestMessage}
+IMPORTANT: Always end your response with a 'Follow-up Questions' section using exactly this format:
 
 ## Follow-up Questions
 1. First suggested question?

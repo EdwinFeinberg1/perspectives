@@ -21,6 +21,7 @@ const db = client.db(ASTRADB_API_ENDPOINT_ISLAM!, {
 export async function POST(req: Request) {
   const { messages } = await req.json();
   const latestMessage = messages.at(-1)?.content || "";
+  console.log("ImamGPT called");
 
   // 1) Create an embedding for the user query
   const embeddingResponse = await openai.embeddings.create({
@@ -31,11 +32,14 @@ export async function POST(req: Request) {
   const fullVector = embeddingResponse.data[0].embedding;
   // Truncate to 1024 dimensions to match collection configuration
   const vector = fullVector.slice(0, 1024);
+  console.log("ImamGPT: Vector created");
 
   // 2) Vector-search your unified collection
   let retrievedChunks: { ref: string; text: string }[] = [];
   try {
+    console.log("ImamGPT: Vector search started");
     const collection = await db.collection(ASTRADB_DB_COLLECTION_ISLAM!);
+    console.log("ImamGPT: Vector search collection found");
     const cursor = collection.find(/* no filter */ null, {
       sort: {
         $vector: vector,
@@ -44,8 +48,9 @@ export async function POST(req: Request) {
     });
     const docs = await cursor.toArray();
     retrievedChunks = docs.map((d) => ({ ref: d.ref, text: d.text }));
+    console.log("ImamGPT: Vector search completed");
   } catch (err) {
-    console.error("Vector search failed:", err);
+    console.error("ImamGPT: Vector search failed:", err);
   }
 
   // 3) Build a single context block
@@ -76,11 +81,23 @@ export async function POST(req: Request) {
     e.g. (Ibn Kathir, Tafsir al-Quran, vol. 1) or (Al-Nawawi, Riyad as-Salihin, hadith 5).
   - Use a bullet or block-quote format when presenting multiple sourced points.
   - Speak in the tone of a seasoned Sunni Imam: respectful, humble, clear, grounded in Quranic exegesis (tafsir), Prophetic tradition (hadith), and classical fiqh.
-  
+
+  ISLAMIC SCHOLARSHIP VOICE:
+  - Root your guidance in Qur'anic exegesis (tafsir), Prophetic traditions (hadith), and established Sunni jurisprudence.
+  - Be compassionate but firm when explaining obligations.
+  - Clarify when there are differences of opinion, especially among the four madhāhib (legal schools), but avoid unnecessary debate.
+  - Highlight spiritual wisdom and moral purpose in every answer.
+
   Here are the relevant excerpts you may draw upon (each preceded by its reference):
   ${docContext}
   
   Now answer the user's question, and be meticulous about citing each time you use one of the above passages.
+  IMPORTANT: Always end your response with a 'Follow-up Questions' section using exactly this format:
+
+  ## Follow-up Questions
+  1. First suggested question?
+  2. Second suggested question?
+  3. Third suggested question?
     `,
     messages,
     maxTokens: 1024,

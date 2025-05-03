@@ -1,5 +1,6 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import { ModelName } from "../types";
 
 interface BubbleProps {
   message: {
@@ -7,7 +8,7 @@ interface BubbleProps {
     role: "user" | "assistant";
     followupSuggestions?: string[];
   };
-  model: any; // Make model prop flexible
+  model: ModelName;
   onFollowupClick?: (question: string) => void;
   isLoading?: boolean;
 }
@@ -75,19 +76,19 @@ const Bubble: React.FC<BubbleProps> = ({
   };
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full max-w-3xl mx-auto">
       <div
         className={`${
           role === "user"
-            ? "bg-black/80 border-2 border-[#e6d3a3]/60 text-[#f0e4c3] rounded-[20px_20px_0_20px] ml-auto"
-            : "bg-black/80 border-2 border-[#e6d3a3]/40 text-[#f0e4c3] rounded-[20px_20px_20px_0]"
-        } mx-6 my-3 p-5 text-[16px] shadow-lg backdrop-blur-sm max-w-[85%] text-left`}
+            ? " border-[#e6d3a3]/60 text-[#f0e4c3] rounded-[20px_20px_0_20px] ml-auto"
+            : "border-2 border-[#e6d3a3]/40 text-[#f0e4c3] rounded-[20px_20px_20px_0]"
+        } mx-2 sm:mx-4 my-2 sm:my-3 p-3 sm:p-5 text-[14px] sm:text-[16px] shadow-lg backdrop-blur-sm max-w-[95%] text-left`}
       >
         {role === "assistant" && model && (
-          <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#e6d3a3]/30">
+          <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#e6d3a3]/30">
             <div className="flex items-center">
               <span className="mr-2 text-xl">{BADGE[model] || "🔹"}</span>
-              <span className="font-medium">{model}</span>
+              <span className="font-medium text-sm sm:text-base">{model}</span>
             </div>
 
             {/* Share button */}
@@ -98,14 +99,15 @@ const Bubble: React.FC<BubbleProps> = ({
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                width="18"
-                height="18"
+                width="16"
+                height="16"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                className="sm:w-[18px] sm:h-[18px]"
               >
                 <circle cx="18" cy="5" r="3"></circle>
                 <circle cx="6" cy="12" r="3"></circle>

@@ -1,0 +1,68 @@
+/* Mobile viewport optimizations */
+@media (max-width: 400px) {
+  /* Reduce side margins */
+  header .relative.h-\[80px\] {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  /* Adjust header elements */
+  header .text-lg.md\:text-2xl {
+    font-size: 1.125rem;
+  }
+
+  /* Ensure consistent message container width */
+  .w-full.max-w-3xl.mx-auto {
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Minimize chat bubbles padding and font size */
+  [class*="rounded-[20px"] {
+    padding: 12px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    max-width: 100% !important;
+    font-size: 14px !important;
+  }
+
+  /* Make message bubbles flush with container */
+  .flex.flex-col.w-full.max-w-3xl.mx-auto > div[class*="rounded"] {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  /* Adjust message container spacing */
+  .h-full.overflow-y-auto.space-y-4 {
+    padding-bottom: 120px;
+  }
+
+  /* Optimize input bar */
+  form.flex.items-center.w-full {
+    padding: 8px 12px;
+    width: 100%;
+  }
+
+  form.flex.items-center.w-full input {
+    font-size: 14px;
+  }
+
+  /* Reduce fixed footer components */
+  .fixed.bottom-\[60px\] {
+    bottom: 50px;
+  }
+  
+  /* Make user messages align right properly */
+  [class*="ml-auto"] {
+    margin-left: auto !important;
+    max-width: 90% !important;
+  }
+
+  /* Override tailwind styles with stronger specificity */
+  div.mx-2, div.sm\:mx-4 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+} 

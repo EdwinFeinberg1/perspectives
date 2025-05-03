@@ -1,232 +1,175 @@
-// api/theme/route.ts
+// app/api/theme/route.ts
+import { NextResponse } from "next/server";
+import OpenAI from "openai";
+import { kv } from "@vercel/kv";
+import { themeSeeds } from "../../../lib/constants";
+// Flatten sub-themes from the record into a simple string[] for easier validation
+const flatSeeds: string[] = Object.values(themeSeeds).flat();
+const { OPENAI_API_KEY } = process.env;
+const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-export type Theme = {
-    name: string
-    emoji: string
-    color: string
-    prompts: string[]
-  }
-  
-  export const THEMES: Theme[] = [
-    {
-      name: "Compassion",
-      emoji: "💗",
-      color: "rose-400",
-      prompts: [
-        "How can I cultivate compassion in my daily interactions?",
-        "What does my tradition teach about showing compassion to strangers?",
-        "A short practice to open my heart to more compassion?",
-        "Story or text that illustrates radical compassion?"
-      ]
-    },
-    {
-      name: "Gratitude",
-      emoji: "🙏",
-      color: "yellow-400",
-      prompts: [
-        "How can I practice gratitude every morning?",
-        "What sacred text speaks about the power of gratitude?",
-        "A micro-ritual to deepen my sense of gratitude?",
-        "How does gratitude transform my mindset according to my tradition?"
-      ]
-    },
-    {
-      name: "Forgiveness",
-      emoji: "🕊️",
-      color: "emerald-400",
-      prompts: [
-        "What steps lead to true forgiveness in my tradition?",
-        "How can I forgive someone who hurt me deeply?",
-        "A brief practice to release resentment?",
-        "Why is forgiveness considered healing in spiritual texts?"
-      ]
-    },
-    {
-      name: "Courage",
-      emoji: "🦁",
-      color: "orange-400",
-      prompts: [
-        "How does my tradition define real courage?",
-        "A daily exercise to build spiritual courage?",
-        "Which story exemplifies courage in my sacred writings?",
-        "How can I face my fears with faith?"
-      ]
-    },
-    {
-      name: "Humility",
-      emoji: "🌾",
-      color: "teal-400",
-      prompts: [
-        "What does humility look like in action?",
-        "How can I practice humility without self-deprecation?",
-        "A one-minute reflection on humility?",
-        "Which sacred passage teaches about humility?"
-      ]
-    },
-    {
-      name: "Wisdom",
-      emoji: "📖",
-      color: "blue-400",
-      prompts: [
-        "How can I seek wisdom each day?",
-        "Which proverb or verse best captures wisdom?",
-        "A daily question to grow in wisdom?",
-        "How do faith traditions distinguish knowledge vs. wisdom?"
-      ]
-    },
-    {
-      name: "Patience",
-      emoji: "⏳",
-      color: "indigo-400",
-      prompts: [
-        "What’s a micro-practice for building patience?",
-        "How does my faith teach me to wait patiently?",
-        "Which story shows the reward of patience?",
-        "How can I turn impatience into mindful waiting?"
-      ]
-    },
-    {
-      name: "Hope",
-      emoji: "✨",
-      color: "pink-400",
-      prompts: [
-        "How can I nurture hope in difficult times?",
-        "What sacred promise speaks to hope?",
-        "A short ritual to re-ignite my hope?",
-        "How does hope shape my spiritual outlook?"
-      ]
-    },
-    {
-      name: "Empathy",
-      emoji: "🤝",
-      color: "lime-400",
-      prompts: [
-        "How can I deepen my empathy for others?",
-        "What practice builds empathetic listening?",
-        "Which text challenges me to feel another’s pain?",
-        "A daily task to grow my empathy?"
-      ]
-    },
-    {
-      name: "Joy",
-      emoji: "🎉",
-      color: "amber-400",
-      prompts: [
-        "How does my tradition celebrate joy?",
-        "A 30-second ritual to invite more joy?",
-        "Which story overflows with spiritual joy?",
-        "How can I sustain joy through challenges?"
-      ]
-    },
-    {
-      name: "Peace",
-      emoji: "🕊️",
-      color: "cyan-400",
-      prompts: [
-        "What does inner peace mean in my faith?",
-        "A breathing exercise for peace?",
-        "Which verse offers comfort and peace?",
-        "How can I spread peace in my community?"
-      ]
-    },
-    {
-      name: "Trust",
-      emoji: "🤲",
-      color: "violet-400",
-      prompts: [
-        "How can I deepen my trust in the Divine?",
-        "A short reflection on surrender and trust?",
-        "Which sacred passage speaks of trust?",
-        "How does trust shape courageous action?"
-      ]
-    },
-    {
-      name: "Resilience",
-      emoji: "🌱",
-      color: "green-400",
-      prompts: [
-        "How does my tradition teach resilience?",
-        "A daily mantra to boost resilience?",
-        "Which story models spiritual resilience?",
-        "How can I transform trials into growth?"
-      ]
-    },
-    {
-      name: "Generosity",
-      emoji: "🎁",
-      color: "purple-400",
-      prompts: [
-        "How can I practice generosity of spirit?",
-        "What small act of giving can I do today?",
-        "Which text celebrates selfless giving?",
-        "How does generosity enrich my faith journey?"
-      ]
-    },
-    {
-      name: "Mindfulness",
-      emoji: "🧘",
-      color: "sky-400",
-      prompts: [
-        "A one-minute mindfulness exercise?",
-        "How does my tradition define mindfulness?",
-        "Which teaching invites me to be present?",
-        "How can I bring mindfulness into routine tasks?"
-      ]
-    },
-    {
-      name: "Integrity",
-      emoji: "⚖️",
-      color: "gray-400",
-      prompts: [
-        "What does integrity demand of me today?",
-        "Which text underscores honesty and integrity?",
-        "A brief reflection on ethical living?",
-        "How can I align actions with beliefs?"
-      ]
-    },
-    {
-      name: "Love",
-      emoji: "❤️",
-      color: "red-400",
-      prompts: [
-        "How can I embody unconditional love?",
-        "Which verse teaches about divine love?",
-        "A heart-opening practice for love?",
-        "How does love transform relationships?"
-      ]
-    },
-    {
-      name: "Healing",
-      emoji: "🩹",
-      color: "emerald-600",
-      prompts: [
-        "What practice promotes spiritual healing?",
-        "Which story speaks of miraculous healing?",
-        "A short ritual for personal healing?",
-        "How can I offer healing to others?"
-      ]
-    },
-    {
-      name: "Justice",
-      emoji: "⚖️",
-      color: "yellow-600",
-      prompts: [
-        "How does my tradition define justice?",
-        "What micro-action promotes justice today?",
-        "Which text calls for social justice?",
-        "How can I balance mercy and justice?"
-      ]
-    },
-    {
-      name: "Reflection",
-      emoji: "🪞",
-      color: "blue-600",
-      prompts: [
-        "A journaling prompt for self-reflection?",
-        "How does reflection deepen my faith?",
-        "Which verse invites me to look inward?",
-        "How can I build a daily reflection habit?"
-      ]
+const rabbiSystemPrompt = `
+You are RabbiGPT — a thoughtful, compassionate digital rabbi drawing from the Torah, Talmud, Mussar, and Kabbalistic teachings.
+
+Your task is not to answer questions, but to generate {{questionCount}} insightful **questions that a user might ask** about the theme: "{{seed}}".
+
+Base your prompts on Jewish ethics, philosophy, or Chassidic teachings. Use {{tone}} language. Your tone should feel like a wise, warm teacher guiding someone who wants to grow spiritually or ethically.
+
+Avoid overly complex Hebrew unless explained. Keep the prompts less than 10 words each. Present prompts as a simple list:
+
+- ...
+- ...
+- ...
+`;
+
+const pastorSystemPrompt = `
+You are PastorGPT — a caring and grounded Christian guide drawing from the Bible (New Testament focus), personal discipleship, and ethical teaching.
+
+Your role is to offer **{{questionCount}} suggested user questions** around the topic: "{{seed}}".
+
+Each should be a sincere, everyday question someone might ask their pastor when struggling with this issue — theological, practical, or emotional.
+
+Use {{tone}} language. You are not answering the question — only helping the user ask it better. keep the prompts less than 10 words each. Format the output like this:
+
+- ...
+- ...
+- ...
+`;
+
+const buddhaSystemPrompt = `
+You are BuddhaGPT — a serene, reflective teacher of Dharma rooted in Buddhist texts and insight.
+
+Your task is to provide **{{questionCount}} reflective questions** a person might ask themselves or a Buddhist teacher related to the topic: "{{seed}}".
+
+These questions should point toward mindfulness, detachment, compassion, or insight. You do not answer — only suggest questions that lead to contemplation and practice.
+
+Avoid jargon. Keep them {{tone}}. keep the prompts less than 10 words each. Format as a list:
+
+- ...
+- ...
+- ...
+`;
+
+const imamSystemPrompt = `
+You are ImamGPT — a faithful guide drawing from the Qur'an, Hadith, Islamic ethics, and the lived traditions of the ummah.
+
+Your job is to offer **{{questionCount}} sincere questions** a person might ask an imam regarding the theme: "{{seed}}".
+
+Include questions about spiritual meaning, moral action, or prophetic guidance. Your tone should be {{tone}} and rooted in mercy.
+
+You do not answer these — just offer questions people might ask. keep the prompts less than 10 words each. Format:
+
+- ...
+- ...
+- ...
+`;
+
+const systemPrompts = {
+  RabbiGPT: rabbiSystemPrompt,
+  PastorGPT: pastorSystemPrompt,
+  BuddhaGPT: buddhaSystemPrompt,
+  ImamGPT: imamSystemPrompt,
+} as const;
+
+function getSystemPrompt(
+  model: keyof typeof systemPrompts,
+  seed: string,
+  questionCount: number = 2,
+  tone: string = "gentle, approachable"
+) {
+  const template = systemPrompts[model];
+  return template
+    .replace("{{seed}}", seed)
+    .replace("{{questionCount}}", questionCount.toString())
+    .replace("{{tone}}", tone);
+}
+
+const CACHE_TTL = 24 * 60 * 60; // 24 hours in seconds
+
+export async function POST(req: Request) {
+  try {
+    const body = await req.json();
+    const {
+      model,
+      seed,
+      allowCustomTheme = false,
+      questionCount = 3,
+      tone = "hard, direct",
+    } = body as {
+      model: keyof typeof systemPrompts;
+      seed: string;
+      allowCustomTheme?: boolean;
+      questionCount?: number;
+      tone?: string;
+    };
+
+    if (!systemPrompts[model]) {
+      return NextResponse.json(
+        { error: "Invalid model name." },
+        { status: 400 }
+      );
     }
-  ]
-  
+
+    // Validate theme seed, allowing custom if enabled
+    if (!allowCustomTheme && !flatSeeds.includes(seed)) {
+      return NextResponse.json(
+        { error: "Invalid theme seed." },
+        { status: 400 }
+      );
+    }
+
+    // Validate question count
+    if (questionCount < 1 || questionCount > 10) {
+      return NextResponse.json(
+        {
+          error: "Question count must be between 1 and 10.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Check cache first
+    const cacheKey = `theme:${model}:${seed}:${questionCount}:${tone}`;
+    if (process.env.USE_CACHE === "true" && kv) {
+      const cachedResponse = await kv.get(cacheKey);
+      if (cachedResponse) {
+        return NextResponse.json(cachedResponse);
+      }
+    }
+
+    const systemPrompt = getSystemPrompt(model, seed, questionCount, tone);
+
+    const chatResponse = await openai.chat.completions.create({
+      model: "gpt-4", // or "gpt-3.5-turbo"
+      messages: [
+        { role: "system", content: systemPrompt },
+        { role: "user", content: `Generate suggested prompts about: ${seed}` },
+      ],
+      temperature: 0.7,
+      max_tokens: 500,
+    });
+
+    const reply = chatResponse.choices[0]?.message?.content?.trim();
+
+    const response = {
+      model,
+      seed,
+      questionCount,
+      tone,
+      prompts: reply,
+    };
+
+    // Cache the response
+    if (process.env.USE_CACHE === "true" && kv) {
+      await kv.set(cacheKey, response, { ex: CACHE_TTL });
+    }
+
+    return NextResponse.json(response);
+  } catch (error) {
+    console.error("Theme prompt generation error:", error);
+    return NextResponse.json(
+      { error: "Internal server error." },
+      { status: 500 }
+    );
+  }
+}

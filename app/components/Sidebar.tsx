@@ -15,7 +15,8 @@ const Sidebar: React.FC = () => {
   } = useConversations();
   const router = useRouter();
   const params = useParams();
-  const activeId = (params?.conversationId as string) || "";
+  const activeId =
+    typeof params.conversationId === "string" ? params.conversationId : "";
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const { open } = useSidebar();
@@ -137,7 +138,8 @@ const Sidebar: React.FC = () => {
       </div>
       <button
         onClick={onCreate}
-        className="flex items-center justify-center gap-2 text-[#e6d3a3] py-4 border-t border-[#e6d3a3]/30 hover:bg-black/80 transition-colors text-sm"
+        className="flex items-center justify-center gap-2 text-[#e6d3a3] py-10 my-4 border-t border-[#e6d3a3]/30 hover:bg-black/80 transition-colors text-sm w-full fixed bottom-0 left-0 z-10 bg-gradient-to-t from-black via-black/95 to-black/80 backdrop-blur-md shadow-[0_-10px_30px_rgba(0,0,0,0.4)]"
+        style={{ width: open ? "300px" : "60px" }}
       >
         <Plus size={18} /> {open && "New Chat"}
       </button>

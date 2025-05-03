@@ -40,3 +40,6 @@ a {
     color-scheme: dark;
   }
 }
+
+/* Import mobile styles */
+@import './mobile.css';
