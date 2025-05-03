@@ -2,17 +2,17 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card, CardHeader, CardContent } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
-import { ModelName } from "../types";
+import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { ModelName } from "../../types";
 import {
   ALL_MODELS,
   MODEL_BADGE,
   THEME_SEEDS,
   THEME_CATEGORIES,
   formatPrompts,
-} from "../features/theme/constants";
-import { useTheme } from "../features/theme/ThemeContext";
+} from "./constants";
+import { useTheme } from "./ThemeContext";
 
 interface ThemePrompt {
   model: string;
@@ -27,9 +27,7 @@ interface DynamicThemeProps {
 
 const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
   const { currentTheme, selectNewTheme } = useTheme();
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [prompts, setPrompts] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPrompts, setShowPrompts] = useState(false);
@@ -75,7 +73,10 @@ const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTheme]);
 
-  const handlePromptClick = (model: NonNullable<ModelName>, prompt: string) => {
+  const handlePromptClick = (
+    model: Exclude<ModelName, null>,
+    prompt: string
+  ) => {
     // Set the selected model to only this model
     setSelectedModels([model]);
     console.log(`Selected model from theme prompt: ${model}`);
@@ -104,7 +105,7 @@ const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
   const handleSubThemeClick = (subTheme: string) => {
     // This no longer sets the theme directly since we're using context
     console.log(`Selected sub-theme: ${subTheme}`);
-    setSelectedCategory(undefined);
+    setSelectedCategory(null);
     setShowPrompts(true);
 
     // Scroll to the newly loaded cards after a short delay
@@ -188,7 +189,7 @@ const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
             {selectedCategory && (
               <div className="pb-2">
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 min-w-max sm:min-w-0 mt-3">
-                  {THEME_SEEDS[selectedCategory]?.map((sub) => (
+                  {THEME_SEEDS[selectedCategory].map((sub) => (
                     <button
                       key={sub}
                       onClick={() => handleSubThemeClick(sub)}
@@ -216,63 +217,53 @@ const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, staggerChildren: 0.1 }}
         >
-          {ALL_MODELS.map((model) => {
-            // Ensure model is not null before using it as an index
-            const safeModel = model as NonNullable<ModelName>;
-            return (
-              <motion.div
-                key={safeModel}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <Card className="bg-black/70 border-[#e6d3a3]/30 backdrop-blur-sm h-full flex flex-col">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-lg">{MODEL_BADGE[safeModel]}</span>
-                      <span className="text-[#f0e4c3] font-medium">
-                        {safeModel}
-                      </span>
+          {ALL_MODELS.map((model) => (
+            <motion.div
+              key={model}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <Card className="bg-black/70 border-[#e6d3a3]/30 backdrop-blur-sm h-full flex flex-col">
+                <CardHeader className="pb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">{MODEL_BADGE[model]}</span>
+                    <span className="text-[#f0e4c3] font-medium">{model}</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  {isLoading ? (
+                    <div className="text-center py-4">
+                      <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#e6d3a3] border-r-transparent"></div>
                     </div>
-                  </CardHeader>
-                  <CardContent className="flex-grow">
-                    {isLoading ? (
-                      <div className="text-center py-4">
-                        <div className="inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-[#e6d3a3] border-r-transparent"></div>
-                      </div>
-                    ) : prompts[safeModel] ? (
-                      <ul className="space-y-2 text-sm text-[#e6d3a3]/90">
-                        {formatPrompts(prompts[safeModel]).map(
-                          (prompt, idx) => (
-                            <motion.li
-                              key={idx}
-                              className="leading-tight"
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: idx * 0.1 }}
-                            >
-                              <button
-                                onClick={() =>
-                                  handlePromptClick(safeModel, prompt)
-                                }
-                                className="text-left w-full hover:underline"
-                              >
-                                {prompt}
-                              </button>
-                            </motion.li>
-                          )
-                        )}
-                      </ul>
-                    ) : (
-                      <p className="text-[#e6d3a3]/60 text-xs italic text-center">
-                        No prompts available
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              </motion.div>
-            );
-          })}
+                  ) : prompts[model] ? (
+                    <ul className="space-y-2 text-sm text-[#e6d3a3]/90">
+                      {formatPrompts(prompts[model]).map((prompt, idx) => (
+                        <motion.li
+                          key={idx}
+                          className="leading-tight"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: idx * 0.1 }}
+                        >
+                          <button
+                            onClick={() => handlePromptClick(model, prompt)}
+                            className="text-left w-full hover:underline"
+                          >
+                            {prompt}
+                          </button>
+                        </motion.li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-[#e6d3a3]/60 text-xs italic text-center">
+                      No prompts available
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          ))}
         </motion.div>
       )}
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import LandingChatbot from "../../components/LandingChatbot";
 import PersonalitiesSection from "../../components/PersonalitiesSection";
@@ -14,7 +14,8 @@ import { StarsBackground } from "@/components/ui/stars-background";
 export default function ChatPage() {
   const params = useParams();
   const router = useRouter();
-  const conversationId = (params?.conversationId as string) || "";
+  const conversationId =
+    typeof params.conversationId === "string" ? params.conversationId : "";
   const [messagesSent, setMessagesSent] = useState(false);
 
   const chatbotRef = useRef<HTMLDivElement>(null);
@@ -74,13 +75,19 @@ export default function ChatPage() {
         className="z-0"
       />
 
-      <main className="w-full min-h-screen flex flex-row relative">
-        {/* Main content */}
-        <div className="flex-1 flex flex-col relative">
-          <Header />
+      <main className="w-full min-h-screen flex flex-col relative">
+        <Header />
 
-          {/* Content with proper spacing for the header and footer */}
-          <div className="mt-[100px] mb-[70px] max-w-[1400px] mx-auto w-full">
+        {/* Main scrollable content area between header and footer */}
+        <div
+          className="flex-1 overflow-y-auto"
+          style={{
+            height: "calc(100vh - 170px)",
+            marginTop: "100px",
+            marginBottom: "70px",
+          }}
+        >
+          <div className="max-w-[1400px] mx-auto w-full pb-10">
             {!conversation.hasStarted && (
               <PersonalitiesSection
                 ref={personalitiesRef}
@@ -97,7 +104,7 @@ export default function ChatPage() {
             >
               <div
                 className={`flex-1 ${
-                  conversation.hasStarted ? "min-h-[600px] h-[75vh]" : "h-auto"
+                  conversation.hasStarted ? "min-h-[500px]" : "h-auto"
                 }`}
               >
                 <LandingChatbot
@@ -115,9 +122,9 @@ export default function ChatPage() {
               </div>
             </div>
           </div>
-
-          <Footer />
         </div>
+
+        <Footer />
       </main>
     </>
   );

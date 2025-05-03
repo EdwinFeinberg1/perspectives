@@ -33,6 +33,12 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
 
   console.log(`LandingChatbot initializing with models:`, selectedModels);
 
+  // Add logging for API route
+  const apiRoute = getApiRoute(selectedModel);
+  console.log(
+    `LandingChatbot using API route: ${apiRoute} for model: ${selectedModel}`
+  );
+
   const {
     messages,
     isLoading,
@@ -46,9 +52,9 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
     id: `landing-${conversationId}-${
       selectedModel?.toLowerCase() || "default"
     }`,
-    api: getApiRoute(selectedModel),
+    api: apiRoute,
     onResponse: (response) => {
-      console.log(`API Response received:`, {
+      console.log(`API Response received for ${selectedModel}:`, {
         status: response.status,
         ok: response.ok,
         headers: Array.from(response.headers.entries()).reduce(
@@ -61,10 +67,10 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
       });
     },
     onFinish: (message) => {
-      console.log(`Message stream finished:`, message);
+      console.log(`Message stream finished for ${selectedModel}:`, message);
     },
     onError: (err) => {
-      console.error(`Chat error:`, err);
+      console.error(`Chat error for ${selectedModel}:`, err);
     },
   });
 
@@ -108,6 +114,8 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
       append({ id: crypto.randomUUID(), role: "user", content: p });
     }
   };
+
+  
 
   // Render empty container when no model is selected
   if (selectedModels.length === 0) {
@@ -158,6 +166,8 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   // Single model mode
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
+      {/* Add test button at top */}
+
       <div className="h-full overflow-y-auto space-y-4 -sm pb-32 w-full">
         {messages.map((m, index) => {
           console.log(`Rendering message ${index}:`, m);

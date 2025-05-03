@@ -4,9 +4,8 @@ import React, { useState, useMemo, useEffect } from "react";
 import { useChat, Message } from "ai/react";
 import ReactMarkdown from "react-markdown";
 import Bubble from "./Chatbot/Bubble";
-import LoadingBubble from "./Chatbot/LoadingBubble";
 import ChatInputFooter from "./Chatbot/ChatInputFooter";
-import { ModelName, ComparisonData } from "../types";
+import { ModelName, ComparisonData } from "../../types";
 
 // Extended Message type that includes our custom properties
 interface ExtendedMessage extends Message {
@@ -51,12 +50,6 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
   const rabbiChat = useChat({
     id: `single-${conversationId}-rabbigpt`,
     api: "/api/chat/judaism",
-    onFinish: (message) => {
-      console.log("RabbiChat finished:", message);
-    },
-    onError: (error) => {
-      console.error("RabbiChat error:", error);
-    },
   });
   const pastorChat = useChat({
     id: `single-${conversationId}-pastorgpt`,
@@ -328,16 +321,14 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
     return (
       <div
         key={`comparison-${message.id || index}`}
-        className="comparison-message w-full"
+        className="comparison-message w-full max-w-[90%] mx-auto"
       >
         <div className="flex flex-col">
-          <div className="bg-black/60 border-2 border-[#ddc39a]/20 text-[#ddc39a]/90 rounded-[20px] mx-2 sm:mx-4 my-2 sm:my-3 p-3 sm:p-5 text-[14px] sm:text-[16px] shadow-lg backdrop-blur-sm text-left">
-            <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#ddc39a]/20">
+          <div className="border-2 border-[#ddc39a]/20 text-[#ddc39a]/90 rounded-[20px] mx-6 my-3 p-5 text-[16px] shadow-lg backdrop-blur-sm text-left">
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-[#ddc39a]/20">
               <div className="flex items-center">
                 <span className="mr-2 text-xl">🔄</span>
-                <span className="font-medium text-sm sm:text-base">
-                  ComparisonGPT
-                </span>
+                <span className="font-medium">ComparisonGPT</span>
               </div>
 
               {/* Share button */}
@@ -348,15 +339,14 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
+                  width="18"
+                  height="18"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
                   strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  className="sm:w-[18px] sm:h-[18px]"
                 >
                   <circle cx="18" cy="5" r="3"></circle>
                   <circle cx="6" cy="12" r="3"></circle>
@@ -395,66 +385,53 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
     );
   };
 
-  // Log Rabbi chat status changes
-  useEffect(() => {
-    console.log(`RabbiChat status: ${rabbiChat.status}`);
-  }, [rabbiChat.status]);
-
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
-      <div className="h-full overflow-y-auto space-y-4 pb-32 w-full flex flex-col items-center">
-        <div className="w-full max-w-3xl mx-auto px-2 sm:px-4">
-          {displayMessages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center mt-0">
-              {/* Initial prompt suggestions removed */}
-            </div>
-          ) : (
-            <>
-              {displayMessages.map((message, index) => {
-                if (message.role === "user") {
-                  return (
-                    <Bubble
-                      key={`user-${message.id || index}`}
-                      message={{
-                        content: message.content,
-                        role: "user",
-                      }}
-                      model={null}
-                    />
-                  );
-                } else if (message.role === "assistant") {
-                  // In multi-select mode, show formatted comparison message
-                  if (selectedModels.length > 1) {
-                    return renderComparisonMessage(message, index);
-                  }
-                  // In single-select mode, show normal message
-                  return (
-                    <Bubble
-                      key={`model-${message.id || index}`}
-                      message={{
-                        content: message.content,
-                        role: "assistant",
-                        followupSuggestions: extractFollowUpQuestions(
-                          message.content
-                        ),
-                      }}
-                      model={message.model || selectedModels[0]}
-                      onFollowupClick={(question) => handleSubmit(question)}
-                      isLoading={isLoading}
-                    />
-                  );
+      <div className="h-full overflow-y-auto space-y-4 pb-32 w-full">
+        {displayMessages.length === 0 ? (
+          <div className="flex flex-col items-center justify-center mt-0">
+            {/* Initial prompt suggestions removed */}
+          </div>
+        ) : (
+          <>
+            {displayMessages.map((message, index) => {
+              if (message.role === "user") {
+                return (
+                  <Bubble
+                    key={`user-${message.id || index}`}
+                    message={{
+                      content: message.content,
+                      role: "user",
+                    }}
+                    model={null}
+                  />
+                );
+              } else if (message.role === "assistant") {
+                // In multi-select mode, show formatted comparison message
+                if (selectedModels.length > 1) {
+                  return renderComparisonMessage(message, index);
                 }
-                return null;
-              })}
-
-              {isLoading && (
-                <div className="flex justify-center w-full">
-                  <LoadingBubble />
-                </div>
-              )}
-            </>
-          )}
-        </div>
+                // In single-select mode, show normal message
+                return (
+                  <Bubble
+                    key={`model-${message.id || index}`}
+                    message={{
+                      content: message.content,
+                      role: "assistant",
+                      followupSuggestions: extractFollowUpQuestions(
+                        message.content
+                      ),
+                    }}
+                    model={message.model || selectedModels[0]}
+                    onFollowupClick={(question) => handleSubmit(question)}
+                    isLoading={isLoading}
+                  />
+                );
+              }
+              return null;
+            })}
+          </>
+        )}
       </div>
 
       <ChatInputFooter

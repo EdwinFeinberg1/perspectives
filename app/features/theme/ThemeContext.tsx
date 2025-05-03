@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState } from "react";
-import { getRandomTheme } from "../constants/theme-constants";
+import { getRandomTheme } from "./constants";
 
 interface ThemeContextType {
   currentTheme: string;

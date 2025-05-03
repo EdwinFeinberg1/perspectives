@@ -15,8 +15,7 @@ const Sidebar: React.FC = () => {
   } = useConversations();
   const router = useRouter();
   const params = useParams();
-  const activeId =
-    typeof params.conversationId === "string" ? params.conversationId : "";
+  const activeId = typeof params.conversationId === 'string' ? params.conversationId : '';
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const { open } = useSidebar();

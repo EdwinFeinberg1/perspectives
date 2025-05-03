@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Plus, Trash, MessageSquare, Edit, Check } from "lucide-react";
-import { useConversations } from "../context/ConversationsContext";
+import { useConversations } from "../../context/ConversationsContext";
 import { useRouter, useParams } from "next/navigation";
 import {
   Sheet,

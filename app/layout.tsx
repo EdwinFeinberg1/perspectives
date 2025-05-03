@@ -1,7 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { ConversationsProvider } from "./context/ConversationsContext";
-import { ThemeProvider } from "./components/ThemeContext";
+import { ThemeProvider } from "./features/theme";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,7 +17,7 @@ export const metadata = {
 const RootLayout = ({ children }) => {
   return (
     <html lang="en" className={`${inter.variable} font-sans h-full`}>
-      <body className="min-h-screen w-full bg-slate-950 flex overflow-x-hidden">
+      <body className="min-h-screen w-full bg-slate-950 flex flex-col overflow-hidden">
         <ConversationsProvider>
           <ThemeProvider>{children}</ThemeProvider>
         </ConversationsProvider>

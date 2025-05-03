@@ -67,11 +67,11 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
   }, [handleInputChange, onModelSelect]); // Add onModelSelect as a dependency
 
   return (
-    <CardFooter className="flex flex-col p-0 fixed bottom-[60px] left-0 right-0 z-20 py-8 py-4 sm:py-8">
-      <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 flex flex-col items-center">
+    <CardFooter className="flex flex-col p-0  fixed bottom-[60px] left-0 right-0 z-20 py-8 ">
+      <div className="w-full max-w-3xl mx-auto px-4 flex flex-col items-center">
         <form
           onSubmit={handleSubmit}
-          className={`flex items-center w-full px-3 py-2 sm:px-6 sm:py-3 rounded-2xl 
+          className={`flex items-center w-full px-6 py-3 rounded-2xl 
             ${isFocused ? "bg-black" : "bg-black/90"} 
             border-2 ${
               isFocused ? "border-[#e6d3a3]/80" : "border-[#e6d3a3]/50"
@@ -89,13 +89,13 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
                 ? `Ask ${selectedModel} anything`
                 : "Select a sage or click a prompt to begin"
             }
-            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-sm sm:text-lg mr-2 sm:mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none font-light tracking-wide"
+            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-lg mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none font-light tracking-wide"
             disabled={isLoading || !selectedModel}
           />
           <Button
             type="submit"
             className={`
-              bg-transparent p-0 h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center
+              bg-transparent p-0 h-12 w-12 flex items-center justify-center
               transition-all duration-300 transform hover:scale-110 active:scale-95
               hover:shadow-none border-none text-[#f0e4c3] ${
                 isLoading || !selectedModel ? "opacity-60" : "opacity-100"
@@ -103,10 +103,7 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
             size="icon"
             disabled={isLoading || !selectedModel}
           >
-            <Send
-              size={20}
-              className="sm:size-26 drop-shadow-md hover:drop-shadow-lg"
-            />
+            <Send size={26} className="drop-shadow-md hover:drop-shadow-lg" />
           </Button>
         </form>
       </div>

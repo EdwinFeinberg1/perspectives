@@ -1,4 +1,4 @@
-import { ModelName } from "../types";
+import { ModelName } from "../../types";
 
 // Models available for themes
 export const ALL_MODELS: ModelName[] = [

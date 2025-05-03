@@ -3,11 +3,11 @@
 import React, { forwardRef } from "react";
 import Image from "next/image";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
-import { ModelName } from "../types";
+import { ModelName } from "../../types";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { StaticImageData } from "next/image";
-import { PERSONALITIES, Personality } from "../constants/personalities";
+import { PERSONALITIES, Personality } from "../../constants/personalities";
 
 interface PersonalityCardProps {
   model: NonNullable<ModelName>;
@@ -28,7 +28,7 @@ const PersonalityCard: React.FC<PersonalityCardProps> = ({
   isSelected,
   onClick,
 }) => {
-  const cardClassName = `border-2 transition-all duration-300 overflow-hidden cursor-pointer bg-black/60 
+  const cardClassName = `border-2 transition-all duration-300 overflow-hidden cursor-pointer  
     ${
       isSelected
         ? "border-[#e6d3a3] shadow-[0_0_20px_rgba(230,211,163,0.5)] scale-[1.02] bg-gradient-to-b from-black/70 to-[#e6d3a3]/10 animate-subtle-pulse"
@@ -47,15 +47,15 @@ const PersonalityCard: React.FC<PersonalityCardProps> = ({
           priority
         />
       </div>
-      <CardHeader className="text-[#f0e4c3] flex flex-row items-center gap-2 pt-3 pb-1 text-left">
+      <CardHeader className="text-[#f0e4c3] flex flex-row items-center gap-2 pt-3 pb-1">
         <span className="text-lg">{emoji}</span>
         <span className="text-base font-medium">{title}</span>
         {isSelected && (
           <span className="ml-auto text-xs opacity-80">Selected</span>
         )}
       </CardHeader>
-      <CardContent className="pt-1 pb-4 text-left">
-        <p className="text-sm text-[#e6d3a3] leading-tight">{description}</p>
+      <CardContent className="pt-1 pb-4">
+        <p className="text-xs text-[#e6d3a3] leading-tight">{description}</p>
       </CardContent>
     </Card>
   );
@@ -91,7 +91,7 @@ const PersonalitiesSection = forwardRef<
   return (
     <section
       ref={ref}
-      className="px-4 sm:px-[5%] md:px-[7%] bg-gradient-to-b from-transparent to-black/40 mb-5 sm:mb-10 relative"
+      className="px-4 sm:px-[5%] md:px-[7%] mb-5 sm:mb-10 relative"
       id="personalities-section"
     >
       {/* Stars background */}

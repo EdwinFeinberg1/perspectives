@@ -92,6 +92,12 @@ export async function POST(req: Request) {
   ${docContext}
   
   Now answer the user's question, and be meticulous about citing each time you use one of the above passages.
+  IMPORTANT: Always end your response with a 'Follow-up Questions' section using exactly this format:
+
+  ## Follow-up Questions
+  1. First suggested question?
+  2. Second suggested question?
+  3. Third suggested question?
     `,
     messages,
     maxTokens: 1024,

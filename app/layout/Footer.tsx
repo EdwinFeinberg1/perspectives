@@ -37,7 +37,7 @@ const Footer: React.FC = () => {
 
           {/* Right section with year */}
           <div className="text-xs md:text-sm text-[#e6d3a3]/80">
-            2025
+            © {new Date().getFullYear()}
           </div>
         </div>
       </div>
