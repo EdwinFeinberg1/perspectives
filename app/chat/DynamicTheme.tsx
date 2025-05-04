@@ -26,7 +26,7 @@ interface DynamicThemeProps {
 }
 
 const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
-  const { currentTheme, selectNewTheme } = useTheme();
+  const { currentTheme, selectNewTheme, setCurrentTheme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(
     undefined
   );
@@ -71,6 +71,7 @@ const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
 
   // Fetch prompts when theme changes or on first mount
   useEffect(() => {
+    console.log("Fetching prompts for theme:", currentTheme);
     fetchPrompts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTheme]);
@@ -102,18 +103,14 @@ const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
 
   // Handle sub-theme click
   const handleSubThemeClick = (subTheme: string) => {
-    // This no longer sets the theme directly since we're using context
+    // Update the current theme with the selected subTheme
+    setCurrentTheme(subTheme);
+
     console.log(`Selected sub-theme: ${subTheme}`);
-    setSelectedCategory(undefined);
+    setSelectedCategory(null);
     setShowPrompts(true);
 
-    // Scroll to the newly loaded cards after a short delay
-    setTimeout(() => {
-      const themeSection = document.getElementById("theme-section");
-      if (themeSection) {
-        themeSection.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 100);
+    // Prompts will be fetched automatically due to the useEffect that watches currentTheme
   };
 
   return (

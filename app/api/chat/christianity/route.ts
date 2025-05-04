@@ -2,7 +2,7 @@ import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import OpenAI from "openai";
-
+import { logQuestion } from "../../../../lib/logging";
 console.log(process.env.NEXT_PUBLIC_OPENAI_API_KEY);
 const {
   ASTRADB_DB_KEYSPACE,
@@ -28,6 +28,7 @@ export async function POST(req: Request) {
     const { messages } = await req.json();
     console.log("Messages received:", messages.length);
     const latestMessage = messages[messages?.length - 1]?.content;
+    await logQuestion(latestMessage, "PastorGPT");
     console.log("Latest message:", latestMessage);
 
     let docContext = "";

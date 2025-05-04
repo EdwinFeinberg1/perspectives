@@ -31,7 +31,7 @@ const ThemeSheet: React.FC = () => {
       >
         <SheetHeader className="px-4 pt-8 pb-4">
           <SheetTitle className="text-[#e6d3a3] text-lg">
-            Dynamic Theme
+            Theme Explorer
           </SheetTitle>
           <SheetDescription className="text-[#e6d3a3]/70 text-sm flex items-center justify-between">
             <span>

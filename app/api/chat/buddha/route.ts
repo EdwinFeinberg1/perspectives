@@ -2,6 +2,7 @@ import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import OpenAI from "openai";
+import { logQuestion } from "../../../../lib/logging";
 
 // Define document structure
 interface BuddhaDocument {
@@ -36,6 +37,7 @@ export async function POST(req: Request) {
     const latestMessage: string =
       messages?.[messages.length - 1]?.content ?? "";
 
+    await logQuestion(latestMessage, "BuddhaGPT");
     // 2) Create embedding for similarity search
     const embedResp = await openai.embeddings.create({
       model: "text-embedding-3-small",

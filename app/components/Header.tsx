@@ -15,8 +15,8 @@ import {
   Sheet,
   SheetTrigger,
   SheetContent,
-  SheetHeader,
   SheetTitle,
+  SheetHeader,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
@@ -28,7 +28,7 @@ const Header: React.FC = () => {
       {/* Glassmorphism container with padding for rounded corners */}
       <div className="mx-auto max-w-[1400px] relative mt-2">
         {/* Glassmorphism background with blur effect */}
-        <div className="absolute inset-0 bg-black/30 backdrop-blur-lg rounded-xl border border-[#e6d3a3]/15 shadow-[0_8px_32px_rgba(0,0,0,0.2)] after:absolute after:inset-0 after:bg-gradient-to-b after:from-[#e6d3a3]/5 after:to-transparent after:rounded-xl"></div>
+        <div className="absolute  bg-black/30 backdrop-blur-lg rounded-xl border border-[#e6d3a3]/15 shadow-[0_8px_32px_rgba(0,0,0,0.2)] after:absolute after:inset-0 after:bg-gradient-to-b after:from-[#e6d3a3]/5 after:to-transparent after:rounded-xl"></div>
 
         {/* Main header content */}
         <div className="relative h-[70px] sm:h-[80px] px-2 sm:px-6 md:px-8 flex items-center justify-between">
@@ -87,10 +87,8 @@ const Header: React.FC = () => {
                 side="right"
                 className="w-[250px] sm:w-[300px] bg-black/90 border-l border-[#e6d3a3]/30 backdrop-blur-xl"
               >
-                <SheetHeader className="mt-6 mb-6">
-                  <SheetTitle className="text-xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-[#e6d3a3] via-[#f0e4c3] to-[#e6d3a3]">
-                    Menu
-                  </SheetTitle>
+                <SheetHeader>
+                  <SheetTitle className="text-[#e6d3a3]">Menu</SheetTitle>
                 </SheetHeader>
                 <div className="flex flex-col space-y-4">
                   <SignUpSheet inline={true} />

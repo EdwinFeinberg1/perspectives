@@ -2,6 +2,7 @@ import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import OpenAI from "openai";
+import { logQuestion } from "../../../../lib/logging";
 
 const {
   ASTRADB_DB_KEYSPACE,
@@ -22,7 +23,7 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
   const latestMessage = messages.at(-1)?.content || "";
   console.log("ImamGPT called");
-
+  await logQuestion(latestMessage, "ImamGPT");
   // 1) Create an embedding for the user query
   const embeddingResponse = await openai.embeddings.create({
     model: "text-embedding-3-small",

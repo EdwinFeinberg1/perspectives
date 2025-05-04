@@ -6,6 +6,7 @@ import { getRandomTheme } from "./constants";
 interface ThemeContextType {
   currentTheme: string;
   selectNewTheme: () => void;
+  setCurrentTheme: (theme: string) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -28,7 +29,9 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   return (
-    <ThemeContext.Provider value={{ currentTheme, selectNewTheme }}>
+    <ThemeContext.Provider
+      value={{ currentTheme, selectNewTheme, setCurrentTheme }}
+    >
       {children}
     </ThemeContext.Provider>
   );

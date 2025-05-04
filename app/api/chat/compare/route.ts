@@ -1,11 +1,12 @@
 import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
-
+import { logQuestion } from "../../../../lib/logging";
 export const runtime = "edge";
 
 export async function POST(req: Request) {
   try {
     const { messages, selectedModels } = await req.json();
+    await logQuestion(messages[messages.length - 1].content, "CompareGPT");
 
     if (!messages || messages.length === 0) {
       return new Response("No messages provided", { status: 400 });
