@@ -5,7 +5,8 @@ export const runtime = "edge";
 export async function POST() {
   // Create an empty stream with a blank response
   const result = streamText({
-    text: "",
+    model: undefined,
+    prompt: "",
   });
 
   return result.toDataStreamResponse();
