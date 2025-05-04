@@ -70,10 +70,18 @@ export const Sidebar = ({
 };
 
 export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+  // Extract children from props to pass them correctly
+  const { children, className, ...restProps } = props;
+
+  // Cast children to ReactNode to satisfy type constraints
+  const childrenAsReactNode = children as React.ReactNode;
+
   return (
     <>
-      <DesktopSidebar {...props} />
-      <MobileSidebar {...(props as React.ComponentProps<"div">)} />
+      <DesktopSidebar className={className} {...restProps}>
+        {childrenAsReactNode}
+      </DesktopSidebar>
+      <MobileSidebar className={className}>{childrenAsReactNode}</MobileSidebar>
     </>
   );
 };
@@ -84,6 +92,9 @@ export const DesktopSidebar = ({
   ...props
 }: React.ComponentProps<typeof motion.div>) => {
   const { open, setOpen, animate } = useSidebar();
+  // Cast children to ReactNode to satisfy type constraints
+  const childrenAsReactNode = children as React.ReactNode;
+
   return (
     <>
       <motion.div
@@ -102,7 +113,7 @@ export const DesktopSidebar = ({
         >
           {open ? <X size={20} /> : <Menu size={20} />}
         </div>
-        {children}
+        {childrenAsReactNode}
       </motion.div>
     </>
   );

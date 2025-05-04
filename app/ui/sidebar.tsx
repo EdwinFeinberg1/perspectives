@@ -69,11 +69,20 @@ export const Sidebar = ({
   );
 };
 
-export const SidebarBody = (props: React.ComponentProps<typeof motion.div>) => {
+export const SidebarBody = ({
+  children,
+  className,
+  ...props
+}: {
+  children: React.ReactNode;
+  className?: string;
+} & Omit<React.HTMLAttributes<HTMLDivElement>, "children">) => {
   return (
     <>
-      <DesktopSidebar {...props} />
-      <MobileSidebar {...(props as React.ComponentProps<"div">)} />
+      <DesktopSidebar className={className} {...props}>
+        {children}
+      </DesktopSidebar>
+      <MobileSidebar className={className}>{children}</MobileSidebar>
     </>
   );
 };
@@ -82,7 +91,10 @@ export const DesktopSidebar = ({
   className,
   children,
   ...props
-}: React.ComponentProps<typeof motion.div>) => {
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) => {
   const { open, setOpen, animate } = useSidebar();
   return (
     <>
@@ -94,7 +106,6 @@ export const DesktopSidebar = ({
         animate={{
           width: animate ? (open ? "300px" : "60px") : "300px",
         }}
-        {...props}
       >
         <div
           className="absolute top-24 right-3 cursor-pointer text-[#ddc39a] z-10"
