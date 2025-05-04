@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo } from "react";
 import { useChat, Message } from "ai/react";
 import ReactMarkdown from "react-markdown";
 import Bubble from "./Chatbot/Bubble";
@@ -43,20 +43,13 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
   const [hasPrompted, setHasPrompted] = useState(false);
 
   // Log when hasPrompted changes
-  useEffect(() => {
-    console.log(`MultiModelChat: hasPrompted state is now ${hasPrompted}`);
-  }, [hasPrompted]);
+  
 
   // Always initialize all chat hooks at the top level
   const rabbiChat = useChat({
     id: `single-${conversationId}-rabbigpt`,
     api: "/api/chat/judaism",
-    onFinish: (message) => {
-      console.log("RabbiChat finished:", message);
-    },
-    onError: (error) => {
-      console.error("RabbiChat error:", error);
-    },
+   
   });
   const pastorChat = useChat({
     id: `single-${conversationId}-pastorgpt`,
@@ -130,17 +123,14 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
     if (!activeChat || selectedModels.length === 0 || isProcessing) return;
 
     if (!hasNotifiedFirst) {
-      console.log(
-        `MultiModelChat: First message, notifying parent with models:`,
-        selectedModels
-      );
+      
       onFirstMessage?.(selectedModels);
       setHasNotifiedFirst(true);
     }
 
     // Mark that a prompt has been submitted
     setHasPrompted(true);
-    console.log(`MultiModelChat: hasPrompted set to true`);
+    
 
     // Set processing state SYNCHRONOUSLY before any async operations
     setIsProcessing(true);
@@ -395,10 +385,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
     );
   };
 
-  // Log Rabbi chat status changes
-  useEffect(() => {
-    console.log(`RabbiChat status: ${rabbiChat.status}`);
-  }, [rabbiChat.status]);
+  
 
   return (
     <div className="h-full flex flex-col overflow-hidden relative">

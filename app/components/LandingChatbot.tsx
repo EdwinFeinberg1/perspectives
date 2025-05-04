@@ -110,12 +110,10 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
 
   const sendPrompt = (p: string) => {
     if (selectedModel) {
-      console.log(`Sending prompt: "${p}" to ${selectedModel}`);
+     
       append({ id: crypto.randomUUID(), role: "user", content: p });
     }
   };
-
-  
 
   // Render empty container when no model is selected
   if (selectedModels.length === 0) {
@@ -129,10 +127,10 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
           handleInputChange={() => {}}
           handleSubmit={(e) => {
             e.preventDefault();
-            console.log("No model selected yet");
+           
           }}
           onModelSelect={(model) => {
-            console.log(`Selecting model from prompt: ${model}`);
+            
             if (model) {
               const modelName = model as ModelName;
               onFirstMessage?.([modelName]);
@@ -152,7 +150,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
         setComparisonData={setComparisonData}
         onFirstMessage={onFirstMessage}
         updateSelectedModels={(models) => {
-          console.log(`Updating models from MultiModelChat:`, models);
+          
           // Only trigger onFirstMessage if there's an actual change
           if (selectedModels.join(",") !== models.join(",")) {
             // This will update the models in the parent component
@@ -170,7 +168,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
 
       <div className="h-full overflow-y-auto space-y-4 -sm pb-32 w-full">
         {messages.map((m, index) => {
-          console.log(`Rendering message ${index}:`, m);
+          
           return (
             <Bubble
               key={m.id || index}
@@ -204,11 +202,11 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
         isLoading={isLoading}
         handleInputChange={handleInputChange}
         handleSubmit={(e) => {
-          console.log(`Form submitted with input: "${input}"`);
+          
           handleSubmit(e);
         }}
         onModelSelect={(model) => {
-          console.log(`Selecting model from prompt: ${model}`);
+          
           if (
             model &&
             (selectedModels.length !== 1 || selectedModel !== model)

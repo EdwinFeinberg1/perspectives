@@ -45,13 +45,13 @@ export async function POST(req: Request) {
       encoding_format: "float",
     });
     const queryVector = embedResp.data[0].embedding;
-    console.log("queryVector", queryVector);
+   
 
     // 3) Retrieve top‑k relevant chunks from AstraDB
     let docContext = "";
     try {
       const collection = await db.collection(ASTRADB_DB_COLLECTION_BUDDHA);
-      console.log("Buddha...");
+   
       const cursor = collection.find(null, {
         sort: { $vector: queryVector },
         limit: 10,

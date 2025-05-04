@@ -3,7 +3,6 @@ import { streamText } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import OpenAI from "openai";
 import { logQuestion } from "../../../../lib/logging";
-console.log(process.env.NEXT_PUBLIC_OPENAI_API_KEY);
 const {
   ASTRADB_DB_KEYSPACE,
   ASTRADB_DB_COLLECTION_CHRISTIANITY,
@@ -23,27 +22,21 @@ const db = client.db(ASTRADB_API_ENDPOINT_CHRISTIANITY, {
 
 export async function POST(req: Request) {
   try {
-    console.log("POST request received in Christianity route");
-    console.log("API Key available:", !!process.env.OPENAI_API_KEY);
     const { messages } = await req.json();
     console.log("Messages received:", messages.length);
     const latestMessage = messages[messages?.length - 1]?.content;
     await logQuestion(latestMessage, "PastorGPT");
-    console.log("Latest message:", latestMessage);
 
     let docContext = "";
 
-    console.log("Generating embeddings via OpenAI");
     try {
       const embedding = await openai.embeddings.create({
         model: "text-embedding-3-small",
         input: latestMessage,
         encoding_format: "float",
       });
-      console.log("Embeddings generated successfully");
 
       try {
-        console.log("Querying AstraDB for similar documents");
         const collection = await db.collection(
           ASTRADB_DB_COLLECTION_CHRISTIANITY
         );
@@ -55,7 +48,6 @@ export async function POST(req: Request) {
           limit: 10,
         });
         const docs = (await cursor.toArray()).map((d) => d.text);
-        console.log(`Retrieved ${docs.length} relevant documents from AstraDB`);
         docContext = JSON.stringify(docs);
       } catch (err) {
         console.error("AstraDB query error:", err);
@@ -67,7 +59,6 @@ export async function POST(req: Request) {
     }
 
     //Kick off a streaming chat
-    console.log("Starting OpenAI stream response");
     try {
       const result = streamText({
         model: aiSdkOpenai("gpt-3.5-turbo"),
@@ -99,7 +90,6 @@ export async function POST(req: Request) {
         messages,
         maxTokens: 1024,
       });
-      console.log("Stream created successfully, returning response");
 
       // Return the response with explicit options to handle potential issues
       return result.toDataStreamResponse({

@@ -96,7 +96,6 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
   ) => {
     // Automatically select just this model, replacing any currently selected models
     updateSelectedModels([model]);
-    console.log(`Selected model from theme prompt: ${model}`);
 
     // Dispatch a global event so chat input can prefill
     setTimeout(() => {

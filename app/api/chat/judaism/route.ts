@@ -13,56 +13,19 @@ const {
 } = process.env;
 
 // Initialize clients
+const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN_JEWISH!);
+const db = client.db(ASTRADB_API_ENDPOINT_JEWISH!, {
+  keyspace: ASTRADB_DB_KEYSPACE!,
+});
+
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-// Add error handling for DB client initialization
-let client;
-let db;
-try {
-  console.log("RabbiGPT: Initializing database client");
-  client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN_JEWISH!);
-  db = client.db(ASTRADB_API_ENDPOINT_JEWISH!, {
-    keyspace: ASTRADB_DB_KEYSPACE!,
-  });
-  console.log("RabbiGPT: Database client initialized successfully");
-} catch (err) {
-  console.error("RabbiGPT: Failed to initialize database client:", err);
-}
-
 export async function POST(req: Request) {
-  console.log("RabbiGPT: Route handler called");
-
-  // Check environment variables
-  console.log("RabbiGPT: Environment variables check:");
-  console.log(
-    "  - ASTRADB_DB_KEYSPACE:",
-    ASTRADB_DB_KEYSPACE ? "defined" : "MISSING"
-  );
-  console.log(
-    "  - ASTRADB_DB_COLLECTION_JEWISH:",
-    ASTRADB_DB_COLLECTION_JEWISH ? "defined" : "MISSING"
-  );
-  console.log(
-    "  - ASTRA_DB_APPLICATION_TOKEN_JEWISH:",
-    ASTRA_DB_APPLICATION_TOKEN_JEWISH ? "defined (value hidden)" : "MISSING"
-  );
-  console.log(
-    "  - ASTRADB_API_ENDPOINT_JEWISH:",
-    ASTRADB_API_ENDPOINT_JEWISH ? "defined" : "MISSING"
-  );
-  console.log(
-    "  - OPENAI_API_KEY:",
-    OPENAI_API_KEY ? "defined (value hidden)" : "MISSING"
-  );
-
   try {
     const { messages } = await req.json();
-    console.log(
-      "RabbiGPT: Messages received:",
-      JSON.stringify(messages).substring(0, 200) + "..."
-    );
+    
     const latestMessage = messages.at(-1)?.content || "";
-    console.log("RabbiGPT: Latest message:", latestMessage);
+    
     await logQuestion(latestMessage, "RabbiGPT");
     // 1) Create an embedding for the user query
     const embeddingResponse = await openai.embeddings.create({
@@ -76,12 +39,12 @@ export async function POST(req: Request) {
 
     let retrievedChunks: { ref: string; text: string }[] = [];
     try {
-      console.log("RabbiGPT: Vector search started");
+      
       if (!db) {
         throw new Error("Database client is not initialized");
       }
       const collection = await db.collection(ASTRADB_DB_COLLECTION_JEWISH!);
-      console.log("RabbiGPT: Vector search collection found");
+     
       const cursor = collection.find(/* no filter */ null, {
         sort: {
           $vector: vector,
@@ -90,13 +53,11 @@ export async function POST(req: Request) {
       });
       const docs = await cursor.toArray();
       retrievedChunks = docs.map((d) => ({ ref: d.ref, text: d.text }));
-      console.log(
-        `RabbiGPT: Vector search found ${retrievedChunks.length} chunks`
-      );
+     
     } catch (err) {
       console.error("RabbiGPT: Vector search failed:", err);
       // Provide a fallback if vector search fails
-      console.log("RabbiGPT: Using fallback general knowledge");
+      
       retrievedChunks = [
         {
           ref: "Fallback",

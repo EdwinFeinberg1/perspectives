@@ -6,7 +6,6 @@ export async function logQuestion(
   conversationId?: string
 ) {
   try {
-    console.log("Logging question:", question, modelName, conversationId);
     const { error } = await supabase.from("questions").insert({
       question,
       model_name: modelName,

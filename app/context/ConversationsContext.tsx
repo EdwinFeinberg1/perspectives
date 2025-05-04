@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { Conversation, ModelName } from "../types";
+import { Conversation } from "../types";
 
 interface ConversationsContextValue {
   conversations: Conversation[];
@@ -26,7 +26,9 @@ export const ConversationsProvider: React.FC<{ children: React.ReactNode }> = ({
       if (stored) {
         try {
           setConversations(JSON.parse(stored));
-        } catch (_) {}
+        } catch (error) {
+          // Silently fail on parse error
+        }
       }
     }
   }, []);
