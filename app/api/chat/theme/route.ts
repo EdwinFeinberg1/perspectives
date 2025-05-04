@@ -2,7 +2,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { kv } from "@vercel/kv";
-import { themeSeeds } from "../../../lib/constants";
+import { themeSeeds } from "../../../../lib/constants";
 // Flatten sub-themes from the record into a simple string[] for easier validation
 const flatSeeds: string[] = Object.values(themeSeeds).flat();
 const { OPENAI_API_KEY } = process.env;
@@ -145,7 +145,7 @@ export async function POST(req: Request) {
         { role: "system", content: systemPrompt },
         { role: "user", content: `Generate suggested prompts about: ${seed}` },
       ],
-      temperature: 0.7,
+      temperature: 0.8,
       max_tokens: 500,
     });
 

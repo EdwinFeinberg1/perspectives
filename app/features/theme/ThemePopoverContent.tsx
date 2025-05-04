@@ -45,7 +45,7 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
     }
   };
 
-  const { currentTheme, selectNewTheme } = useTheme();
+  const { currentTheme, selectNewTheme, setCurrentTheme } = useTheme();
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [prompts, setPrompts] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -110,6 +110,12 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
       );
     }, 150);
 
+    // If in mobile view, close the sheet
+    if (isMobileSheet) {
+      // Dispatch a custom event to close the sheet
+      window.dispatchEvent(new CustomEvent("closeThemeSheet"));
+    }
+
     // Optionally, scroll to chat section
     const chatbotSection = document.getElementById("chatbot-section");
     if (chatbotSection) {
@@ -123,18 +129,21 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
   };
 
   // Handle sub-theme click
-  const handleSubThemeClick = () => {
+  const handleSubThemeClick = (subTheme: string) => {
+    // Update the current theme with the selected subTheme
+    setCurrentTheme(subTheme);
+
     setSelectedCategory(null);
     setShowPrompts(true);
+
+    // Prompts will be fetched automatically due to the useEffect that watches currentTheme
   };
 
   return (
     <div className={`space-y-6 ${isMobileSheet ? "p-0" : "p-2"}`}>
       <div className="flex items-center justify-between">
-        <h4 className="text-base font-medium text-[#f0e4c3]">
-          Explore Themes for Meaningful Conversations
-        </h4>
-        <div className="flex gap-3">
+        <h4 className="text-base font-medium text-[#f0e4c3]"></h4>
+        <div className="flex gap-3 justify-center">
           <Button
             variant="outline"
             size="sm"
@@ -219,7 +228,7 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
                 {THEME_SEEDS[selectedCategory].map((sub) => (
                   <button
                     key={sub}
-                    onClick={handleSubThemeClick}
+                    onClick={() => handleSubThemeClick(sub)}
                     className="py-2 px-3 bg-black/70 backdrop-blur-sm border-2 border-[#e6d3a3]/40 text-[#e6d3a3] 
                               rounded-lg transition-all duration-300 text-sm
                               hover:border-[#e6d3a3] hover:bg-gradient-to-b hover:from-black/80 hover:to-[#e6d3a3]/10

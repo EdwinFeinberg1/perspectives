@@ -87,7 +87,7 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
             placeholder={
               selectedModel
                 ? `Ask ${selectedModel} anything`
-                : "Select a sage or click a prompt to begin"
+                : "Pick a perspective or click a prompt at the top to begin..."
             }
             className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-sm sm:text-lg mr-2 sm:mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none font-light tracking-wide"
             disabled={isLoading || !selectedModel}

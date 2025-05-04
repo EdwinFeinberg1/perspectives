@@ -47,7 +47,7 @@ const Bubble: React.FC<BubbleProps> = ({
           role === "user"
             ? "bg-black/70 border-2 border-[#ddc39a]/40 text-[#ddc39a] rounded-[20px_20px_0_20px] ml-auto"
             : "bg-black/60 border-2 border-[#ddc39a]/20 text-[#ddc39a]/90 rounded-[20px_20px_20px_0]"
-        } mx-6 my-3 p-5 text-[16px] shadow-lg backdrop-blur-sm max-w-[85%] text-left`}
+        } mx-2 my-3 p-5 text-[16px] shadow-lg backdrop-blur-sm max-w-[92%] text-left`}
       >
         {role === "assistant" && model && (
           <div className="flex items-center mb-4 pb-2 border-b border-[#ddc39a]/20">
