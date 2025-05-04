@@ -71,7 +71,6 @@ const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
 
   // Fetch prompts when theme changes or on first mount
   useEffect(() => {
-    console.log("Fetching prompts for theme:", currentTheme);
     fetchPrompts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentTheme]);
@@ -79,7 +78,6 @@ const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
   const handlePromptClick = (model: NonNullable<ModelName>, prompt: string) => {
     // Set the selected model to only this model
     setSelectedModels([model]);
-    console.log(`Selected model from theme prompt: ${model}`);
 
     // Dispatch a global event so chat input can prefill. Delay slightly to
     // ensure the chat input footer has mounted if no model was previously selected.
@@ -106,7 +104,6 @@ const DynamicTheme: React.FC<DynamicThemeProps> = ({ setSelectedModels }) => {
     // Update the current theme with the selected subTheme
     setCurrentTheme(subTheme);
 
-    console.log(`Selected sub-theme: ${subTheme}`);
     setSelectedCategory(null);
     setShowPrompts(true);
 

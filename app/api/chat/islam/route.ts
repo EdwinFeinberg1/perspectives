@@ -22,7 +22,7 @@ const db = client.db(ASTRADB_API_ENDPOINT_ISLAM!, {
 export async function POST(req: Request) {
   const { messages } = await req.json();
   const latestMessage = messages.at(-1)?.content || "";
-  console.log("ImamGPT called");
+
   await logQuestion(latestMessage, "ImamGPT");
   // 1) Create an embedding for the user query
   const embeddingResponse = await openai.embeddings.create({
@@ -33,14 +33,14 @@ export async function POST(req: Request) {
   const fullVector = embeddingResponse.data[0].embedding;
   // Truncate to 1024 dimensions to match collection configuration
   const vector = fullVector.slice(0, 1024);
-  console.log("ImamGPT: Vector created");
+  
 
   // 2) Vector-search your unified collection
   let retrievedChunks: { ref: string; text: string }[] = [];
   try {
-    console.log("ImamGPT: Vector search started");
+   
     const collection = await db.collection(ASTRADB_DB_COLLECTION_ISLAM!);
-    console.log("ImamGPT: Vector search collection found");
+   
     const cursor = collection.find(/* no filter */ null, {
       sort: {
         $vector: vector,
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     });
     const docs = await cursor.toArray();
     retrievedChunks = docs.map((d) => ({ ref: d.ref, text: d.text }));
-    console.log("ImamGPT: Vector search completed");
+   
   } catch (err) {
     console.error("ImamGPT: Vector search failed:", err);
   }

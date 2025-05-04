@@ -7,7 +7,7 @@ interface BubbleProps {
     role: "user" | "assistant";
     followupSuggestions?: string[];
   };
-  model: any; // Make model prop flexible
+  model: string;
   onFollowupClick?: (question: string) => void;
   isLoading?: boolean;
 }
