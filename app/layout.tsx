@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { ConversationsProvider } from "./context/ConversationsContext";
 import { ThemeProvider } from "./features/theme";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -21,6 +22,7 @@ const RootLayout = ({ children }) => {
         <ConversationsProvider>
           <ThemeProvider>{children}</ThemeProvider>
         </ConversationsProvider>
+        <Analytics />
       </body>
     </html>
   );
