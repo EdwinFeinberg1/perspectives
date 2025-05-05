@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "Perspectives.ai",
+  title: "Sephira",
   description:
     "It's for the seeker, the skeptic, the believer, and the curious.",
 };
