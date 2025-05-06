@@ -2,11 +2,18 @@ import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { logQuestion } from "../../../../lib/logging";
 export const runtime = "edge";
+import OpenAI from "openai";
 
+const { OPENAI_API_KEY } = process.env;
+
+const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 export async function POST(req: Request) {
+ 
   try {
     const { messages, selectedModels } = await req.json();
     await logQuestion(messages[messages.length - 1].content, "CompareGPT");
+
+    
 
     if (!messages || messages.length === 0) {
       return new Response("No messages provided", { status: 400 });
@@ -18,6 +25,27 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+      // Moderate the user input
+   const moderationResponse = await openai.moderations.create({
+    input: messages[messages.length - 1].content,
+  });
+
+  // Check if content is flagged
+  const flagged = moderationResponse.results[0]?.flagged;
+  if (flagged) {
+    console.warn(
+      "RabbiGPT: Content moderation flagged input",
+      moderationResponse.results[0]
+    );
+    return new Response(
+      JSON.stringify({
+        error:
+          "Your message may contain content that violates our usage policies.",
+        flagged: true,
+      }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
 
     const modelResponses = messages.filter(
       (m) =>

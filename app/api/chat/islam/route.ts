@@ -24,6 +24,27 @@ export async function POST(req: Request) {
   const latestMessage = messages.at(-1)?.content || "";
 
   await logQuestion(latestMessage, "ImamGPT");
+   // Moderate the user input
+   const moderationResponse = await openai.moderations.create({
+    input: latestMessage,
+  });
+
+  // Check if content is flagged
+  const flagged = moderationResponse.results[0]?.flagged;
+  if (flagged) {
+    console.warn(
+      "ImamGPT: Content moderation flagged input",
+      moderationResponse.results[0]
+    );
+    return new Response(
+      JSON.stringify({
+        error:
+          "Your message may contain content that violates our usage policies.",
+        flagged: true,
+      }),
+      { status: 400, headers: { "Content-Type": "application/json" } }
+    );
+  }
   // 1) Create an embedding for the user query
   const embeddingResponse = await openai.embeddings.create({
     model: "text-embedding-3-small",
@@ -33,14 +54,12 @@ export async function POST(req: Request) {
   const fullVector = embeddingResponse.data[0].embedding;
   // Truncate to 1024 dimensions to match collection configuration
   const vector = fullVector.slice(0, 1024);
-  
 
   // 2) Vector-search your unified collection
   let retrievedChunks: { ref: string; text: string }[] = [];
   try {
-   
     const collection = await db.collection(ASTRADB_DB_COLLECTION_ISLAM!);
-   
+
     const cursor = collection.find(/* no filter */ null, {
       sort: {
         $vector: vector,
@@ -49,7 +68,6 @@ export async function POST(req: Request) {
     });
     const docs = await cursor.toArray();
     retrievedChunks = docs.map((d) => ({ ref: d.ref, text: d.text }));
-   
   } catch (err) {
     console.error("ImamGPT: Vector search failed:", err);
   }

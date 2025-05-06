@@ -41,15 +41,14 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasNotifiedFirst, setHasNotifiedFirst] = useState(false);
   const [hasPrompted, setHasPrompted] = useState(false);
+  
 
   // Log when hasPrompted changes
-  
 
   // Always initialize all chat hooks at the top level
   const rabbiChat = useChat({
     id: `single-${conversationId}-rabbigpt`,
     api: "/api/chat/judaism",
-   
   });
   const pastorChat = useChat({
     id: `single-${conversationId}-pastorgpt`,
@@ -123,14 +122,12 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
     if (!activeChat || selectedModels.length === 0 || isProcessing) return;
 
     if (!hasNotifiedFirst) {
-      
       onFirstMessage?.(selectedModels);
       setHasNotifiedFirst(true);
     }
 
     // Mark that a prompt has been submitted
     setHasPrompted(true);
-    
 
     // Set processing state SYNCHRONOUSLY before any async operations
     setIsProcessing(true);
@@ -384,8 +381,6 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
       </div>
     );
   };
-
-  
 
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
