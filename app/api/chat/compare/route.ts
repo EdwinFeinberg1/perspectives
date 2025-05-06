@@ -11,7 +11,15 @@ export async function POST(req: Request) {
  
   try {
     const { messages, selectedModels } = await req.json();
-    await logQuestion(messages[messages.length - 1].content, "CompareGPT");
+
+    
+    // Extract IP address from request headers
+    const forwardedFor = req.headers.get("x-forwarded-for");
+    const ipAddress = forwardedFor
+     ? forwardedFor.split(",")[0].trim()
+     : "not available";
+
+    await logQuestion(messages[messages.length - 1].content, "CompareGPT", ipAddress);
 
     
 
