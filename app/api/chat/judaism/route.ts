@@ -27,7 +27,14 @@ export async function POST(req: Request) {
 
     const latestMessage = messages.at(-1)?.content || "";
 
-    await logQuestion(latestMessage, "RabbiGPT");
+   
+     // Extract IP address from request headers
+     const forwardedFor = req.headers.get("x-forwarded-for");
+     const ipAddress = forwardedFor
+      ? forwardedFor.split(",")[0].trim()
+      : "not available";
+
+    await logQuestion(latestMessage, "RabbiGPT", ipAddress);
 
     // Moderate the user input
     const moderationResponse = await openai.moderations.create({
@@ -36,6 +43,7 @@ export async function POST(req: Request) {
 
     // Check if content is flagged
     const flagged = moderationResponse.results[0]?.flagged;
+
     if (flagged) {
       console.warn(
         "RabbiGPT: Content moderation flagged input",

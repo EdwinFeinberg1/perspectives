@@ -32,12 +32,19 @@ const db = client.db(ASTRA_DB_API_ENDPOINT_BUDDHA, {
 
 export async function POST(req: Request) {
   try {
+
     // 1) latest user message
     const { messages } = await req.json();
     const latestMessage: string =
       messages?.[messages.length - 1]?.content ?? "";
 
-    await logQuestion(latestMessage, "BuddhaGPT");
+      // Extract IP address from request headers
+     const forwardedFor = req.headers.get("x-forwarded-for");
+     const ipAddress = forwardedFor
+      ? forwardedFor.split(",")[0].trim()
+      : "not available";
+
+    await logQuestion(latestMessage, "BuddhaGPT", ipAddress);
 
       // Moderate the user input
    const moderationResponse = await openai.moderations.create({

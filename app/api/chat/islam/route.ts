@@ -22,8 +22,14 @@ const db = client.db(ASTRADB_API_ENDPOINT_ISLAM!, {
 export async function POST(req: Request) {
   const { messages } = await req.json();
   const latestMessage = messages.at(-1)?.content || "";
+  // Extract IP address from request headers
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const ipAddress = forwardedFor
+   ? forwardedFor.split(",")[0].trim()
+   : "not available";
 
-  await logQuestion(latestMessage, "ImamGPT");
+
+  await logQuestion(latestMessage, "ImamGPT", ipAddress);
    // Moderate the user input
    const moderationResponse = await openai.moderations.create({
     input: latestMessage,
