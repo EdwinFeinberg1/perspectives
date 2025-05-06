@@ -110,7 +110,6 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
 
   const sendPrompt = (p: string) => {
     if (selectedModel) {
-     
       append({ id: crypto.randomUUID(), role: "user", content: p });
     }
   };
@@ -127,10 +126,8 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
           handleInputChange={() => {}}
           handleSubmit={(e) => {
             e.preventDefault();
-           
           }}
           onModelSelect={(model) => {
-            
             if (model) {
               const modelName = model as ModelName;
               onFirstMessage?.([modelName]);
@@ -150,7 +147,6 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
         setComparisonData={setComparisonData}
         onFirstMessage={onFirstMessage}
         updateSelectedModels={(models) => {
-          
           // Only trigger onFirstMessage if there's an actual change
           if (selectedModels.join(",") !== models.join(",")) {
             // This will update the models in the parent component
@@ -168,7 +164,6 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
 
       <div className="h-full overflow-y-auto space-y-4 -sm pb-32 w-full">
         {messages.map((m, index) => {
-          
           return (
             <Bubble
               key={m.id || index}
@@ -202,11 +197,9 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
         isLoading={isLoading}
         handleInputChange={handleInputChange}
         handleSubmit={(e) => {
-          
           handleSubmit(e);
         }}
         onModelSelect={(model) => {
-          
           if (
             model &&
             (selectedModels.length !== 1 || selectedModel !== model)

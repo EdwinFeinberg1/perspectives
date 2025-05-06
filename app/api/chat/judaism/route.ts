@@ -21,12 +21,36 @@ const db = client.db(ASTRADB_API_ENDPOINT_JEWISH!, {
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 export async function POST(req: Request) {
+  //moderate the prompt that users submit.
   try {
     const { messages } = await req.json();
-    
+
     const latestMessage = messages.at(-1)?.content || "";
-    
+
     await logQuestion(latestMessage, "RabbiGPT");
+
+    // Moderate the user input
+    const moderationResponse = await openai.moderations.create({
+      input: latestMessage,
+    });
+
+    // Check if content is flagged
+    const flagged = moderationResponse.results[0]?.flagged;
+    if (flagged) {
+      console.warn(
+        "RabbiGPT: Content moderation flagged input",
+        moderationResponse.results[0]
+      );
+      return new Response(
+        JSON.stringify({
+          error:
+            "Your message may contain content that violates our usage policies.",
+          flagged: true,
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
+
     // 1) Create an embedding for the user query
     const embeddingResponse = await openai.embeddings.create({
       model: "text-embedding-3-small",
@@ -39,12 +63,11 @@ export async function POST(req: Request) {
 
     let retrievedChunks: { ref: string; text: string }[] = [];
     try {
-      
       if (!db) {
         throw new Error("Database client is not initialized");
       }
       const collection = await db.collection(ASTRADB_DB_COLLECTION_JEWISH!);
-     
+
       const cursor = collection.find(/* no filter */ null, {
         sort: {
           $vector: vector,
@@ -53,11 +76,10 @@ export async function POST(req: Request) {
       });
       const docs = await cursor.toArray();
       retrievedChunks = docs.map((d) => ({ ref: d.ref, text: d.text }));
-     
     } catch (err) {
       console.error("RabbiGPT: Vector search failed:", err);
       // Provide a fallback if vector search fails
-      
+
       retrievedChunks = [
         {
           ref: "Fallback",
