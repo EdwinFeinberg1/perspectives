@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardHeader, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "./ThemeContext";
@@ -25,11 +25,13 @@ interface ThemePopoverContentProps {
   selectedModels?: ModelName[];
   setSelectedModels?: (models: ModelName[]) => void;
   isMobileSheet?: boolean;
+  onShowPromptsChange?: (showPrompts: boolean) => void;
 }
 
 const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
   setSelectedModels,
   isMobileSheet = false,
+  onShowPromptsChange,
 }) => {
   const params = useParams();
   const { updateConversation } = useConversations();
@@ -50,6 +52,13 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
   const [prompts, setPrompts] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [showPrompts, setShowPrompts] = useState(false);
+
+  // Notify parent when showPrompts changes
+  useEffect(() => {
+    if (onShowPromptsChange) {
+      onShowPromptsChange(showPrompts);
+    }
+  }, [showPrompts, onShowPromptsChange]);
 
   const fetchPrompts = async () => {
     setIsLoading(true);
@@ -86,7 +95,7 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     fetchPrompts();
   }, [currentTheme]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -137,6 +146,10 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
     // Prompts will be fetched automatically due to the useEffect that watches currentTheme
   };
 
+  const toggleShowPrompts = () => {
+    setShowPrompts(!showPrompts);
+  };
+
   return (
     <div
       className={`space-y-3 sm:space-y-6 ${
@@ -154,7 +167,7 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
                      hover:border-[#e6d3a3] hover:bg-gradient-to-b hover:from-black/80 hover:to-[#e6d3a3]/10
                      hover:shadow-[0_0_15px_rgba(230,211,163,0.4)] hover:scale-[1.02]
                      active:scale-[0.98]"
-            onClick={() => setShowPrompts(!showPrompts)}
+            onClick={toggleShowPrompts}
           >
             {showPrompts ? "Browse Themes" : "Show Prompts"}
           </Button>
@@ -256,7 +269,7 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
           <div
             className={`grid ${
               isMobileSheet ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"
-            } gap-3 sm:gap-5 max-h-[300px] sm:max-h-[400px] overflow-y-auto pr-1 sm:pr-2 pb-1 sm:pb-2`}
+            } gap-3 sm:gap-5 overflow-y-auto`}
           >
             {ALL_MODELS.map((model) => (
               <Card

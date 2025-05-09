@@ -25,6 +25,7 @@ const Header: React.FC = () => {
   const [subHeaderExpanded, setSubHeaderExpanded] = useState(false);
   const [subHeaderHeight, setSubHeaderHeight] = useState(0);
   const [overlayTop, setOverlayTop] = useState("0px");
+  const [showingPrompts, setShowingPrompts] = useState(false);
   const subHeaderRef = React.useRef<HTMLDivElement>(null);
 
   // Calculate the header offset for the overlay
@@ -46,6 +47,27 @@ const Header: React.FC = () => {
   useEffect(() => {
     setOverlayTop(calculateHeaderOffset());
   }, [subHeaderHeight, calculateHeaderOffset]);
+
+  // Handle showPrompts change from ThemePopoverContent
+  const handleShowPromptsChange = useCallback(
+    (isShowingPrompts: boolean) => {
+      setShowingPrompts(isShowingPrompts);
+
+      // Force remeasure the subheader after state update
+      setTimeout(() => {
+        if (subHeaderRef.current && subHeaderExpanded) {
+          const height = subHeaderRef.current.scrollHeight;
+          setSubHeaderHeight(height);
+          document.documentElement.style.setProperty(
+            "--theme-subheader-height",
+            `${height}px`
+          );
+          setOverlayTop(calculateHeaderOffset());
+        }
+      }, 10);
+    },
+    [subHeaderExpanded, calculateHeaderOffset]
+  );
 
   // Measure subheader height when expanded
   useEffect(() => {
@@ -131,16 +153,16 @@ const Header: React.FC = () => {
                   aria-expanded={subHeaderExpanded}
                   aria-controls="theme-subheader"
                 >
-                  <Sparkles size={18} className="relative z-10" />
+                  <Sparkles size={14} className="bottom-1 relative z-10 " />
                   {subHeaderExpanded ? (
                     <ChevronUp
-                      size={14}
-                      className="absolute bottom-1 right-1 text-[#e6d3a3]/70"
+                      size={18}
+                      className="absolute bottom-1 right--1 text-[#e6d3a3]/70"
                     />
                   ) : (
                     <ChevronDown
-                      size={14}
-                      className="absolute bottom-1 right-1 text-[#e6d3a3]/70"
+                      size={18}
+                      className="absolute bottom-1 right--1 text-[#e6d3a3]/70"
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-tr from-[#e6d3a3]/5 to-transparent opacity-70 rounded-full" />
@@ -243,11 +265,15 @@ const Header: React.FC = () => {
             ref={subHeaderRef}
             className={`relative border-t border-[#e6d3a3]/10 transition-all duration-500 ease-in-out ${
               subHeaderExpanded
-                ? "max-h-[400px] opacity-100 pointer-events-auto"
+                ? "opacity-100 pointer-events-auto"
                 : "max-h-0 opacity-0 pointer-events-none overflow-hidden"
             }`}
             style={{
-              maxHeight: subHeaderExpanded ? `${subHeaderHeight}px` : "0px",
+              maxHeight: subHeaderExpanded
+                ? showingPrompts
+                  ? "700px" // More space when showing prompts
+                  : `${subHeaderHeight}px`
+                : "0px",
             }}
           >
             <div className="py-3 px-3 sm:py-4 sm:px-4 md:px-8">
@@ -279,8 +305,15 @@ const Header: React.FC = () => {
                 Select a category to explore themes or view prompts related to
                 the current theme
               </div>
-              <div className="max-h-[300px] overflow-y-auto">
-                <ThemePopoverContent isMobileSheet={false} />
+              <div
+                className={`${
+                  showingPrompts ? "max-h-[550px]" : "max-h-[300px]"
+                } overflow-y-auto transition-all duration-300`}
+              >
+                <ThemePopoverContent
+                  isMobileSheet={false}
+                  onShowPromptsChange={handleShowPromptsChange}
+                />
               </div>
             </div>
           </div>

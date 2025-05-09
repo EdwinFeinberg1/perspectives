@@ -68,10 +68,10 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
 
   return (
     <CardFooter className="flex flex-col p-0 fixed bottom-[60px] left-0 right-0 z-20 py-4 sm:py-8 sm:px-4">
-      <div className="w-full max-w-3xl mx-auto px-4 sm:px-8 flex flex-col items-center">
+      <div className="w-full max-w-3xl mx-auto px-6 sm:px-8 flex flex-col items-center">
         <form
           onSubmit={handleSubmit}
-          className={`flex items-center w-full px-4 py-2 sm:px-6 sm:py-4 rounded-2xl 
+          className={`flex items-center w-[92%] sm:w-full px-3 sm:px-6 py-2.5 sm:py-4 rounded-2xl 
             ${isFocused ? "bg-black" : "bg-black/90"} 
             border-2 ${
               isFocused ? "border-[#e6d3a3]/80" : "border-[#e6d3a3]/50"
@@ -89,7 +89,7 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
                 ? `Ask ${selectedModel}...`
                 : "Select a perspective to begin..."
             }
-            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-sm sm:text-lg mr-2 sm:mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none font-light tracking-wide min-h-[40px] py-1 sm:py-2 sm:px-8"
+            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-sm sm:text-lg mr-2 sm:mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none font-light tracking-wide min-h-[40px] py-1 sm:py-2 px-2 sm:px-8"
             disabled={isLoading || !selectedModel}
           />
           <Button
