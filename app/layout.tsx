@@ -25,7 +25,7 @@ export const viewport = {
 const RootLayout = ({ children }) => {
   return (
     <html lang="en" className={`${inter.variable} font-sans h-full`}>
-      <body className="min-h-screen w-full bg-slate-950 flex flex-col overflow-hidden">
+      <body className="min-h-screen w-full bg-slate-950 flex flex-col overflow-hidden overscroll-none">
         <ConversationsProvider>
           <ThemeProvider>
             <SafeArea>{children}</SafeArea>

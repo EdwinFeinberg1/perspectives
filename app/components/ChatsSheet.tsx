@@ -106,7 +106,7 @@ const ChatsSheet: React.FC = () => {
 
       <SheetContent
         side="left"
-        className="bg-black/95 border-r border-[#ddc39a]/30 backdrop-blur-xl w-[320px] pt-20 p-0 shadow-[5px_0_30px_rgba(0,0,0,0.7)]"
+        className="bg-black/95 border-r border-[#ddc39a]/30 backdrop-blur-xl w-[320px] pt-[calc(20px+var(--safe-area-top))] pl-[var(--safe-area-left)] p-0 shadow-[5px_0_30px_rgba(0,0,0,0.7)]"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 pointer-events-none opacity-40" />
 
@@ -285,7 +285,7 @@ const ChatsSheet: React.FC = () => {
         </div>
         <button
           onClick={onCreate}
-          className="flex items-center justify-center gap-2 text-[#e6d3a3] py-5 px-6 border-t border-[#e6d3a3]/20 hover:bg-[#e6d3a3]/10 transition-all text-sm w-full fixed bottom-0 left-0 z-10 bg-gradient-to-t from-black via-black/95 to-transparent backdrop-blur-md shadow-[0_-10px_30px_rgba(0,0,0,0.5)] group"
+          className="flex items-center justify-center gap-2 text-[#e6d3a3] py-5 px-6 border-t border-[#e6d3a3]/20 hover:bg-[#e6d3a3]/10 transition-all text-sm w-full sticky bottom-[env(safe-area-inset-bottom)] left-0 z-10 bg-gradient-to-t from-black via-black/95 to-transparent backdrop-blur-md shadow-[0_-10px_30px_rgba(0,0,0,0.5)] group"
           style={{ width: "320px" }}
         >
           <div className="relative">

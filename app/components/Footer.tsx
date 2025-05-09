@@ -6,7 +6,7 @@ import { Heart } from "lucide-react";
 
 const Footer: React.FC = () => {
   return (
-    <footer className="fixed bottom-0 left-0 w-full z-40">
+    <footer className="sticky bottom-[env(safe-area-inset-bottom)] left-0 w-full z-40">
       <div className="mx-auto max-w-[1400px] relative mb-2 px-4 sm:px-6">
         {/* Main footer content with no background container */}
         <div className="relative h-[60px] px-6 md:px-8 flex items-center justify-between">

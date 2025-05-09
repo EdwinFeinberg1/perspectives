@@ -67,7 +67,7 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
   }, [handleInputChange, onModelSelect]); // Add onModelSelect as a dependency
 
   return (
-    <CardFooter className="flex flex-col p-0 fixed bottom-[60px] left-0 right-0 z-20 py-4 sm:py-8 sm:px-4">
+    <CardFooter className="flex flex-col p-0 sticky bottom-[env(safe-area-inset-bottom)] left-0 right-0 z-20 py-4 sm:py-8 sm:px-4">
       <div className="w-full max-w-3xl mx-auto px-6 sm:px-8 flex flex-col items-center">
         <form
           onSubmit={handleSubmit}
