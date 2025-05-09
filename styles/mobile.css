@@ -1,3 +1,42 @@
+/* Native iOS feel enhancements */
+/* Smooth scrolling and momentum for all scrollable containers */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* All scrollable elements get momentum scrolling */
+.overflow-y-auto,
+.overflow-x-auto,
+.overflow-scroll,
+div[class*="overflow-y"],
+div[class*="overflow-x"] {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+/* Dynamic Island & Notch padding for header elements */
+header, 
+.header, 
+[class*="header"],
+nav,
+.nav,
+[class*="nav"] {
+  padding-top: max(16px, var(--safe-area-top));
+}
+
+/* Mobile first approach for form controls */
+input, textarea {
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+@media (min-width: 480px) {
+  input, textarea {
+    font-size: 14px;
+  }
+}
+
 /* Mobile viewport optimizations */
 @media (max-width: 400px) {
   /* Reduce side margins */
