@@ -108,6 +108,28 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
     }
   }, [error]);
 
+  // Listen for direct prompt submission events
+  useEffect(() => {
+    const handleDirectPrompt = (e: Event) => {
+      const custom = e as CustomEvent<{ prompt: string; model?: string }>;
+      if (custom?.detail?.prompt) {
+        if (custom?.detail?.model && selectedModel !== custom.detail.model) {
+          // If the model is different, we need to update the selected model first
+          const modelName = custom.detail.model as ModelName;
+          onFirstMessage?.([modelName]);
+          // The prompt will be sent once the model is updated
+        } else if (selectedModel) {
+          // If the model is the same or not specified, send the prompt directly
+          sendPrompt(custom.detail.prompt);
+        }
+      }
+    };
+
+    window.addEventListener("sendPromptDirectly", handleDirectPrompt);
+    return () =>
+      window.removeEventListener("sendPromptDirectly", handleDirectPrompt);
+  }, [selectedModel, onFirstMessage]);
+
   const sendPrompt = (p: string) => {
     if (selectedModel) {
       append({ id: crypto.randomUUID(), role: "user", content: p });
@@ -160,9 +182,8 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   // Single model mode
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
-      {/* Add test button at top */}
 
-      <div className="h-full overflow-y-auto space-y-4 -sm pb-32 w-full">
+      <div className="h-full overflow-y-auto space-y-4 pb-24 w-full">
         {messages.map((m, index) => {
           return (
             <Bubble

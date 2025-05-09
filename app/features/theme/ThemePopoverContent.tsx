@@ -97,10 +97,10 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
     // Automatically select just this model, replacing any currently selected models
     updateSelectedModels([model]);
 
-    // Dispatch a global event so chat input can prefill
+    // Dispatch a custom event to directly send the prompt to the model
     setTimeout(() => {
       window.dispatchEvent(
-        new CustomEvent("prefillPrompt", {
+        new CustomEvent("sendPromptDirectly", {
           detail: {
             prompt,
             model,
@@ -109,11 +109,10 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
       );
     }, 150);
 
-    // If in mobile view, close the sheet
-    if (isMobileSheet) {
-      // Dispatch a custom event to close the sheet
-      window.dispatchEvent(new CustomEvent("closeThemeSheet"));
-    }
+    // Always close the popover/sheet regardless of mobile or desktop
+    window.dispatchEvent(new CustomEvent("closeThemeSheet"));
+    // Also dispatch a general close event for any popover
+    window.dispatchEvent(new CustomEvent("closeThemePopover"));
 
     // Optionally, scroll to chat section
     const chatbotSection = document.getElementById("chatbot-section");

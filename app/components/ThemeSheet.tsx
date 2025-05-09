@@ -17,6 +17,17 @@ const ThemeSheet: React.FC = () => {
   const { currentTheme, selectNewTheme } = useTheme();
   const [open, setOpen] = useState(false);
 
+  // Add event listener to close the sheet programmatically
+  React.useEffect(() => {
+    const handleCloseSheet = () => {
+      setOpen(false);
+    };
+
+    window.addEventListener("closeThemeSheet", handleCloseSheet);
+    return () =>
+      window.removeEventListener("closeThemeSheet", handleCloseSheet);
+  }, []);
+
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>

@@ -67,11 +67,11 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
   }, [handleInputChange, onModelSelect]); // Add onModelSelect as a dependency
 
   return (
-    <CardFooter className="flex flex-col p-0 fixed bottom-[60px] left-0 right-0 z-20 py-8 py-4 sm:py-8">
-      <div className="w-full max-w-3xl mx-auto px-2 sm:px-4 flex flex-col items-center">
+    <CardFooter className="flex flex-col p-0 fixed bottom-[60px] left-0 right-0 z-20 py-4 sm:py-8 sm:px-4">
+      <div className="w-full max-w-3xl mx-auto px-4 sm:px-8 flex flex-col items-center">
         <form
           onSubmit={handleSubmit}
-          className={`flex items-center w-full px-3 py-2 sm:px-6 sm:py-3 rounded-2xl 
+          className={`flex items-center w-full px-4 py-2 sm:px-6 sm:py-4 rounded-2xl 
             ${isFocused ? "bg-black" : "bg-black/90"} 
             border-2 ${
               isFocused ? "border-[#e6d3a3]/80" : "border-[#e6d3a3]/50"
@@ -86,27 +86,23 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
             onBlur={() => setIsFocused(false)}
             placeholder={
               selectedModel
-                ? `Ask ${selectedModel} anything`
-                : "Pick a perspective or click a prompt at the top to begin..."
+                ? `Ask ${selectedModel}...`
+                : "Select a perspective to begin..."
             }
-            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-sm sm:text-lg mr-2 sm:mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none font-light tracking-wide"
+            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-sm sm:text-lg mr-2 sm:mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none font-light tracking-wide min-h-[40px] py-1 sm:py-2 sm:px-8"
             disabled={isLoading || !selectedModel}
           />
           <Button
             type="submit"
             className={`
-              bg-transparent p-0 h-10 w-10 sm:h-12 sm:w-12 flex items-center justify-center
-              transition-all duration-300 transform hover:scale-110 active:scale-95
-              hover:shadow-none border-none text-[#f0e4c3] ${
-                isLoading || !selectedModel ? "opacity-60" : "opacity-100"
-              }`}
-            size="icon"
+              p-2 sm:p-3 min-w-[35px] min-h-[30px] flex items-center justify-center
+              bg-black/50 rounded-full border border-[#e6d3a3]/30 text-[#f0e4c3]
+              hover:bg-black/80 hover:border-[#e6d3a3]/60 transition-all duration-300 
+              hover:shadow-[0_0_15px_rgba(230,211,163,0.3)] hover:scale-105
+              ${isLoading || !selectedModel ? "opacity-60" : "opacity-100"}`}
             disabled={isLoading || !selectedModel}
           >
-            <Send
-              size={20}
-              className="sm:size-26 drop-shadow-md hover:drop-shadow-lg"
-            />
+            <Send size={18} className="drop-shadow-md sm:size-20" />
           </Button>
         </form>
       </div>

@@ -115,7 +115,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
         </button>
         <div
           className={`overflow-hidden transition-all ${
-            isOpen ? "max-h-96 py-3" : "max-h-0"
+            isOpen ? "max-h-[1000px] py-3" : "max-h-0"
           }`}
         >
           <div className="px-4 text-gray-400 text-sm">{children}</div>
