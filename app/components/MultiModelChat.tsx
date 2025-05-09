@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { useChat, Message } from "ai/react";
 import ReactMarkdown from "react-markdown";
 import Bubble from "./Chatbot/Bubble";
@@ -41,7 +41,6 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [hasNotifiedFirst, setHasNotifiedFirst] = useState(false);
   const [hasPrompted, setHasPrompted] = useState(false);
-  
 
   // Log when hasPrompted changes
 
@@ -381,6 +380,161 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
       </div>
     );
   };
+
+  // Effect to watch chat message count changes
+  useEffect(() => {
+    // The displayMessages variable will be recalculated on re-render
+    // No need to call any function here
+  }, [
+    selectedModels,
+    ...Object.values(modelChats).map((chat) => chat?.messages?.length || 0),
+    comparisonChat?.messages?.length || 0,
+  ]);
+
+  // Listen for direct prompt submission events
+  useEffect(() => {
+    const handleDirectPrompt = (e: Event) => {
+      const custom = e as CustomEvent<{ prompt: string; model?: string }>;
+      if (custom?.detail?.prompt && !isProcessing) {
+        if (custom?.detail?.model) {
+          // If a specific model is requested, update the selected models
+          const modelName = custom.detail.model as ModelName;
+
+          // Only update if needed
+          if (selectedModels.length !== 1 || selectedModels[0] !== modelName) {
+            updateSelectedModels([modelName]);
+          }
+
+          // Submit with a small delay to allow state to update
+          setTimeout(() => {
+            handleSubmit(custom.detail.prompt);
+          }, 200);
+        } else {
+          // If no specific model is requested, just submit to currently selected models
+          handleSubmit(custom.detail.prompt);
+        }
+      }
+    };
+
+    window.addEventListener("sendPromptDirectly", handleDirectPrompt);
+    return () =>
+      window.removeEventListener("sendPromptDirectly", handleDirectPrompt);
+  }, [selectedModels, isProcessing]);
+
+  // Render empty container when no model is selected
+  if (selectedModels.length === 0) {
+    return (
+      <div className="h-full flex flex-col overflow-hidden relative">
+        <div className="h-full overflow-y-auto space-y-4 pb-32 w-full flex flex-col items-center">
+          <div className="w-full max-w-3xl mx-auto px-2 sm:px-4">
+            <div className="flex flex-col items-center justify-center mt-0">
+              {/* Initial prompt suggestions removed */}
+            </div>
+          </div>
+        </div>
+
+        <ChatInputFooter
+          selectedModel={null}
+          input={""}
+          isLoading={false}
+          handleInputChange={() => {}}
+          onModelSelect={(model) => {
+            if (model && typeof updateSelectedModels === "function") {
+              // Update the selected models array to only include this model
+              const modelName = model as ModelName;
+              if (
+                selectedModels.length !== 1 ||
+                selectedModels[0] !== modelName
+              ) {
+                updateSelectedModels([modelName]);
+              }
+            }
+          }}
+          handleSubmit={(e) => {
+            e.preventDefault();
+            if (activeChat) {
+              // Force loading animation to appear immediately
+              const loadingContainer = document.createElement("div");
+              loadingContainer.className = "flex justify-center mb-4 mt-2";
+              loadingContainer.id = "instant-loading";
+
+              const loader = document.createElement("div");
+              loader.className = "loader";
+
+              // Add text element with the same style as in LoadingBubble
+              const text = document.createElement("p");
+              text.className = "text-[#ddc39a] text-sm mt-2";
+              text.textContent = "Letting the wise ones chew on this...";
+
+              // Create a wrapper for loader and text
+              const wrapper = document.createElement("div");
+              wrapper.className = "flex flex-col items-center py-4";
+              wrapper.appendChild(loader);
+              wrapper.appendChild(text);
+
+              loadingContainer.appendChild(wrapper);
+
+              // Find chat container and append loading animation
+              const chatContainer = document.querySelector(
+                ".h-full.overflow-y-auto"
+              );
+              if (chatContainer) {
+                chatContainer.appendChild(loadingContainer);
+                // Scroll to show loading animation
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+
+                // Set up a mutation observer to watch for the appearance of the response bubble
+                const observer = new MutationObserver((mutations) => {
+                  // Look for added nodes that might be response bubbles
+                  for (const mutation of mutations) {
+                    if (
+                      mutation.type === "childList" &&
+                      mutation.addedNodes.length > 0
+                    ) {
+                      // Check if any of the added nodes is a response bubble (markdown-content class)
+                      const addedResponseBubble = Array.from(
+                        mutation.addedNodes
+                      ).some((node) => {
+                        if (node instanceof HTMLElement) {
+                          // Check if the node itself or any of its children has the markdown-content class
+                          return (
+                            node.querySelector(".markdown-content") ||
+                            node.classList.contains("markdown-content")
+                          );
+                        }
+                        return false;
+                      });
+
+                      if (addedResponseBubble) {
+                        // Remove the instant loading animation once a response is detected
+                        const instantLoader =
+                          document.getElementById("instant-loading");
+                        if (instantLoader) {
+                          instantLoader.remove();
+                        }
+                        // Disconnect the observer as we no longer need it
+                        observer.disconnect();
+                        break;
+                      }
+                    }
+                  }
+                });
+
+                // Start observing the chat container for changes
+                observer.observe(chatContainer, {
+                  childList: true,
+                  subtree: true,
+                });
+              }
+
+              // Now submit the message
+              handleSubmit(activeChat.input);
+            }
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="h-full flex flex-col overflow-hidden relative">

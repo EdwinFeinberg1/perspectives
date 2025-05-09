@@ -91,7 +91,7 @@ const PersonalitiesSection = forwardRef<
   return (
     <section
       ref={ref}
-      className="px-4 sm:px-[5%] md:px-[7%] bg-gradient-to-b from-transparent to-black/40 mb-5 sm:mb-10 relative"
+      className="px-4 sm:px-[5%] md:px-[7%]  mb-5 sm:mb-10 relative"
       id="personalities-section"
     >
       {/* Stars background */}
