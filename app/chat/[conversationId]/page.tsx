@@ -17,9 +17,11 @@ export default function ChatPage() {
   const conversationId =
     typeof params.conversationId === "string" ? params.conversationId : "";
   const [messagesSent, setMessagesSent] = useState(false);
+  const [headerOffset, setHeaderOffset] = useState(120);
 
   const chatbotRef = useRef<HTMLDivElement>(null);
   const personalitiesRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const { conversations, updateConversation, createConversation } =
     useConversations();
@@ -35,6 +37,47 @@ export default function ChatPage() {
     },
     similarities: [],
   });
+
+  // Listen for theme subheader toggle events
+  useEffect(() => {
+    const handleThemeSubheaderToggle = (e: CustomEvent) => {
+      const { expanded } = e.detail;
+
+      // Get the subheader height from CSS variable
+      const subheaderHeight = parseInt(
+        getComputedStyle(document.documentElement).getPropertyValue(
+          "--theme-subheader-height"
+        ) || "0"
+      );
+
+      // Base header offset (with no expanded subheader)
+      const baseOffset = 120;
+
+      // Set new offset with a slight delay to match animations
+      if (expanded) {
+        // If expanding, update immediately to avoid content jumps
+        setHeaderOffset(baseOffset + subheaderHeight);
+      } else {
+        // If collapsing, wait for animation to complete
+        setTimeout(() => {
+          setHeaderOffset(baseOffset);
+        }, 300);
+      }
+    };
+
+    // Add event listener with type assertion
+    window.addEventListener(
+      "themeSubheaderToggled",
+      handleThemeSubheaderToggle as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        "themeSubheaderToggled",
+        handleThemeSubheaderToggle as EventListener
+      );
+    };
+  }, []);
 
   // If conversation not found, create a new one and redirect
   useEffect(() => {
@@ -80,10 +123,11 @@ export default function ChatPage() {
 
         {/* Main scrollable content area between header and footer */}
         <div
-          className="flex-1 overflow-y-auto"
+          ref={contentRef}
+          className="flex-1 overflow-y-auto transition-all duration-300"
           style={{
             height: "calc(100vh - 170px)",
-            marginTop: "100px",
+            marginTop: `${headerOffset}px`,
             marginBottom: "70px",
           }}
         >
