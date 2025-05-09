@@ -37,25 +37,29 @@ const PersonalityCard: React.FC<PersonalityCardProps> = ({
 
   return (
     <Card className={cardClassName} onClick={() => onClick(model)}>
-      <div className="h-[160px] relative flex items-center justify-center overflow-hidden pt-2">
+      <div className="h-[120px] sm:h-[160px] relative flex items-center justify-center overflow-hidden pt-2">
         <Image
           src={image}
           alt={title}
           width={140}
           height={140}
-          className="object-contain object-center w-auto h-auto max-h-[140px]"
+          className="object-contain object-center w-auto h-auto max-h-[100px] sm:max-h-[140px]"
           priority
         />
       </div>
-      <CardHeader className="text-[#f0e4c3] flex flex-row items-center gap-2 pt-3 pb-1 text-left">
-        <span className="text-lg">{emoji}</span>
-        <span className="text-base font-medium">{title}</span>
+      <CardHeader className="text-[#f0e4c3] flex flex-row items-center gap-2 pt-2 sm:pt-3 pb-0 sm:pb-1 text-left">
+        <span className="text-base sm:text-lg">{emoji}</span>
+        <span className="text-sm sm:text-base font-medium">{title}</span>
         {isSelected && (
-          <span className="ml-auto text-xs opacity-80">Selected</span>
+          <span className="ml-auto text-[10px] sm:text-xs opacity-80">
+            Selected
+          </span>
         )}
       </CardHeader>
-      <CardContent className="pt-1 pb-4 text-left">
-        <p className="text-sm text-[#e6d3a3] leading-tight">{description}</p>
+      <CardContent className="pt-1 pb-2 sm:pb-4 text-left">
+        <p className="text-xs sm:text-sm text-[#e6d3a3] leading-tight">
+          {description}
+        </p>
       </CardContent>
     </Card>
   );
@@ -91,7 +95,7 @@ const PersonalitiesSection = forwardRef<
   return (
     <section
       ref={ref}
-      className="px-4 sm:px-[5%] md:px-[7%]  mb-5 sm:mb-10 relative"
+      className="px-2 xs:px-4 sm:px-[5%] md:px-[7%] mb-5 sm:mb-10 relative"
       id="personalities-section"
     >
       {/* Stars background */}
@@ -112,7 +116,7 @@ const PersonalitiesSection = forwardRef<
       />
 
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 flex-wrap relative z-10 py-20">
+        <div className="grid grid-cols-2 gap-3 xs:gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4 flex-wrap relative z-10 py-10 sm:py-20">
           {PERSONALITIES.map((personality: Personality) => (
             <PersonalityCard
               key={personality.model}
