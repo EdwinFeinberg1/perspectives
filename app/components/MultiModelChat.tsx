@@ -42,24 +42,74 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
   const [hasNotifiedFirst, setHasNotifiedFirst] = useState(false);
   const [hasPrompted, setHasPrompted] = useState(false);
 
-  // Log when hasPrompted changes
+  // Add state to track model selection changes
+  const [pendingModelChange, setPendingModelChange] =
+    useState<ModelName | null>(null);
+
+  // Add state to track which model responded to each message
+  const [messageModels, setMessageModels] = useState<Record<string, ModelName>>({});
+
+  // Apply model change when selectedModels changes
+  useEffect(() => {
+    // Clear any pending model change when selectedModels is updated
+    setPendingModelChange(null);
+  }, [selectedModels]);
 
   // Always initialize all chat hooks at the top level
   const rabbiChat = useChat({
     id: `single-${conversationId}-rabbigpt`,
     api: "/api/chat/judaism",
+    onFinish: (message) => {
+      // Track which model generated this response
+      if (message.id) {
+        setMessageModels((prev) => ({
+          ...prev,
+          [message.id]: "RabbiGPT"
+        }));
+      }
+    }
   });
+  
   const pastorChat = useChat({
     id: `single-${conversationId}-pastorgpt`,
     api: "/api/chat/christianity",
+    onFinish: (message) => {
+      // Track which model generated this response
+      if (message.id) {
+        setMessageModels((prev) => ({
+          ...prev,
+          [message.id]: "PastorGPT"
+        }));
+      }
+    }
   });
+  
   const buddhaChat = useChat({
     id: `single-${conversationId}-buddhagpt`,
     api: "/api/chat/buddha",
+    onFinish: (message) => {
+      // Track which model generated this response
+      if (message.id) {
+        setMessageModels((prev) => ({
+          ...prev,
+          [message.id]: "BuddhaGPT"
+        }));
+      }
+    }
   });
+  
   const imamChat = useChat({
     id: `single-${conversationId}-imamgpt`,
     api: "/api/chat/islam",
+    onFinish: (message) => {
+      // Track which model generated this response
+      if (message.id) {
+        setMessageModels((prev) => ({
+          ...prev,
+          [message.id]: "ImamGPT"
+        }));
+      }
+    }
   });
 
   // Initialize comparison chat with custom handler
@@ -75,6 +125,14 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
     body: { selectedModels },
     onFinish: (message) => {
       try {
+        // Track which model generated this response
+        if (message.id) {
+          setMessageModels((prev) => ({
+            ...prev,
+            [message.id]: "ComparisonGPT"
+          }));
+        }
+        
         // Extract JSON data from the response
         const jsonMatch = message.content.match(/```json\s*([\s\S]*?)\s*```/);
 
@@ -108,112 +166,18 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
   // Determine which chat instance to use based on selection mode
   const activeChat = useMemo(() => {
+    // If there's a pending model change, prioritize it
+    if (pendingModelChange) {
+      return modelChats[pendingModelChange] || null;
+    }
+
     if (selectedModels.length > 1) {
       return comparisonChat;
     } else if (selectedModels.length === 1 && selectedModels[0]) {
       return modelChats[selectedModels[0]] || null;
     }
     return null;
-  }, [selectedModels, comparisonChat, modelChats]);
-
-  // Handle submitting a prompt
-  const handleSubmit = async (prompt: string) => {
-    if (!activeChat || selectedModels.length === 0 || isProcessing) return;
-
-    if (!hasNotifiedFirst) {
-      onFirstMessage?.(selectedModels);
-      setHasNotifiedFirst(true);
-    }
-
-    // Mark that a prompt has been submitted
-    setHasPrompted(true);
-
-    // Set processing state SYNCHRONOUSLY before any async operations
-    setIsProcessing(true);
-
-    try {
-      // Create user message with proper typing
-      const userMessage: Message = {
-        id: crypto.randomUUID(),
-        role: "user",
-        content: prompt,
-      };
-
-      // Run in a microtask to allow UI to update first
-      await Promise.resolve();
-
-      // In multi-select mode, submit to individual models first, then to comparison
-      if (selectedModels.length > 1) {
-        // Submit to each selected model first
-        for (const model of selectedModels) {
-          if (!model) continue;
-          if (modelChats[model]) {
-            await modelChats[model]?.append(userMessage);
-          }
-        }
-
-        // Then submit to comparison API
-        await comparisonChat.append(userMessage);
-      } else if (selectedModels[0]) {
-        // In single-select mode, just submit to the selected model
-        const selectedModel = selectedModels[0];
-        if (modelChats[selectedModel]) {
-          await modelChats[selectedModel]?.append(userMessage);
-        }
-      }
-    } catch (error) {
-      console.error("Error submitting message:", error);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
-  // Function to extract follow-up questions from message content
-  const extractFollowUpQuestions = (content: string): string[] => {
-    try {
-      // Match the section heading for "Follow-up Questions"
-      const sectionRegex =
-        /##?\s*Follow-up Questions\s*\n([\s\S]*?)(?:\n##|$)/i;
-      const sectionMatch = content.match(sectionRegex);
-
-      if (sectionMatch && sectionMatch[1]) {
-        // Extract numbered questions (1. Question text?)
-        const numberedQuestionsRegex = /\d+\.\s+(.+?\?)/g;
-        const section = sectionMatch[1];
-
-        const matches = Array.from(section.matchAll(numberedQuestionsRegex));
-        if (matches && matches.length > 0) {
-          return matches.map((match) => match[1].trim());
-        }
-      }
-
-      // Fallback: Try to find any numbered questions anywhere in the text
-      // This helps with inconsistently formatted responses
-      const anyNumberedQuestionsRegex = /\d+\.\s+(.+?\?)/g;
-      const anyMatches = Array.from(
-        content.matchAll(anyNumberedQuestionsRegex)
-      );
-      if (anyMatches && anyMatches.length > 0) {
-        return anyMatches.map((match) => match[1].trim());
-      }
-
-      return DEFAULT_FOLLOW_UPS;
-    } catch (error) {
-      console.error("Error extracting follow-up questions:", error);
-      return DEFAULT_FOLLOW_UPS;
-    }
-  };
-
-  // Function to remove the follow-up questions section from message content
-  const removeFollowUpSection = (content: string): string => {
-    try {
-      // Remove the "Follow-up Questions" section and everything after it
-      return content.replace(/##?\s*Follow-up Questions[\s\S]*$/, "").trim();
-    } catch (error) {
-      console.error("Error removing follow-up section:", error);
-      return content;
-    }
-  };
+  }, [selectedModels, comparisonChat, modelChats, pendingModelChange]);
 
   // Get messages to display based on current mode
   const getDisplayMessages = (): ExtendedMessage[] => {
@@ -256,10 +220,13 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         // Remove the follow-up section from the displayed content
         const contentWithoutFollowups = removeFollowUpSection(msg.content);
 
+        // Use the tracked model for this message if available, or use pending model or selected model
+        const messageModel = messageModels[msg.id] || pendingModelChange || selectedModels[0];
+
         return {
           ...msg,
           content: contentWithoutFollowups,
-          model: selectedModels[0],
+          model: messageModel,
           followupSuggestions,
         } as ExtendedMessage;
       }
@@ -421,6 +388,140 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
       window.removeEventListener("sendPromptDirectly", handleDirectPrompt);
   }, [selectedModels, isProcessing]);
 
+  // Handle model selection from ChatInputFooter
+  const handleModelSelect = (model: string) => {
+    if (model && typeof updateSelectedModels === "function") {
+      // Update local state immediately for UI feedback
+      setPendingModelChange(model as ModelName);
+
+      // Update the selected models array to only include this model
+      const modelName = model as ModelName;
+      if (selectedModels.length !== 1 || selectedModels[0] !== modelName) {
+        console.log(
+          `MultiModelChat: Updating selected models to [${modelName}]`
+        );
+        updateSelectedModels([modelName]);
+      }
+    }
+  };
+
+  // Handle submitting a prompt
+  const handleSubmit = async (prompt: string) => {
+    // Use pendingModelChange if available
+    const effectiveModels = pendingModelChange
+      ? [pendingModelChange]
+      : selectedModels;
+
+    if (!activeChat || effectiveModels.length === 0 || isProcessing) return;
+
+    if (!hasNotifiedFirst) {
+      onFirstMessage?.(effectiveModels);
+      setHasNotifiedFirst(true);
+    }
+
+    // Mark that a prompt has been submitted
+    setHasPrompted(true);
+
+    // Set processing state SYNCHRONOUSLY before any async operations
+    setIsProcessing(true);
+
+    try {
+      // Create user message with proper typing
+      const userMessage: Message = {
+        id: crypto.randomUUID(),
+        role: "user",
+        content: prompt,
+      };
+
+      // Run in a microtask to allow UI to update first
+      await Promise.resolve();
+
+      // For single model selection (including pending model change)
+      if (effectiveModels.length === 1) {
+        // In single-select mode, just submit to the selected model
+        const selectedModel = effectiveModels[0];
+        if (modelChats[selectedModel]) {
+          // Generate a predictable ID for the expected assistant response
+          const predictedAssistantId = `assistant-${Date.now()}`;
+          
+          // Pre-emptively update the messageModels with the model that will respond
+          setMessageModels((prev) => ({
+            ...prev,
+            [predictedAssistantId]: selectedModel
+          }));
+          
+          await modelChats[selectedModel]?.append(userMessage);
+        }
+        return;
+      }
+
+      // Original multi-model logic for comparison
+      if (selectedModels.length > 1) {
+        // Submit to each selected model first
+        for (const model of selectedModels) {
+          if (!model) continue;
+          if (modelChats[model]) {
+            await modelChats[model]?.append(userMessage);
+          }
+        }
+
+        // Then submit to comparison API
+        await comparisonChat.append(userMessage);
+      }
+    } catch (error) {
+      console.error("Error submitting message:", error);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  // Function to extract follow-up questions from message content
+  const extractFollowUpQuestions = (content: string): string[] => {
+    try {
+      // Match the section heading for "Follow-up Questions"
+      const sectionRegex =
+        /##?\s*Follow-up Questions\s*\n([\s\S]*?)(?:\n##|$)/i;
+      const sectionMatch = content.match(sectionRegex);
+
+      if (sectionMatch && sectionMatch[1]) {
+        // Extract numbered questions (1. Question text?)
+        const numberedQuestionsRegex = /\d+\.\s+(.+?\?)/g;
+        const section = sectionMatch[1];
+
+        const matches = Array.from(section.matchAll(numberedQuestionsRegex));
+        if (matches && matches.length > 0) {
+          return matches.map((match) => match[1].trim());
+        }
+      }
+
+      // Fallback: Try to find any numbered questions anywhere in the text
+      // This helps with inconsistently formatted responses
+      const anyNumberedQuestionsRegex = /\d+\.\s+(.+?\?)/g;
+      const anyMatches = Array.from(
+        content.matchAll(anyNumberedQuestionsRegex)
+      );
+      if (anyMatches && anyMatches.length > 0) {
+        return anyMatches.map((match) => match[1].trim());
+      }
+
+      return DEFAULT_FOLLOW_UPS;
+    } catch (error) {
+      console.error("Error extracting follow-up questions:", error);
+      return DEFAULT_FOLLOW_UPS;
+    }
+  };
+
+  // Function to remove the follow-up questions section from message content
+  const removeFollowUpSection = (content: string): string => {
+    try {
+      // Remove the "Follow-up Questions" section and everything after it
+      return content.replace(/##?\s*Follow-up Questions[\s\S]*$/, "").trim();
+    } catch (error) {
+      console.error("Error removing follow-up section:", error);
+      return content;
+    }
+  };
+
   // Render empty container when no model is selected
   if (selectedModels.length === 0) {
     return (
@@ -434,22 +535,11 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         </div>
 
         <ChatInputFooter
-          selectedModel={null}
+          selectedModel={pendingModelChange}
           input={""}
           isLoading={false}
           handleInputChange={() => {}}
-          onModelSelect={(model) => {
-            if (model && typeof updateSelectedModels === "function") {
-              // Update the selected models array to only include this model
-              const modelName = model as ModelName;
-              if (
-                selectedModels.length !== 1 ||
-                selectedModels[0] !== modelName
-              ) {
-                updateSelectedModels([modelName]);
-              }
-            }
-          }}
+          onModelSelect={handleModelSelect}
           handleSubmit={(e) => {
             e.preventDefault();
             if (activeChat) {
@@ -595,23 +685,13 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
       <ChatInputFooter
         selectedModel={
-          selectedModels.length > 1 ? "ComparisonGPT" : selectedModels[0]
+          pendingModelChange ||
+          (selectedModels.length > 1 ? "ComparisonGPT" : selectedModels[0])
         }
         input={activeChat?.input || ""}
         isLoading={isLoading}
         handleInputChange={activeChat?.handleInputChange || (() => {})}
-        onModelSelect={(model) => {
-          if (model && typeof updateSelectedModels === "function") {
-            // Update the selected models array to only include this model
-            const modelName = model as ModelName;
-            if (
-              selectedModels.length !== 1 ||
-              selectedModels[0] !== modelName
-            ) {
-              updateSelectedModels([modelName]);
-            }
-          }
-        }}
+        onModelSelect={handleModelSelect}
         handleSubmit={(e) => {
           e.preventDefault();
           if (activeChat) {
@@ -669,8 +749,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
                     if (addedResponseBubble) {
                       // Remove the instant loading animation once a response is detected
-                      const instantLoader =
-                        document.getElementById("instant-loading");
+                      const instantLoader = document.getElementById("instant-loading");
                       if (instantLoader) {
                         instantLoader.remove();
                       }
@@ -684,13 +763,29 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
               // Start observing the chat container for changes
               observer.observe(chatContainer, {
-                childList: true,
+                childList: true, 
                 subtree: true,
               });
             }
 
-            // Now submit the message
-            handleSubmit(activeChat.input);
+            // Now submit the message with the current or pending model
+            const inputToSubmit = activeChat.input;
+            
+            // Pre-emptively update messageModels for the expected response
+            const modelToUse = pendingModelChange || 
+              (selectedModels.length > 1 ? "ComparisonGPT" : selectedModels[0]);
+            
+            if (modelToUse) {
+              const predictedAssistantId = `assistant-${Date.now()}`;
+              setMessageModels((prev) => ({
+                ...prev,
+                [predictedAssistantId]: modelToUse as ModelName
+              }));
+            }
+            
+            if (inputToSubmit.trim()) {
+              handleSubmit(inputToSubmit);
+            }
           }
         }}
       />

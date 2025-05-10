@@ -132,14 +132,12 @@ export default function ChatPage() {
           }}
         >
           <div className="max-w-[1400px] mx-auto w-full pb-10">
-            {!conversation.hasStarted && (
-              <PersonalitiesSection
-                ref={personalitiesRef}
-                selectedModels={conversation.selectedModels}
-                setSelectedModels={setSelectedModels}
-                messagesSent={messagesSent}
-              />
-            )}
+            <PersonalitiesSection
+              ref={personalitiesRef}
+              selectedModels={conversation.selectedModels}
+              setSelectedModels={setSelectedModels}
+              messagesSent={messagesSent}
+            />
 
             <div
               id="chatbot-section"

@@ -150,7 +150,7 @@ Only include the religious traditions that were selected by the user: ${selected
 
     // Use the streamText function from the AI SDK
     const result = streamText({
-      model: aiSdkOpenai("gpt-4o"),
+      model: aiSdkOpenai("gpt-4.1-nano"),
       system: systemPrompt,
       messages,
       temperature: 0.7,

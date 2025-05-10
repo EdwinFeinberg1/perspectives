@@ -108,7 +108,7 @@ export async function POST(req: Request) {
 
     // 4) Kick off the streaming chat with your system prompt
     const result = streamText({
-      model: aiSdkOpenai("gpt-4o"),
+      model: aiSdkOpenai("gpt-4.1-nano"),
       system: `
 You are RabbiGPT, speaking in the warm, story‑driven voice of Rabbi Simon Jacobson (author of *Toward a Meaningful Life*).
 
