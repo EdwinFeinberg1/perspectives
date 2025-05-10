@@ -1,5 +1,7 @@
 import React from "react";
 import ReactMarkdown from "react-markdown";
+import { PERSONALITIES } from "@/app/constants/personalities";
+import Image from "next/image";
 
 interface BubbleProps {
   message: {
@@ -7,7 +9,7 @@ interface BubbleProps {
     role: "user" | "assistant";
     followupSuggestions?: string[];
   };
-  model: string;
+  model: string | null;
   onFollowupClick?: (question: string) => void;
   isLoading?: boolean;
 }
@@ -40,6 +42,11 @@ const Bubble: React.FC<BubbleProps> = ({
     (role === "assistant" && followupSuggestions) ||
     (role === "assistant" ? DEFAULT_FOLLOW_UPS : []);
 
+  // Find personality data for the avatar
+  const personalityData = model
+    ? PERSONALITIES.find((p) => p.model === model)
+    : null;
+
   return (
     <div className="flex flex-col">
       <div
@@ -51,7 +58,19 @@ const Bubble: React.FC<BubbleProps> = ({
       >
         {role === "assistant" && model && (
           <div className="flex items-center mb-4 pb-2 border-b border-[#ddc39a]/20">
-            <span className="mr-2 text-xl">{BADGE[model] || "🔹"}</span>
+            {personalityData?.image ? (
+              <div className="w-8 h-8 rounded-full overflow-hidden mr-2 bg-black/50 flex items-center justify-center">
+                <Image
+                  src={personalityData.image}
+                  alt={model}
+                  width={32}
+                  height={32}
+                  className="object-cover"
+                />
+              </div>
+            ) : (
+              <span className="mr-2 text-xl">{BADGE[model] || "🔹"}</span>
+            )}
             <span className="font-medium">{model}</span>
           </div>
         )}

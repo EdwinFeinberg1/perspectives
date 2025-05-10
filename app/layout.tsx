@@ -4,6 +4,7 @@ import { ConversationsProvider } from "./context/ConversationsContext";
 import { ThemeProvider } from "./features/theme";
 import { Analytics } from "@vercel/analytics/next";
 import { SafeArea } from "./components/SafeArea";
+import { ToastProvider } from "./components/ui/toast";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -28,7 +29,9 @@ const RootLayout = ({ children }) => {
       <body className="min-h-screen w-full bg-slate-950 flex flex-col overflow-hidden overscroll-none">
         <ConversationsProvider>
           <ThemeProvider>
-            <SafeArea>{children}</SafeArea>
+            <ToastProvider>
+              <SafeArea>{children}</SafeArea>
+            </ToastProvider>
           </ThemeProvider>
         </ConversationsProvider>
         <Analytics />
