@@ -7,6 +7,7 @@ import Bubble from "./Chatbot/Bubble";
 import LoadingBubble from "./Chatbot/LoadingBubble";
 import ChatInputFooter from "./Chatbot/ChatInputFooter";
 import { ModelName, ComparisonData } from "../types";
+import { getApiEndpoint } from "../config/development";
 
 // Extended Message type that includes our custom properties
 interface ExtendedMessage extends Message {
@@ -47,7 +48,9 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
     useState<ModelName | null>(null);
 
   // Add state to track which model responded to each message
-  const [messageModels, setMessageModels] = useState<Record<string, ModelName>>({});
+  const [messageModels, setMessageModels] = useState<Record<string, ModelName>>(
+    {}
+  );
 
   // Apply model change when selectedModels changes
   useEffect(() => {
@@ -58,58 +61,58 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
   // Always initialize all chat hooks at the top level
   const rabbiChat = useChat({
     id: `single-${conversationId}-rabbigpt`,
-    api: "/api/chat/judaism",
+    api: getApiEndpoint("judaism"),
     onFinish: (message) => {
       // Track which model generated this response
       if (message.id) {
         setMessageModels((prev) => ({
           ...prev,
-          [message.id]: "RabbiGPT"
+          [message.id]: "RabbiGPT",
         }));
       }
-    }
+    },
   });
-  
+
   const pastorChat = useChat({
     id: `single-${conversationId}-pastorgpt`,
-    api: "/api/chat/christianity",
+    api: getApiEndpoint("christianity"),
     onFinish: (message) => {
       // Track which model generated this response
       if (message.id) {
         setMessageModels((prev) => ({
           ...prev,
-          [message.id]: "PastorGPT"
+          [message.id]: "PastorGPT",
         }));
       }
-    }
+    },
   });
-  
+
   const buddhaChat = useChat({
     id: `single-${conversationId}-buddhagpt`,
-    api: "/api/chat/buddha",
+    api: getApiEndpoint("buddha"),
     onFinish: (message) => {
       // Track which model generated this response
       if (message.id) {
         setMessageModels((prev) => ({
           ...prev,
-          [message.id]: "BuddhaGPT"
+          [message.id]: "BuddhaGPT",
         }));
       }
-    }
+    },
   });
-  
+
   const imamChat = useChat({
     id: `single-${conversationId}-imamgpt`,
-    api: "/api/chat/islam",
+    api: getApiEndpoint("islam"),
     onFinish: (message) => {
       // Track which model generated this response
       if (message.id) {
         setMessageModels((prev) => ({
           ...prev,
-          [message.id]: "ImamGPT"
+          [message.id]: "ImamGPT",
         }));
       }
-    }
+    },
   });
 
   // Initialize comparison chat with custom handler
@@ -121,7 +124,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
       .slice()
       .sort()
       .join("&")}`,
-    api: "/api/chat/compare",
+    api: getApiEndpoint("compare"),
     body: { selectedModels },
     onFinish: (message) => {
       try {
@@ -129,10 +132,10 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         if (message.id) {
           setMessageModels((prev) => ({
             ...prev,
-            [message.id]: "ComparisonGPT"
+            [message.id]: "ComparisonGPT",
           }));
         }
-        
+
         // Extract JSON data from the response
         const jsonMatch = message.content.match(/```json\s*([\s\S]*?)\s*```/);
 
@@ -221,7 +224,8 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         const contentWithoutFollowups = removeFollowUpSection(msg.content);
 
         // Use the tracked model for this message if available, or use pending model or selected model
-        const messageModel = messageModels[msg.id] || pendingModelChange || selectedModels[0];
+        const messageModel =
+          messageModels[msg.id] || pendingModelChange || selectedModels[0];
 
         return {
           ...msg,
@@ -443,13 +447,13 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         if (modelChats[selectedModel]) {
           // Generate a predictable ID for the expected assistant response
           const predictedAssistantId = `assistant-${Date.now()}`;
-          
+
           // Pre-emptively update the messageModels with the model that will respond
           setMessageModels((prev) => ({
             ...prev,
-            [predictedAssistantId]: selectedModel
+            [predictedAssistantId]: selectedModel,
           }));
-          
+
           await modelChats[selectedModel]?.append(userMessage);
         }
         return;
@@ -749,7 +753,8 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
                     if (addedResponseBubble) {
                       // Remove the instant loading animation once a response is detected
-                      const instantLoader = document.getElementById("instant-loading");
+                      const instantLoader =
+                        document.getElementById("instant-loading");
                       if (instantLoader) {
                         instantLoader.remove();
                       }
@@ -763,26 +768,27 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
               // Start observing the chat container for changes
               observer.observe(chatContainer, {
-                childList: true, 
+                childList: true,
                 subtree: true,
               });
             }
 
             // Now submit the message with the current or pending model
             const inputToSubmit = activeChat.input;
-            
+
             // Pre-emptively update messageModels for the expected response
-            const modelToUse = pendingModelChange || 
+            const modelToUse =
+              pendingModelChange ||
               (selectedModels.length > 1 ? "ComparisonGPT" : selectedModels[0]);
-            
+
             if (modelToUse) {
               const predictedAssistantId = `assistant-${Date.now()}`;
               setMessageModels((prev) => ({
                 ...prev,
-                [predictedAssistantId]: modelToUse as ModelName
+                [predictedAssistantId]: modelToUse as ModelName,
               }));
             }
-            
+
             if (inputToSubmit.trim()) {
               handleSubmit(inputToSubmit);
             }

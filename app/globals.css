@@ -325,3 +325,25 @@ input:focus {
 .animate-aura {
   animation: aura-pulse 4s ease-in-out infinite;
 }
+
+/* iPhone-specific optimizations for personalities grid */
+@media screen and (min-width: 375px) and (max-width: 428px) and (-webkit-device-pixel-ratio: 2), 
+       screen and (min-width: 375px) and (max-width: 428px) and (-webkit-device-pixel-ratio: 3) {
+  /* iPhones 12/13/14 */
+  #personalities-section .grid {
+    gap: 2px !important;
+    padding: 2px 0 !important;
+  }
+  
+  #personalities-section .card {
+    border-width: 1px !important;
+  }
+  
+  #personalities-section p {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.1 !important;
+  }
+}

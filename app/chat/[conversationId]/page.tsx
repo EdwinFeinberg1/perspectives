@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
@@ -6,7 +7,7 @@ import LandingChatbot from "../../components/LandingChatbot";
 import PersonalitiesSection from "../../components/PersonalitiesSection";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
-import { ModelName, ComparisonData } from "../../types";
+import { ModelName } from "../../types";
 import { useConversations } from "../../context/ConversationsContext";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import { StarsBackground } from "@/components/ui/stars-background";
@@ -27,16 +28,6 @@ export default function ChatPage() {
     useConversations();
 
   const conversation = conversations.find((c) => c.id === conversationId);
-
-  const [, setComparisonData] = useState<ComparisonData>({
-    uniquePoints: {
-      RabbiGPT: [],
-      BuddhaGPT: [],
-      PastorGPT: [],
-      ImamGPT: [],
-    },
-    similarities: [],
-  });
 
   // Listen for theme subheader toggle events
   useEffect(() => {
@@ -131,12 +122,11 @@ export default function ChatPage() {
             marginBottom: "70px",
           }}
         >
-          <div className="max-w-[1400px] mx-auto w-full pb-10">
+          <div className="max-w-[1400px] mx-auto w-full pb-5">
             <PersonalitiesSection
               ref={personalitiesRef}
               selectedModels={conversation.selectedModels}
               setSelectedModels={setSelectedModels}
-              messagesSent={messagesSent}
             />
 
             <div
@@ -152,12 +142,10 @@ export default function ChatPage() {
                 <LandingChatbot
                   conversationId={conversationId}
                   selectedModels={conversation.selectedModels}
-                  setComparisonData={setComparisonData}
                   onFirstMessage={(msgModels) => {
-                    const name =
-                      msgModels.length === 1
-                        ? `${msgModels[0]} Conversation`
-                        : `Comparison: ${msgModels.join(" & ")}`;
+                    // Always use the first model in the array for naming
+                    const modelName = msgModels[0] || "AI";
+                    const name = `${modelName} Conversation`;
                     markConversationStarted(name);
                   }}
                 />

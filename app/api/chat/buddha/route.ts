@@ -32,41 +32,42 @@ const db = client.db(ASTRA_DB_API_ENDPOINT_BUDDHA, {
 
 export async function POST(req: Request) {
   try {
-
     // 1) latest user message
     const { messages } = await req.json();
     const latestMessage: string =
       messages?.[messages.length - 1]?.content ?? "";
 
-      // Extract IP address from request headers
-     const forwardedFor = req.headers.get("x-forwarded-for");
-     const ipAddress = forwardedFor
+   
+    // Extract IP address from request headers
+    
+    const forwardedFor = req.headers.get("x-forwarded-for");
+    const ipAddress = forwardedFor
       ? forwardedFor.split(",")[0].trim()
       : "not available";
 
     await logQuestion(latestMessage, "BuddhaGPT", ipAddress);
+    
+    // Moderate the user input
+    const moderationResponse = await openai.moderations.create({
+      input: latestMessage,
+    });
 
-      // Moderate the user input
-   const moderationResponse = await openai.moderations.create({
-    input: latestMessage,
-  });
-
-  // Check if content is flagged
-  const flagged = moderationResponse.results[0]?.flagged;
-  if (flagged) {
-    console.warn(
-      "RabbiGPT: Content moderation flagged input",
-      moderationResponse.results[0]
-    );
-    return new Response(
-      JSON.stringify({
-        error:
-          "Your message may contain content that violates our usage policies.",
-        flagged: true,
-      }),
-      { status: 400, headers: { "Content-Type": "application/json" } }
-    );
-  }
+    // Check if content is flagged
+    const flagged = moderationResponse.results[0]?.flagged;
+    if (flagged) {
+      console.warn(
+        "RabbiGPT: Content moderation flagged input",
+        moderationResponse.results[0]
+      );
+      return new Response(
+        JSON.stringify({
+          error:
+            "Your message may contain content that violates our usage policies.",
+          flagged: true,
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
     // 2) Create embedding for similarity search
     const embedResp = await openai.embeddings.create({
       model: "text-embedding-3-small",
@@ -74,13 +75,12 @@ export async function POST(req: Request) {
       encoding_format: "float",
     });
     const queryVector = embedResp.data[0].embedding;
-   
 
     // 3) Retrieve top‑k relevant chunks from AstraDB
     let docContext = "";
     try {
       const collection = await db.collection(ASTRADB_DB_COLLECTION_BUDDHA);
-   
+
       const cursor = collection.find(null, {
         sort: { $vector: queryVector },
         limit: 10,
