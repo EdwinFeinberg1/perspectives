@@ -1,10 +1,12 @@
+//logging.ts
 import { supabase } from "./supabase";
 
 export async function logQuestion(
   question: string,
   modelName: string,
   ipAddress?: string,
-  conversationId?: string
+  conversationId?: string,
+  answer?: string
 ) {
   try {
     const { error } = await supabase.from("questions").insert({
@@ -12,6 +14,7 @@ export async function logQuestion(
       model_name: modelName,
       ip_address: ipAddress,
       conversation_id: conversationId,
+      answer,
     });
 
     if (error) {
