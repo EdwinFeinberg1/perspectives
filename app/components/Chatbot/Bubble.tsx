@@ -4,28 +4,10 @@ import { PERSONALITIES } from "@/app/constants/personalities";
 import Image from "next/image";
 import QuoteCard from "./QuoteCard";
 
+// Define the shape of the summarizeParshah result
 interface SummarizeParshahResult {
   summary: string;
   source: string;
-}
-
-interface ToolInvocation {
-  toolName: string;
-  toolCallId: string;
-  state: "call" | "result";
-  args?: Record<string, unknown>;
-  result?: unknown;
-}
-
-interface SummarizeParshahToolInvocation extends ToolInvocation {
-  toolName: "summarizeParshah";
-  result?: SummarizeParshahResult;
-}
-
-interface MessagePart {
-  type: string;
-  text?: string;
-  toolInvocation?: ToolInvocation;
 }
 
 interface BubbleProps {
@@ -33,8 +15,9 @@ interface BubbleProps {
     content: string;
     role: "user" | "assistant";
     followupSuggestions?: string[];
-    parts?: MessagePart[];
-    toolInvocations?: ToolInvocation[];
+    // Use any for parts and toolInvocations to avoid type errors
+    parts?: any[];
+    toolInvocations?: any[];
   };
   model: string | null;
   onFollowupClick?: (question: string) => void;
@@ -116,14 +99,15 @@ const Bubble: React.FC<BubbleProps> = ({
   if (hasToolResults && toolInvocations) {
     const summarizeResult = toolInvocations.find(
       (ti) => ti.toolName === "summarizeParshah" && ti.state === "result"
-    ) as SummarizeParshahToolInvocation | undefined;
+    );
 
     if (summarizeResult?.result) {
+      const result = summarizeResult.result as SummarizeParshahResult;
       toolContent = `## This Week's Torah Portion
 
-${summarizeResult.result.summary}
+${result.summary}
 
-[Read the full text on Sefaria](${summarizeResult.result.source})`;
+[Read the full text on Sefaria](${result.source})`;
     }
   }
 
@@ -205,7 +189,9 @@ ${summarizeResult.result.summary}
             >
               {/* If tools are being called but no result yet */}
               {toolInvocations?.some(
-                (ti) => ti.state === "call" && !toolContent
+                (ti) =>
+                  (ti.state === "call" || ti.state === "partial-call") &&
+                  !toolContent
               ) && (
                 <div className="text-[#ddc39a]/70 italic">
                   Gathering information about this week&apos;s Torah portion...
