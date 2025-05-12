@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getApiRoute } from "@/app/constants/api-routes";
 import { ModelName } from "@/app/types";
 
+export const runtime = "edge";
+
 /**
  * Main chat route that redirects to the appropriate model-specific endpoint
  * based on the selectedModel parameter in the request body
@@ -30,11 +32,9 @@ export async function POST(req: Request) {
     }
 
     // Forward the request to the appropriate API route
-    // This creates a new request to the target route with the same body
     const targetUrl = new URL(apiRoute, req.url);
     const response = await fetch(targetUrl, {
       method: "POST",
-      headers: req.headers,
       body: JSON.stringify(body),
     });
 
@@ -43,13 +43,21 @@ export async function POST(req: Request) {
       return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
-        headers: response.headers,
+        headers: {
+          "Cache-Control": "no-transform",
+          "Content-Type":
+            response.headers.get("Content-Type") || "application/json",
+        },
       });
     }
 
-    // Return the response from the model-specific route
+    // Return the response with proper headers to prevent compression issues
     return new Response(response.body, {
-      headers: response.headers,
+      headers: {
+        "Cache-Control": "no-transform",
+        "Content-Type":
+          response.headers.get("Content-Type") || "application/json",
+      },
     });
   } catch (error) {
     console.error("Error in chat route:", error);
