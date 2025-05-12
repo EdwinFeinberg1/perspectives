@@ -547,7 +547,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
           handleSubmit={(e) => {
             e.preventDefault();
             if (activeChat) {
-              // Force loading animation to appear immediately
+              // Remove force loading animation immediate scroll code
               const loadingContainer = document.createElement("div");
               loadingContainer.className = "flex justify-center mb-4 mt-2";
               loadingContainer.id = "instant-loading";
@@ -568,14 +568,14 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
               loadingContainer.appendChild(wrapper);
 
-              // Find chat container and append loading animation
+              // Find chat container and append loading animation without scrolling
               const chatContainer = document.querySelector(
                 ".h-full.overflow-y-auto"
               );
               if (chatContainer) {
                 chatContainer.appendChild(loadingContainer);
-                // Scroll to show loading animation
-                chatContainer.scrollTop = chatContainer.scrollHeight;
+                // Disabled automatic scrolling
+                // chatContainer.scrollTop = chatContainer.scrollHeight;
 
                 // Set up a mutation observer to watch for the appearance of the response bubble
                 const observer = new MutationObserver((mutations) => {
@@ -699,7 +699,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         handleSubmit={(e) => {
           e.preventDefault();
           if (activeChat) {
-            // Force loading animation to appear immediately
+            // Remove force loading animation immediate scroll code
             const loadingContainer = document.createElement("div");
             loadingContainer.className = "flex justify-center mb-4 mt-2";
             loadingContainer.id = "instant-loading";
@@ -720,14 +720,14 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
             loadingContainer.appendChild(wrapper);
 
-            // Find chat container and append loading animation
+            // Find chat container and append loading animation without scrolling
             const chatContainer = document.querySelector(
               ".h-full.overflow-y-auto"
             );
             if (chatContainer) {
               chatContainer.appendChild(loadingContainer);
-              // Scroll to show loading animation
-              chatContainer.scrollTop = chatContainer.scrollHeight;
+              // Disabled automatic scrolling
+              // chatContainer.scrollTop = chatContainer.scrollHeight;
 
               // Set up a mutation observer to watch for the appearance of the response bubble
               const observer = new MutationObserver((mutations) => {
