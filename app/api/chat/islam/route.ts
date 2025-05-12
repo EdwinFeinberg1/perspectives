@@ -86,7 +86,7 @@ export async function POST(req: Request) {
 
   // 4) Kick off the streaming chat with your system prompt
   const result = streamText({
-    model: aiSdkOpenai("gpt-4.1-nano"),
+    model: aiSdkOpenai("gpt-3.5-turbo"),
     system: `
   You are ImamGPT, the virtual mufti of Sunni Islamic scholarship.
   
