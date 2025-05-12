@@ -119,19 +119,20 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
         }
       }
 
-      // Scroll to input when message finishes
-      smoothScrollToInput();
+      // Disabled auto-scroll when message finishes
+      // smoothScrollToInput();
     },
     onError: (err) => {
       console.error(`Chat error for ${selectedModel}:`, err);
     },
   });
 
-  // Auto-scroll to input form when loading state changes
+  // Auto-scroll to input form when loading state changes (disabled)
   useEffect(() => {
-    if (isLoading) {
-      smoothScrollToInput();
-    }
+    // Disabled auto-scroll when loading state changes
+    // if (isLoading) {
+    //   smoothScrollToInput();
+    // }
   }, [isLoading, smoothScrollToInput]);
 
   // Log current status
@@ -217,8 +218,8 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
         }
       );
 
-      // Scroll to input after sending message
-      smoothScrollToInput();
+      // Disabled auto-scroll after sending message
+      // smoothScrollToInput();
     }
   };
 

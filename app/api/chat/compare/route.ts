@@ -1,7 +1,6 @@
 import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { logQuestion } from "../../../../lib/logging";
-export const runtime = "edge";
 import OpenAI from "openai";
 
 const { OPENAI_API_KEY } = process.env;
