@@ -4,11 +4,37 @@ import { PERSONALITIES } from "@/app/constants/personalities";
 import Image from "next/image";
 import QuoteCard from "./QuoteCard";
 
+interface SummarizeParshahResult {
+  summary: string;
+  source: string;
+}
+
+interface ToolInvocation {
+  toolName: string;
+  toolCallId: string;
+  state: "call" | "result";
+  args?: Record<string, unknown>;
+  result?: unknown;
+}
+
+interface SummarizeParshahToolInvocation extends ToolInvocation {
+  toolName: "summarizeParshah";
+  result?: SummarizeParshahResult;
+}
+
+interface MessagePart {
+  type: string;
+  text?: string;
+  toolInvocation?: ToolInvocation;
+}
+
 interface BubbleProps {
   message: {
     content: string;
     role: "user" | "assistant";
     followupSuggestions?: string[];
+    parts?: MessagePart[];
+    toolInvocations?: ToolInvocation[];
   };
   model: string | null;
   onFollowupClick?: (question: string) => void;
@@ -36,7 +62,7 @@ const Bubble: React.FC<BubbleProps> = ({
   onFollowupClick,
   isLoading = false,
 }) => {
-  const { content, role, followupSuggestions } = message;
+  const { content, role, followupSuggestions, toolInvocations } = message;
   const [isHighlightMode, setIsHighlightMode] = useState(false);
   const [highlightedText, setHighlightedText] = useState("");
   const [showCard, setShowCard] = useState(false);
@@ -81,6 +107,28 @@ const Bubble: React.FC<BubbleProps> = ({
       document.removeEventListener("mouseup", handleHighlightSelection);
     };
   }, [isHighlightMode]);
+
+  // Check if we have tool results to display
+  const hasToolResults = toolInvocations?.some((ti) => ti.state === "result");
+
+  // Extract tool result content if available
+  let toolContent = "";
+  if (hasToolResults && toolInvocations) {
+    const summarizeResult = toolInvocations.find(
+      (ti) => ti.toolName === "summarizeParshah" && ti.state === "result"
+    ) as SummarizeParshahToolInvocation | undefined;
+
+    if (summarizeResult?.result) {
+      toolContent = `## This Week's Torah Portion
+
+${summarizeResult.result.summary}
+
+[Read the full text on Sefaria](${summarizeResult.result.source})`;
+    }
+  }
+
+  // Content to display - use tool content if available, otherwise use message content
+  const displayContent = toolContent || content;
 
   return (
     <div className="flex flex-col">
@@ -155,31 +203,51 @@ const Bubble: React.FC<BubbleProps> = ({
                 isHighlightMode ? "cursor-text selection:bg-[#ddc39a]/30" : ""
               }`}
             >
-              <ReactMarkdown
-                components={{
-                  h1: (props) => (
-                    <h1 className="text-2xl font-bold mt-6 mb-4" {...props} />
-                  ),
-                  h2: (props) => (
-                    <h2 className="text-xl font-bold mt-5 mb-3" {...props} />
-                  ),
-                  h3: (props) => (
-                    <h3 className="text-lg font-bold mt-4 mb-2" {...props} />
-                  ),
-                  p: (props) => <p className="my-3" {...props} />,
-                  ul: (props) => <ul className="my-3 space-y-2" {...props} />,
-                  ol: (props) => <ol className="my-3 space-y-2" {...props} />,
-                  li: (props) => <li className="ml-5" {...props} />,
-                  blockquote: (props) => (
-                    <blockquote
-                      className="border-l-4 border-[#ddc39a]/30 pl-4 italic my-4"
-                      {...props}
-                    />
-                  ),
-                }}
-              >
-                {content}
-              </ReactMarkdown>
+              {/* If tools are being called but no result yet */}
+              {toolInvocations?.some(
+                (ti) => ti.state === "call" && !toolContent
+              ) && (
+                <div className="text-[#ddc39a]/70 italic">
+                  Gathering information about this week&apos;s Torah portion...
+                </div>
+              )}
+
+              {/* Display content when available */}
+              {displayContent && (
+                <ReactMarkdown
+                  components={{
+                    h1: (props) => (
+                      <h1 className="text-2xl font-bold mt-6 mb-4" {...props} />
+                    ),
+                    h2: (props) => (
+                      <h2 className="text-xl font-bold mt-5 mb-3" {...props} />
+                    ),
+                    h3: (props) => (
+                      <h3 className="text-lg font-bold mt-4 mb-2" {...props} />
+                    ),
+                    p: (props) => <p className="my-3" {...props} />,
+                    ul: (props) => <ul className="my-3 space-y-2" {...props} />,
+                    ol: (props) => <ol className="my-3 space-y-2" {...props} />,
+                    li: (props) => <li className="ml-5" {...props} />,
+                    blockquote: (props) => (
+                      <blockquote
+                        className="border-l-4 border-[#ddc39a]/30 pl-4 italic my-4"
+                        {...props}
+                      />
+                    ),
+                    a: (props) => (
+                      <a
+                        className="text-[#ddc39a] underline hover:text-[#ddc39a]/80"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        {...props}
+                      />
+                    ),
+                  }}
+                >
+                  {displayContent}
+                </ReactMarkdown>
+              )}
             </div>
 
             {/* Highlight instruction */}

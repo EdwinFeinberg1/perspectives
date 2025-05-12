@@ -92,6 +92,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
       // Include the selected model in the request body
       selectedModel: selectedModel,
     },
+    maxSteps: 5, // Enable multi-step tool interactions
     onResponse: (response) => {
       console.log(`API Response received for ${selectedModel}:`, {
         status: response.status,
@@ -291,6 +292,8 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
                   m.role === "assistant"
                     ? extractFollowUpQuestions(m.content)
                     : undefined,
+                parts: m.parts,
+                toolInvocations: m.toolInvocations,
               }}
               model={messageModel}
               onFollowupClick={(question) => sendPrompt(question)}

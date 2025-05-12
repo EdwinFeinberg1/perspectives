@@ -37,16 +37,14 @@ export async function POST(req: Request) {
     const latestMessage: string =
       messages?.[messages.length - 1]?.content ?? "";
 
-   
     // Extract IP address from request headers
-    
     const forwardedFor = req.headers.get("x-forwarded-for");
     const ipAddress = forwardedFor
       ? forwardedFor.split(",")[0].trim()
       : "not available";
 
     await logQuestion(latestMessage, "BuddhaGPT", ipAddress);
-    
+
     // Moderate the user input
     const moderationResponse = await openai.moderations.create({
       input: latestMessage,
@@ -121,7 +119,7 @@ IMPORTANT: Always end your response with a 'Follow-up Questions' section using e
       maxTokens: 1024,
     });
 
-    // 5) Return streaming HTTP response
+    // Get the response directly without transformation
     return result.toDataStreamResponse();
   } catch (err) {
     console.error(err);

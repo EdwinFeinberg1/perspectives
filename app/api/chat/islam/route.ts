@@ -25,13 +25,12 @@ export async function POST(req: Request) {
   // Extract IP address from request headers
   const forwardedFor = req.headers.get("x-forwarded-for");
   const ipAddress = forwardedFor
-   ? forwardedFor.split(",")[0].trim()
-   : "not available";
-
+    ? forwardedFor.split(",")[0].trim()
+    : "not available";
 
   await logQuestion(latestMessage, "ImamGPT", ipAddress);
-   // Moderate the user input
-   const moderationResponse = await openai.moderations.create({
+  // Moderate the user input
+  const moderationResponse = await openai.moderations.create({
     input: latestMessage,
   });
 
@@ -128,5 +127,6 @@ export async function POST(req: Request) {
     maxTokens: 1024,
   });
 
+  // Return streaming HTTP response directly
   return result.toDataStreamResponse();
 }
