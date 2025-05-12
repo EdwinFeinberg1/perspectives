@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
     <footer className="sticky bottom-[env(safe-area-inset-bottom)] left-0 w-full z-40">
       <div className="mx-auto max-w-[1400px] relative mb-2 px-4 sm:px-6">
         {/* Main footer content with no background container */}
-        <div className="relative h-[60px] px-6 md:px-8 flex items-center justify-between">
+        <div className="relative h-[30px] px-6 md:px-8 flex items-center justify-between">
           {/* Left section with logo and name */}
           <div className="flex items-center space-x-4">
             <div className="relative h-8 w-8 md:h-10 md:w-10 overflow-hidden">

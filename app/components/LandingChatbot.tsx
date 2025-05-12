@@ -1,12 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { useChat } from "ai/react";
-import MultiModelChat from "./MultiModelChat";
 import Bubble from "./Chatbot/Bubble";
 import LoadingBubble from "./Chatbot/LoadingBubble";
 import ChatInputFooter from "./Chatbot/ChatInputFooter";
-import { ModelName, ComparisonData } from "../types";
+import { ModelName } from "../types";
 import {
   extractFollowUpQuestions,
   removeFollowUpSection,
@@ -15,18 +15,17 @@ import {
 interface LandingChatbotProps {
   conversationId: string;
   selectedModels: ModelName[];
-  setComparisonData: (data: ComparisonData) => void;
   onFirstMessage?: (models: ModelName[]) => void;
 }
 
 const LandingChatbot: React.FC<LandingChatbotProps> = ({
   conversationId,
   selectedModels,
-  setComparisonData,
   onFirstMessage,
 }) => {
-  const isSingleModelMode = selectedModels.length === 1;
-  const selectedModel = isSingleModelMode ? selectedModels[0] : null;
+  const selectedModel = selectedModels.length > 0 ? selectedModels[0] : null;
+  const chatInputRef = useRef<HTMLDivElement>(null);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Track which model responded to each message
   const [messageModels, setMessageModels] = useState<Record<string, ModelName>>(
@@ -38,10 +37,40 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   const [pendingModelChange, setPendingModelChange] =
     useState<ModelName | null>(null);
 
+  // Debounced scroll function to prevent rapid consecutive scrolls
+  const smoothScrollToInput = useCallback(() => {
+    // Clear any existing timeout to prevent multiple scroll attempts
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+    }
+
+    // Set a new timeout
+    scrollTimeoutRef.current = setTimeout(() => {
+      if (chatInputRef.current) {
+        // Use a more natural scroll with 'nearest' block alignment
+        chatInputRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+          inline: "nearest",
+        });
+      }
+      scrollTimeoutRef.current = null;
+    }, 200); // Slightly longer delay for DOM stability
+  }, []);
+
   // Reset pending model change when selectedModels changes
   useEffect(() => {
     setPendingModelChange(null);
   }, [selectedModels]);
+
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (scrollTimeoutRef.current) {
+        clearTimeout(scrollTimeoutRef.current);
+      }
+    };
+  }, []);
 
   console.log(`LandingChatbot initializing with models:`, selectedModels);
 
@@ -89,11 +118,21 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
           }));
         }
       }
+
+      // Scroll to input when message finishes
+      smoothScrollToInput();
     },
     onError: (err) => {
       console.error(`Chat error for ${selectedModel}:`, err);
     },
   });
+
+  // Auto-scroll to input form when loading state changes
+  useEffect(() => {
+    if (isLoading) {
+      smoothScrollToInput();
+    }
+  }, [isLoading, smoothScrollToInput]);
 
   // Log current status
   useEffect(() => {
@@ -177,6 +216,32 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
           },
         }
       );
+
+      // Scroll to input after sending message
+      smoothScrollToInput();
+    }
+  };
+
+  // Handler for model selection from ChatInputFooter
+  const handleModelSelect = (model: string) => {
+    if (model) {
+      console.log(`LandingChatbot: Switching to model ${model}`);
+      const modelName = model as ModelName;
+
+      // Set pending model change for immediate UI feedback
+      setPendingModelChange(modelName);
+
+      // Show a brief toast notification that model was switched
+      if (typeof window !== "undefined" && selectedModel !== modelName) {
+        const event = new CustomEvent("showToast", {
+          detail: { message: `Switched to ${modelName}`, type: "info" },
+        });
+        window.dispatchEvent(event);
+      }
+
+      // Always notify parent to update the global state
+      // This will update PersonalitiesSection
+      onFirstMessage?.([modelName]);
     }
   };
 
@@ -184,53 +249,27 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   if (selectedModels.length === 0) {
     return (
       <div className="h-full flex flex-col overflow-hidden relative">
-        <div className="h-full overflow-y-auto space-y-4 pb-32 w-full"></div>
-        <ChatInputFooter
-          selectedModel={pendingModelChange || null}
-          input=""
-          isLoading={false}
-          handleInputChange={() => {}}
-          handleSubmit={(e) => {
-            e.preventDefault();
-          }}
-          onModelSelect={(model) => {
-            if (model) {
-              const modelName = model as ModelName;
-
-              // Set pending model change for immediate UI feedback
-              setPendingModelChange(modelName);
-
-              onFirstMessage?.([modelName]);
-            }
-          }}
-        />
+        <div className="h-full overflow-y-auto space-y-4 pb-8 w-full"></div>
+        <div ref={chatInputRef}>
+          <ChatInputFooter
+            selectedModel={pendingModelChange || null}
+            input=""
+            isLoading={false}
+            handleInputChange={() => {}}
+            handleSubmit={(e) => {
+              e.preventDefault();
+            }}
+            onModelSelect={handleModelSelect}
+          />
+        </div>
       </div>
-    );
-  }
-
-  // Render the multi-model chat when multiple models are selected
-  if (selectedModels.length > 1) {
-    return (
-      <MultiModelChat
-        conversationId={conversationId}
-        selectedModels={selectedModels}
-        setComparisonData={setComparisonData}
-        onFirstMessage={onFirstMessage}
-        updateSelectedModels={(models) => {
-          // Only trigger onFirstMessage if there's an actual change
-          if (selectedModels.join(",") !== models.join(",")) {
-            // This will update the models in the parent component
-            onFirstMessage?.(models);
-          }
-        }}
-      />
     );
   }
 
   // Single model mode
   return (
     <div className="h-full flex flex-col overflow-hidden relative">
-      <div className="h-full overflow-y-auto space-y-4 pb-24 w-full">
+      <div className="h-full overflow-y-auto space-y-4 pb-8 w-full">
         {messages.map((m, index) => {
           // Get the model that generated this message, or use current model as fallback
           const messageModel =
@@ -265,54 +304,37 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
         )}
       </div>
 
-      <ChatInputFooter
-        selectedModel={pendingModelChange || selectedModel}
-        input={input}
-        isLoading={isLoading}
-        handleInputChange={handleInputChange}
-        handleSubmit={(e) => {
-          e.preventDefault();
-          // Use pending model change if available, otherwise use the selected model
-          const modelToUse = pendingModelChange || selectedModel;
-          if (modelToUse) {
-            // Generate a predictable ID for the expected assistant response
-            const predictedAssistantId = `assistant-${Date.now()}`;
-            
-            // Pre-emptively update the messageModels with the model that will respond
-            setMessageModels((prev) => ({
-              ...prev,
-              [predictedAssistantId]: modelToUse
-            }));
-            
-            // Include the current model in the request
-            handleSubmit(e, {
-              body: {
-                selectedModel: modelToUse,
-              },
-            });
-          }
-        }}
-        onModelSelect={(model) => {
-          if (model) {
-            console.log(`LandingChatbot: Switching to model ${model}`);
-            const modelName = model as ModelName;
+      <div ref={chatInputRef}>
+        <ChatInputFooter
+          selectedModel={pendingModelChange || selectedModel}
+          input={input}
+          isLoading={isLoading}
+          handleInputChange={handleInputChange}
+          handleSubmit={(e) => {
+            e.preventDefault();
+            // Use pending model change if available, otherwise use the selected model
+            const modelToUse = pendingModelChange || selectedModel;
+            if (modelToUse) {
+              // Generate a predictable ID for the expected assistant response
+              const predictedAssistantId = `assistant-${Date.now()}`;
 
-            // Set pending model change for immediate UI feedback
-            setPendingModelChange(modelName);
+              // Pre-emptively update the messageModels with the model that will respond
+              setMessageModels((prev) => ({
+                ...prev,
+                [predictedAssistantId]: modelToUse,
+              }));
 
-            // Show a brief toast notification that model was switched
-            if (typeof window !== "undefined" && selectedModel !== modelName) {
-              const event = new CustomEvent("showToast", {
-                detail: { message: `Switched to ${modelName}`, type: "info" },
+              // Include the current model in the request
+              handleSubmit(e, {
+                body: {
+                  selectedModel: modelToUse,
+                },
               });
-              window.dispatchEvent(event);
             }
-
-            // Update the selected model without starting a new conversation
-            onFirstMessage?.([modelName]);
-          }
-        }}
-      />
+          }}
+          onModelSelect={handleModelSelect}
+        />
+      </div>
     </div>
   );
 };
