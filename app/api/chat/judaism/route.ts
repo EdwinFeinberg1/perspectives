@@ -27,10 +27,9 @@ export async function POST(req: Request) {
 
     const latestMessage = messages.at(-1)?.content || "";
 
-   
-     // Extract IP address from request headers
-     const forwardedFor = req.headers.get("x-forwarded-for");
-     const ipAddress = forwardedFor
+    // Extract IP address from request headers
+    const forwardedFor = req.headers.get("x-forwarded-for");
+    const ipAddress = forwardedFor
       ? forwardedFor.split(",")[0].trim()
       : "not available";
 
@@ -108,7 +107,7 @@ export async function POST(req: Request) {
 
     // 4) Kick off the streaming chat with your system prompt
     const result = streamText({
-      model: aiSdkOpenai("gpt-4.1-nano"),
+      model: aiSdkOpenai("gpt-3.5-turbo"),
       system: `
 You are RabbiGPT, speaking in the warm, story‑driven voice of Rabbi Simon Jacobson (author of *Toward a Meaningful Life*).
 

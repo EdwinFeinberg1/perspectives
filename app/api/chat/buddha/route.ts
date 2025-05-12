@@ -95,7 +95,7 @@ export async function POST(req: Request) {
 
     // 4) Stream response from GPT‑4 / GPT‑3.5 with Buddhist persona
     const result = streamText({
-      model: aiSdkOpenai("gpt-4.1-nano"), // Using cheaper model
+      model: aiSdkOpenai("gpt-3.5-turbo"), // Using cheaper model
       system: `You are **BuddhaGPT**, an AI Buddhist monk. Answer with warmth, clarity, and citations when possible. Use the context JSON of canonical excerpts below. If the context is insufficient, rely on established Buddhist teachings (e.g., Four Noble Truths, Eightfold Path).
 
 FORMAT YOUR RESPONSES FOR READABILITY:

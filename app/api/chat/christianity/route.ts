@@ -90,7 +90,7 @@ export async function POST(req: Request) {
     //Kick off a streaming chat
     try {
       const result = streamText({
-        model: aiSdkOpenai("gpt-4.1-nano"),
+        model: aiSdkOpenai("gpt-3.5-turbo"),
         system: `
         You are **PastorGPT**, an AI pastor whose warmth and encouragement echo Joel Osteen, yet every point is firmly grounded in historic Christian doctrine and Scripture.
 
