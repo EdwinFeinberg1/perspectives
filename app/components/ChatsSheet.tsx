@@ -9,9 +9,10 @@ import {
   Check,
   X,
   AlertCircle,
+  Sparkles,
 } from "lucide-react";
 import { useConversations } from "../context/ConversationsContext";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, usePathname } from "next/navigation";
 import {
   Sheet,
   SheetContent,
@@ -37,6 +38,8 @@ const ChatsSheet: React.FC = () => {
   const [open, setOpen] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const editInputRef = useRef<HTMLInputElement>(null);
+  const pathname = usePathname();
+  const isPrayerActive = pathname === "/prayer";
 
   // Focus input when editing starts
   useEffect(() => {
@@ -120,6 +123,37 @@ const ChatsSheet: React.FC = () => {
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto h-full pb-24 relative z-10">
+          {/* Permanent Prayer entry */}
+          <div
+            className={`group flex items-center justify-between px-6 py-3.5 cursor-pointer transition-all duration-200 relative ${
+              isPrayerActive
+                ? "bg-[#e6d3a3]/10 border-l-2 border-[#e6d3a3]/60 pl-[22px]"
+                : "hover:bg-black/80 hover:border-l-2 hover:border-[#e6d3a3]/30 hover:pl-[22px]"
+            }`}
+            onClick={() => {
+              router.push("/prayer");
+              setOpen(false);
+            }}
+          >
+            <div className="flex items-center flex-1 overflow-hidden">
+              <Sparkles
+                size={16}
+                className={`mr-2 flex-shrink-0 ${
+                  isPrayerActive ? "text-[#e6d3a3]" : "text-[#e6d3a3]/80"
+                }`}
+              />
+              <span
+                className={`text-sm whitespace-normal truncate transition-colors ${
+                  isPrayerActive
+                    ? "text-[#e6d3a3]"
+                    : "text-[#e6d3a3]/80 group-hover:text-[#e6d3a3]"
+                }`}
+              >
+                Prayer
+              </span>
+            </div>
+          </div>
+
           {conversations.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 px-6 text-center">
               <MessageSquare size={24} className="text-[#e6d3a3]/40 mb-3" />

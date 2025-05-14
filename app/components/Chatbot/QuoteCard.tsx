@@ -12,11 +12,17 @@ import { uploadQuoteCard } from "@/app/utils/uploadQuoteCard";
 
 interface QuoteCardProps {
   text: string;
+  html?: string; // rich HTML version of the quote
   author: string;
   onClose: () => void;
 }
 
-const QuoteCard: React.FC<QuoteCardProps> = ({ text, author, onClose }) => {
+const QuoteCard: React.FC<QuoteCardProps> = ({
+  text,
+  html,
+  author,
+  onClose,
+}) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [isGeneratingImage, setIsGeneratingImage] = useState(false);
@@ -34,6 +40,8 @@ const QuoteCard: React.FC<QuoteCardProps> = ({ text, author, onClose }) => {
       const canvas = await html2canvas(cardRef.current, {
         backgroundColor: null,
         scale: 2,
+        useCORS: true,
+        allowTaint: true,
       });
       const dataUrl = canvas.toDataURL("image/png");
 
@@ -73,6 +81,8 @@ const QuoteCard: React.FC<QuoteCardProps> = ({ text, author, onClose }) => {
       const canvas = await html2canvas(cardRef.current, {
         backgroundColor: null,
         scale: 2,
+        useCORS: true,
+        allowTaint: true,
       });
       canvas.toBlob(async (blob) => {
         if (!blob) return;
@@ -185,8 +195,10 @@ const QuoteCard: React.FC<QuoteCardProps> = ({ text, author, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-black/90 rounded-xl border border-[#ddc39a]/30 p-6 max-w-md w-full">
-        <h3 className="text-[#ddc39a] text-xl font-medium mb-4">Foster the Flame</h3>
+      <div className="bg-black/90 backdrop-blur-md rounded-2xl shadow-2xl border border-[#ddc39a]/30 p-6 max-w-md w-full">
+        <h3 className="text-[#ddc39a] text-xl font-medium mb-4">
+          Foster the Flame
+        </h3>
         <div
           ref={cardRef}
           className="bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] p-6 rounded-lg border border-[#ddc39a]/20 mb-4"
@@ -200,6 +212,7 @@ const QuoteCard: React.FC<QuoteCardProps> = ({ text, author, onClose }) => {
                   width={40}
                   height={40}
                   className="object-cover"
+                  crossOrigin="anonymous"
                 />
               </div>
             ) : (
@@ -221,9 +234,16 @@ const QuoteCard: React.FC<QuoteCardProps> = ({ text, author, onClose }) => {
             )}
             <span className="text-[#ddc39a] font-medium">{author}</span>
           </div>
-          <blockquote className="text-[#ddc39a]/90 text-lg italic mb-3 leading-relaxed">
-            &quot;{text}&quot;
-          </blockquote>
+          {html ? (
+            <div
+              className="markdown-content prose prose-invert prose-headings:text-[#ddc39a] prose-p:text-[#ddc39a]/90 max-w-none mb-3"
+              dangerouslySetInnerHTML={{ __html: html as string }}
+            />
+          ) : (
+            <blockquote className="text-[#ddc39a]/90 text-lg italic mb-3 leading-relaxed">
+              &quot;{text}&quot;
+            </blockquote>
+          )}
           <div className="flex justify-end">
             <div className="text-xs text-[#ddc39a]/60">ask-sephira.com</div>
           </div>

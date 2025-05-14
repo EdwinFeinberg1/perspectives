@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { PERSONALITIES } from "@/app/constants/personalities";
@@ -48,6 +49,7 @@ const Bubble: React.FC<BubbleProps> = ({
   const { content, role, followupSuggestions, toolInvocations } = message;
   const [isHighlightMode, setIsHighlightMode] = useState(false);
   const [highlightedText, setHighlightedText] = useState("");
+  const [highlightedHtml, setHighlightedHtml] = useState("");
   const [showCard, setShowCard] = useState(false);
 
   // Use default follow-ups if none provided and this is an assistant message
@@ -64,7 +66,21 @@ const Bubble: React.FC<BubbleProps> = ({
   const handleHighlightSelection = () => {
     const selection = window.getSelection();
     if (selection && selection.toString().trim()) {
+      // Grab the plain text for sharing purposes
       setHighlightedText(selection.toString().trim());
+
+      // Capture the selected HTML fragment for rich rendering
+      try {
+        const range = selection.getRangeAt(0);
+        const clonedContents = range.cloneContents();
+        const div = document.createElement("div");
+        div.appendChild(clonedContents);
+        setHighlightedHtml(div.innerHTML);
+      } catch {
+        // Fallback: store just the plain text if something goes wrong
+        setHighlightedHtml(selection.toString().trim());
+      }
+
       setShowCard(true);
     }
   };
@@ -75,6 +91,7 @@ const Bubble: React.FC<BubbleProps> = ({
     if (isHighlightMode) {
       // Exit highlight mode
       setShowCard(false);
+      setHighlightedHtml("");
     }
   };
 
@@ -286,10 +303,12 @@ ${result.summary}
       {showCard && (
         <QuoteCard
           text={highlightedText}
+          html={highlightedHtml}
           author={model || "Perspective"}
           onClose={() => {
             setShowCard(false);
             setIsHighlightMode(false);
+            setHighlightedHtml("");
           }}
         />
       )}

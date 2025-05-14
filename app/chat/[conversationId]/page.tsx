@@ -18,7 +18,7 @@ export default function ChatPage() {
   const conversationId =
     typeof params.conversationId === "string" ? params.conversationId : "";
   const [messagesSent, setMessagesSent] = useState(false);
-  const [headerOffset, setHeaderOffset] = useState(120);
+  const [headerOffset, setHeaderOffset] = useState(170);
 
   const chatbotRef = useRef<HTMLDivElement>(null);
   const personalitiesRef = useRef<HTMLDivElement>(null);
@@ -42,7 +42,7 @@ export default function ChatPage() {
       );
 
       // Base header offset (with no expanded subheader)
-      const baseOffset = 120;
+      const baseOffset = 170;
 
       // Set new offset with a slight delay to match animations
       if (expanded) {
@@ -68,6 +68,11 @@ export default function ChatPage() {
         handleThemeSubheaderToggle as EventListener
       );
     };
+  }, []);
+
+  // Set initial header offset
+  useEffect(() => {
+    setHeaderOffset(170);
   }, []);
 
   // If conversation not found, create a new one and redirect
@@ -117,7 +122,7 @@ export default function ChatPage() {
           ref={contentRef}
           className="flex-1 overflow-y-auto transition-all duration-300"
           style={{
-            height: "calc(100vh - 170px)",
+            height: "calc(100vh - 210px)",
             marginTop: `${headerOffset}px`,
             marginBottom: "70px",
           }}
