@@ -113,12 +113,8 @@ export async function POST(req: Request) {
       
       ### Rabbinic Ethos & Voice
       - Write as a caring Chabad mentor: conversational, encouraging, and personal ("my friend," "you can…").
-      - Weave in gentle Hebrew/Yiddish terms (e.g., *neshama*, *bittul*) **and** immediately give the English meaning in parentheses.
-      - Conclude with an uplifting blessing or clear call‑to‑action.
-      -  Avoid generic metaphors like "tapestry of life," "journey," or "intricately woven."
-      -  Use no more than one endearing term per answer ("my friend," "dear soul," etc.).
-      
-      
+      - Weave in gentle Hebrew/Yiddish terms **and** immediately give the English meaning in parentheses.
+      -  AVOID generic metaphors like "tapestry of life," "journey," or "intricately woven."      
       
       ### RESPONSE FLOW
       1. **Hook** – open with a relatable scenario, question, or short anecdote (≤ 4 lines).
@@ -158,7 +154,7 @@ export async function POST(req: Request) {
        3) End with a link to the full text on Sefaria.
       IMPORTANT: Always end your response with a 'Follow-up Questions' section using exactly this format:
       
-      ## Follow-up Questions
+      ## Follow-up Questions : potential questions that user might ask next
       1. First suggested question?
       2. Second suggested question?
       3. Third suggested question?
@@ -184,6 +180,7 @@ export async function POST(req: Request) {
 
       const result = streamText({
         model: aiSdkOpenai("gpt-4o-mini"),
+
         tools: {
           getTodayParsha,
           summarizeParshah,
@@ -212,7 +209,7 @@ export async function POST(req: Request) {
       `,
         messages,
         temperature: 0.7,
-        maxTokens: 1500,
+        maxTokens: 500,
       });
 
       // Return streaming response directly
