@@ -10,6 +10,7 @@ import {
   Menu,
   ChevronDown,
   ChevronUp,
+  UserPlus,
 } from "lucide-react";
 import {
   Sheet,
@@ -236,6 +237,15 @@ const Header: React.FC<{
                   >
                     <Sparkles size={12} className="relative z-10" />
                   </Link>
+
+                  {/* Sign Up button */}
+                  <Link
+                    href="/sign-up"
+                    className="relative flex items-center justify-center px-3 py-1.5 bg-gradient-to-r from-[#e6d3a3] to-[#d4b978] rounded-full border border-[#e6d3a3]/40 text-black hover:from-[#d4b978] hover:to-[#e6d3a3] transition-all duration-300 shadow-md text-xs font-medium"
+                    aria-label="Sign Up"
+                  >
+                    <UserPlus size={12} className="mr-1" /> Sign&nbsp;Up
+                  </Link>
                 </div>
               ) : (
                 <div className="col-span-12 flex flex-col gap-2">
@@ -357,6 +367,15 @@ const Header: React.FC<{
                     >
                       <Sparkles className="h-4 w-4 mr-2 text-[#e6d3a3]" />
                       <span className="text-sm font-medium">Need Prayer</span>
+                    </Link>
+
+                    {/* Sign Up button - desktop */}
+                    <Link
+                      href="/sign-up"
+                      className="inline-flex items-center bg-gradient-to-r from-[#e6d3a3] to-[#d4b978] px-4 py-2 rounded-full text-black font-medium hover:from-[#d4b978] hover:to-[#e6d3a3] transition-all duration-300 shadow-md"
+                    >
+                      <UserPlus className="h-4 w-4 mr-2" />
+                      <span className="text-sm font-medium">Sign Up</span>
                     </Link>
                   </div>
                 ) : (
