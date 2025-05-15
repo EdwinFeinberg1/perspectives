@@ -9,6 +9,13 @@ export const runtime = "edge";
  * based on the selectedModel parameter in the request body
  */
 export async function POST(req: Request) {
+  // Enhanced debugging
+  console.log("🔧 Edge Runtime Debug Info:");
+  console.log("🔑 OPENAI_API_KEY exists:", !!process.env.OPENAI_API_KEY);
+  console.log(
+    "🔑 OPENAI_API_KEY length:",
+    process.env.OPENAI_API_KEY?.length || 0
+  );
   console.log("🔑 Keys in process.env:", Object.keys(process.env));
   console.log(
     "🔑 OPENAI_API_KEY:",
@@ -42,15 +49,34 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-    // Forward the request to the appropriate API route
+    // Log the target URL being used
     const targetUrl = new URL(apiRoute, req.url);
+    console.log("🔄 Forwarding to:", targetUrl.toString());
+
+    // Forward the request to the appropriate API route
     const response = await fetch(targetUrl, {
       method: "POST",
       body: JSON.stringify(body),
     });
 
+    // Log response status
+    console.log("📥 Response status:", response.status, response.statusText);
+
     // Ensure error status codes are properly forwarded
     if (!response.ok) {
+      console.error(
+        "❌ Error response from API:",
+        response.status,
+        response.statusText
+      );
+      // Try to read response body for more details
+      try {
+        const errorText = await response.text();
+        console.error("❌ Error details:", errorText.slice(0, 500));
+      } catch (_) {
+        console.error("❌ Could not read error details");
+      }
+
       return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
@@ -68,6 +94,9 @@ export async function POST(req: Request) {
         "Cache-Control": "no-transform",
         "Content-Type":
           response.headers.get("Content-Type") || "application/json",
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Headers": "Content-Type",
       },
     });
   } catch (error) {
