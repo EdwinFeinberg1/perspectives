@@ -9,6 +9,15 @@ export const runtime = "edge";
  * based on the selectedModel parameter in the request body
  */
 export async function POST(req: Request) {
+  console.log("🔑 Keys in process.env:", Object.keys(process.env));
+  console.log("🔑 OPENAI_API_KEY:", process.env.OPENAI_API_KEY?.slice(0,8) || "(missing)");
+
+  if (!process.env.OPENAI_API_KEY) {
+    return NextResponse.json(
+      { error: "Missing OPENAI_API_KEY in production!" },
+      { status: 500 }
+    );
+  }
   try {
     // Clone the request to read the body
     const clonedReq = req.clone();
