@@ -369,14 +369,7 @@ const Header: React.FC<{
                       <span className="text-sm font-medium">Need Prayer</span>
                     </Link>
 
-                    {/* Sign Up button - desktop */}
-                    <Link
-                      href="/sign-up"
-                      className="inline-flex items-center bg-gradient-to-r from-[#e6d3a3] to-[#d4b978] px-4 py-2 rounded-full text-black font-medium hover:from-[#d4b978] hover:to-[#e6d3a3] transition-all duration-300 shadow-md"
-                    >
-                      <UserPlus className="h-4 w-4 mr-2" />
-                      <span className="text-sm font-medium">Sign Up</span>
-                    </Link>
+                    
                   </div>
                 ) : (
                   <>
