@@ -69,14 +69,14 @@ export async function POST(req: Request) {
         response.status,
         response.statusText
       );
-      // Try to read response body for more details
+      // Clone the response so we can safely read its body for logging
+      const errorClone = response.clone();
       try {
-        const errorText = await response.text();
+        const errorText = await errorClone.text();
         console.error("❌ Error details:", errorText.slice(0, 500));
-      } catch (_) {
+      } catch {
         console.error("❌ Could not read error details");
       }
-
       return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
