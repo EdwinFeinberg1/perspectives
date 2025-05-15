@@ -21,6 +21,22 @@ const {
   OPENAI_API_KEY,
 } = process.env as Record<string, string>;
 
+console.log("🔧 BuddhaGPT Env Debug:");
+console.log("ASTRADB_DB_KEYSPACE exists:", !!ASTRADB_DB_KEYSPACE);
+console.log(
+  "ASTRADB_DB_COLLECTION_BUDDHA exists:",
+  !!ASTRADB_DB_COLLECTION_BUDDHA
+);
+console.log(
+  "ASTRA_DB_APPLICATION_TOKEN_BUDDHA length:",
+  ASTRA_DB_APPLICATION_TOKEN_BUDDHA?.length || 0
+);
+console.log(
+  "ASTRA_DB_API_ENDPOINT_BUDDHA:",
+  ASTRA_DB_API_ENDPOINT_BUDDHA?.slice(0, 30) || "(missing)"
+);
+console.log("OPENAI_API_KEY exists:", !!OPENAI_API_KEY);
+
 // -----------------------------------------------------------------------------
 // Clients
 // -----------------------------------------------------------------------------
@@ -87,8 +103,17 @@ export async function POST(req: Request) {
         (d) => (d as unknown as BuddhaDocument).text
       );
       docContext = JSON.stringify(docs);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Vector search failed", err);
+      if (err instanceof Error && err.message?.includes("Forbidden")) {
+        return new Response(
+          JSON.stringify({
+            error:
+              "Astra DB access forbidden. Check your ASTRA_DB_APPLICATION_TOKEN_BUDDHA and endpoint.",
+          }),
+          { status: 500, headers: { "Content-Type": "application/json" } }
+        );
+      }
     }
 
     // 4) Stream response from GPT‑4 / GPT‑3.5 with Buddhist persona
