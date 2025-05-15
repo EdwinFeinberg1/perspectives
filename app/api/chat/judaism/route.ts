@@ -7,7 +7,7 @@ import OpenAI from "openai";
 
 import { getTodayParsha } from "@/lib/tools/parshah/getTodayParsha";
 import { summarizeParshah } from "@/lib/tools/parshah/summarizeParshah";
-import { logQuestion } from "@/lib/logging";
+//import { logQuestion } from "@/lib/logging";
 
 const {
   ASTRADB_DB_KEYSPACE,
