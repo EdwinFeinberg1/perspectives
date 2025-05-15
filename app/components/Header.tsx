@@ -10,7 +10,7 @@ import {
   Menu,
   ChevronDown,
   ChevronUp,
-  UserPlus,
+  
 } from "lucide-react";
 import {
   Sheet,
