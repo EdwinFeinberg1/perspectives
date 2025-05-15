@@ -18,9 +18,9 @@ export async function logQuestion(
     });
 
     if (error) {
-      console.error("Error logging question:", error);
+      console.error("Error logging question to Supabase:", error);
     }
   } catch (err) {
-    console.error("Failed to log question:", err);
+    console.error("Failed to log question to Supabase:", err);
   }
 }
