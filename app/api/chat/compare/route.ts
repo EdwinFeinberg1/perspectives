@@ -1,6 +1,6 @@
 import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
-import { logQuestion } from "../../../../lib/logging";
+//import { logQuestion } from "../../../../lib/logging";
 import OpenAI from "openai";
 
 const { OPENAI_API_KEY } = process.env;
@@ -13,14 +13,19 @@ export async function POST(req: Request) {
 
     
     // Extract IP address from request headers
-    const forwardedFor = req.headers.get("x-forwarded-for");
-    const ipAddress = forwardedFor
-     ? forwardedFor.split(",")[0].trim()
-     : "not available";
+    // const forwardedFor = req.headers.get("x-forwarded-for");
+    // const ipAddress = forwardedFor
+    //  ? forwardedFor.split(",")[0].trim()
+    //  : "not available";
 
-    await logQuestion(messages[messages.length - 1].content, "CompareGPT", ipAddress);
+    /*
+    await logQuestion(
+      messages[messages.length - 1].content,
+      "CompareGPT",
+      ipAddress
+    );
+    */
 
-    
 
     if (!messages || messages.length === 0) {
       return new Response("No messages provided", { status: 400 });
