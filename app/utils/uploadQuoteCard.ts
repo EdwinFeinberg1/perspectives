@@ -1,11 +1,7 @@
 // uploadQuoteCard.ts
 
-import { SupabaseClient } from "@supabase/supabase-js";
-import { supabase as untypedSupabase } from "@/lib/supabase";
+import { supabase } from "@/lib/supabase";
 import { dataUrlToBlob } from "./dataUrlToBlob";
-
-// Explicitly type supabase
-const supabase: SupabaseClient = untypedSupabase;
 
 export const uploadQuoteCard = async (dataUrl: string, filename: string) => {
   const blob = dataUrlToBlob(dataUrl);
