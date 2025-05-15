@@ -21,8 +21,20 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
-const Header: React.FC<{ isPrayerPage?: boolean }> = ({
+const Header: React.FC<{
+  isPrayerPage?: boolean;
+  prayerSearch?: string;
+  onPrayerSearch?: (search: string) => void;
+  selectedCategories?: Set<string>;
+  togglePrayerCategory?: (cat: string) => void;
+  counts?: Record<string, number>;
+}> = ({
   isPrayerPage = false,
+  prayerSearch = "",
+  onPrayerSearch,
+  selectedCategories,
+  togglePrayerCategory,
+  counts = {},
 }) => {
   const { currentTheme, selectNewTheme } = useTheme();
   const [subHeaderExpanded, setSubHeaderExpanded] = useState(false);
@@ -30,6 +42,7 @@ const Header: React.FC<{ isPrayerPage?: boolean }> = ({
   const [overlayTop, setOverlayTop] = useState("0px");
   const [showingPrompts, setShowingPrompts] = useState(false);
   const subHeaderRef = React.useRef<HTMLDivElement>(null);
+  const contentRef = React.useRef<HTMLDivElement>(null);
 
   // Prayer section state
   const [expandedSection, setExpandedSection] = useState<
@@ -145,11 +158,18 @@ const Header: React.FC<{ isPrayerPage?: boolean }> = ({
           <div className="absolute inset-0 bg-dark backdrop-blur-lg rounded-xl border border-[#e6d3a3]/15 shadow-[0_8px_32px_rgba(0,0,0,0.2)] after:absolute after:inset-0 after:bg-gradient-to-b after:from-[#e6d3a3]/5 after:to-transparent after:rounded-xl"></div>
 
           {/* Main header content */}
-          <div className="relative h-[100px] sm:h-[110px] md:h-[120px] px-2 sm:px-6 md:px-8 flex items-center justify-between">
+          <div
+            ref={contentRef}
+            className={`relative px-2 sm:px-6 md:px-8 flex items-center justify-between ${
+              isPrayerPage
+                ? "h-[130px] sm:h-[130px] md:h-[120px]"
+                : "h-[100px] sm:h-[110px] md:h-[120px]"
+            }`}
+          >
             {/* Mobile layout (12-column grid) for iPhone 12-15 */}
             <div className="w-full grid grid-cols-12 gap-2 items-center md:hidden">
               {/* First row */}
-              <div className="col-span-12 flex justify-between items-center mb-2">
+              <div className="col-span-12 flex justify-between items-center mb-1">
                 {/* Left: Chat bubble - 48pt hit area */}
                 <div className="flex items-center">
                   <div className="w-12 h-12 flex items-center justify-center">
@@ -191,8 +211,8 @@ const Header: React.FC<{ isPrayerPage?: boolean }> = ({
                 </div>
               </div>
 
-              {/* Second row with Theme and Prayer buttons */}
-              {!isPrayerPage && (
+              {/* Second row with Theme and Prayer buttons - or search for prayer page */}
+              {!isPrayerPage ? (
                 <div className="col-span-12 flex justify-center items-center space-x-2 mt-1">
                   {/* Theme button */}
                   <button
@@ -216,6 +236,38 @@ const Header: React.FC<{ isPrayerPage?: boolean }> = ({
                   >
                     <Sparkles size={12} className="relative z-10" />
                   </Link>
+                </div>
+              ) : (
+                <div className="col-span-12 flex flex-col gap-2">
+                  {/* Mobile Search bar for prayer page */}
+                  <div className="w-full">
+                    <input
+                      type="text"
+                      value={prayerSearch}
+                      onChange={(e) => onPrayerSearch?.(e.target.value)}
+                      placeholder="Search prayers..."
+                      className="w-full bg-[#0c1320] rounded-full border border-[#e6d3a3]/30 text-sm text-[#e6d3a3] px-3 py-1.5 focus:outline-none focus:border-[#e6d3a3]/70 focus:ring-1 focus:ring-[#e6d3a3]/30"
+                    />
+                  </div>
+
+                  {/* Mobile category filters below search bar */}
+                  <div className="w-full flex items-center space-x-1.5 overflow-x-auto scrollbar-hide pb-1">
+                    {selectedCategories &&
+                      togglePrayerCategory &&
+                      Object.entries(counts).map(([category, count]) => (
+                        <button
+                          key={category}
+                          onClick={() => togglePrayerCategory(category)}
+                          className={`shrink-0 whitespace-nowrap text-xs px-2 py-1 rounded-full border transition-all ${
+                            selectedCategories.has(category)
+                              ? "bg-[#e6d3a3]/20 border-[#e6d3a3]/50 text-[#e6d3a3]"
+                              : "bg-[#0c1320] border-[#e6d3a3]/20 text-[#e6d3a3]/70 hover:border-[#e6d3a3]/30"
+                          }`}
+                        >
+                          {category} ({count})
+                        </button>
+                      ))}
+                  </div>
                 </div>
               )}
             </div>
@@ -257,53 +309,90 @@ const Header: React.FC<{ isPrayerPage?: boolean }> = ({
                 </div>
               </div>
 
-              {/* Second row: Theme and Prayer buttons */}
-              {!isPrayerPage && (
-                <div className="flex items-center justify-center space-x-3 pt-2 border-t border-[#e6d3a3]/10 flex-1">
-                  {/* Theme button */}
-                  <button
-                    onClick={() => toggleSubHeader("theme")}
-                    className={`inline-flex items-center bg-[#0c1320] px-4 py-2 rounded-full border border-[#e6d3a3]/20 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/30 transition-all duration-300 animate-breathing animate-aura relative ${
-                      expandedSection === "theme"
-                        ? "bg-[#1c2434] border-[#e6d3a3]/30"
-                        : ""
-                    }`}
-                    aria-expanded={expandedSection === "theme"}
-                    aria-controls="theme-subheader"
-                  >
-                    <Sparkles className="h-4 w-4 mr-2 text-[#e6d3a3]" />
-                    <span className="text-sm font-medium">
-                      Contemplating{" "}
-                      <span className="italic">{currentTheme}</span>
-                    </span>
-                    <RefreshCw
-                      size={14}
-                      className="ml-2 animate-subtle-glow"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        selectNewTheme();
-                      }}
-                    />
-                    {expandedSection === "theme" ? (
-                      <ChevronUp size={16} className="ml-2 text-[#e6d3a3]/70" />
-                    ) : (
-                      <ChevronDown
-                        size={16}
-                        className="ml-2 text-[#e6d3a3]/70"
+              {/* Second row: Theme and Prayer buttons OR Search and Categories for Prayer page */}
+              <div className="flex items-center justify-between pt-2 border-t border-[#e6d3a3]/10 flex-1">
+                {!isPrayerPage ? (
+                  <div className="flex items-center space-x-3">
+                    {/* Theme button */}
+                    <button
+                      onClick={() => toggleSubHeader("theme")}
+                      className={`inline-flex items-center bg-[#0c1320] px-4 py-2 rounded-full border border-[#e6d3a3]/20 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/30 transition-all duration-300 animate-breathing animate-aura relative ${
+                        expandedSection === "theme"
+                          ? "bg-[#1c2434] border-[#e6d3a3]/30"
+                          : ""
+                      }`}
+                      aria-expanded={expandedSection === "theme"}
+                      aria-controls="theme-subheader"
+                    >
+                      <Sparkles className="h-4 w-4 mr-2 text-[#e6d3a3]" />
+                      <span className="text-sm font-medium">
+                        Contemplating{" "}
+                        <span className="italic">{currentTheme}</span>
+                      </span>
+                      <RefreshCw
+                        size={14}
+                        className="ml-2 animate-subtle-glow"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          selectNewTheme();
+                        }}
                       />
-                    )}
-                  </button>
+                      {expandedSection === "theme" ? (
+                        <ChevronUp
+                          size={16}
+                          className="ml-2 text-[#e6d3a3]/70"
+                        />
+                      ) : (
+                        <ChevronDown
+                          size={16}
+                          className="ml-2 text-[#e6d3a3]/70"
+                        />
+                      )}
+                    </button>
 
-                  {/* Prayer button */}
-                  <Link
-                    href="/prayer"
-                    className="inline-flex items-center bg-[#0c1320] px-4 py-2 rounded-full border border-[#e6d3a3]/20 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/30 transition-all duration-300 animate-breathing animate-aura"
-                  >
-                    <Sparkles className="h-4 w-4 mr-2 text-[#e6d3a3]" />
-                    <span className="text-sm font-medium">Need Prayer</span>
-                  </Link>
-                </div>
-              )}
+                    {/* Prayer button */}
+                    <Link
+                      href="/prayer"
+                      className="inline-flex items-center bg-[#0c1320] px-4 py-2 rounded-full border border-[#e6d3a3]/20 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/30 transition-all duration-300 animate-breathing animate-aura"
+                    >
+                      <Sparkles className="h-4 w-4 mr-2 text-[#e6d3a3]" />
+                      <span className="text-sm font-medium">Need Prayer</span>
+                    </Link>
+                  </div>
+                ) : (
+                  <>
+                    {/* Search bar - now on the left */}
+                    <div className="w-[200px] lg:w-[240px]">
+                      <input
+                        type="text"
+                        value={prayerSearch}
+                        onChange={(e) => onPrayerSearch?.(e.target.value)}
+                        placeholder="Search prayers..."
+                        className="w-full bg-[#0c1320] rounded-full border border-[#e6d3a3]/30 text-sm text-[#e6d3a3] px-3 py-1.5 focus:outline-none focus:border-[#e6d3a3]/70 focus:ring-1 focus:ring-[#e6d3a3]/30"
+                      />
+                    </div>
+
+                    {/* Prayer categories filter - now on the right */}
+                    <div className="flex items-center space-x-2 overflow-x-auto scrollbar-hide ml-4">
+                      {selectedCategories &&
+                        togglePrayerCategory &&
+                        Object.entries(counts).map(([category, count]) => (
+                          <button
+                            key={category}
+                            onClick={() => togglePrayerCategory(category)}
+                            className={`whitespace-nowrap text-xs px-3 py-1.5 rounded-full border transition-all ${
+                              selectedCategories.has(category)
+                                ? "bg-[#e6d3a3]/20 border-[#e6d3a3]/50 text-[#e6d3a3]"
+                                : "bg-[#0c1320] border-[#e6d3a3]/20 text-[#e6d3a3]/70 hover:border-[#e6d3a3]/30"
+                            }`}
+                          >
+                            {category} ({count})
+                          </button>
+                        ))}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -431,6 +520,16 @@ const Header: React.FC<{ isPrayerPage?: boolean }> = ({
           50% {
             transform: scale(1.02);
           }
+        }
+
+        /* Hide scrollbar but allow scrolling */
+        .scrollbar-hide {
+          -ms-overflow-style: none; /* IE and Edge */
+          scrollbar-width: none; /* Firefox */
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none; /* Chrome, Safari, Opera */
         }
       `}</style>
     </>
