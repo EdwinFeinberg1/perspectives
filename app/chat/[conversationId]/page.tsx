@@ -159,7 +159,7 @@ export default function ChatPage() {
           </div>
         </div>
 
-        <Footer />
+        <Footer/>
       </main>
     </>
   );

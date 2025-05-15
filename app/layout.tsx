@@ -1,6 +1,7 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
 import { ConversationsProvider } from "./context/ConversationsContext";
+import { FavoritesProvider } from "./context/FavoritesContext";
 import { ThemeProvider } from "./features/theme";
 import { Analytics } from "@vercel/analytics/next";
 import { SafeArea } from "./components/SafeArea";
@@ -28,11 +29,13 @@ const RootLayout = ({ children }) => {
     <html lang="en" className={`${inter.variable} font-sans h-full`}>
       <body className="min-h-screen w-full bg-slate-950 flex flex-col overflow-hidden overscroll-none">
         <ConversationsProvider>
-          <ThemeProvider>
-            <ToastProvider>
-              <SafeArea>{children}</SafeArea>
-            </ToastProvider>
-          </ThemeProvider>
+          <FavoritesProvider>
+            <ThemeProvider>
+              <ToastProvider>
+                <SafeArea>{children}</SafeArea>
+              </ToastProvider>
+            </ThemeProvider>
+          </FavoritesProvider>
         </ConversationsProvider>
         <Analytics />
       </body>

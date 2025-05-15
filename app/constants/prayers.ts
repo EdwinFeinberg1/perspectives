@@ -17,6 +17,11 @@ export const Categories = {
   Health: "health",
   Discernment: "discernment",
   AnyTime: "any_time",
+  Scripture: "scripture",
+  Meditation: "meditation",
+  Liturgical: "liturgical",
+  Affirmation: "affirmation",
+  Chant: "chant",
 } as const;
 export type Category = (typeof Categories)[keyof typeof Categories];
 
@@ -170,6 +175,235 @@ by You we live and by You we die, and to You is the resurrection.`,
     title: "Prayer for Discernment",
     text: "Light of Wisdom, clear the noise around me; help me see the path that aligns with truth and love.",
   },
+  {
+    id: "76",
+    faith: Faiths.Christianity,
+    category: Categories.Scripture,
+    title: 'Rest for the Weary (Matthew 11:28)',
+    text: 'Come to me, all you who are weary and burdened, and I will give you rest.',
+    source: 'https://www.biblegateway.com/passage/?search=Matthew+11%3A28',
+    tags: ['burnout', 'stress', 'focus']
+  },
+  {
+    id: "77",
+    faith: Faiths.Christianity,
+    category: Categories.Scripture,
+    title: 'Trust in the Lord (Proverbs 3:5–6)',
+    text: 'Trust in the LORD with all your heart and lean not on your own understanding; in all your ways acknowledge Him, and He will make your paths straight.',
+    source: 'https://www.biblegateway.com/passage/?search=Proverbs+3%3A5-6',
+    tags: ['courage', 'guidance', 'trust']
+  },
+  {
+    id: "78",
+    faith: Faiths.Christianity,
+    category: Categories.Scripture,
+    title: 'The Lord Is Near the Brokenhearted (Psalm 34:18)',
+    text: 'The LORD is near to the brokenhearted and saves those who are crushed in spirit.',
+    source: 'https://www.biblegateway.com/passage/?search=Psalm+34%3A18',
+    tags: ['grief', 'comfort', 'love']
+  },
+  {
+    id: "79",
+    faith: Faiths.Christianity,
+    category: Categories.Scripture,
+    title: 'Never Will I Leave You (Hebrews 13:5)',
+    text: '“Never will I leave you; never will I forsake you.”',
+    source: 'https://www.biblegateway.com/passage/?search=Hebrews+13%3A5',
+    tags: ['loneliness', 'comfort', 'love']
+  },
+  {
+    id: "80",
+    faith: Faiths.Christianity,
+    category: Categories.Scripture,
+    title: 'Rejoice in This Day (Psalm 118:24)',
+    text: 'This is the day the LORD has made; let us rejoice and be glad in it.',
+    source: 'https://www.biblegateway.com/passage/?search=Psalm+118%3A24',
+    tags: ['gratitude', 'joy', 'focus']
+  },
+  {
+    id: "81",
+    faith: Faiths.Islam,
+    category: Categories.Liturgical,
+    title: 'Dua for Relief from Anxiety and Sorrow',
+    text: 'اللّٰهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الهَمِّ وَالحَزَنِ، وَالعَجزِ وَالكَسَلِ، وَالبُخلِ وَالجُبنِ، وَضَلَعِ الدَّيْنِ وَغَلَبَةِ الرِّجَالِ',
+    transliteration: "Allahumma inni a'udhu bika minal-hammi wal-hazani, wal-'ajzi wal-kasali, wal-bukhli wal-jubni, wa dhala'id-dayni wa ghalabatir-rijaal.",
+    translation: 'O Allah, I seek refuge in You from worry and grief, from weakness and laziness, from miserliness and cowardice, and from being overwhelmed by debt and overpowered by others.',
+    source: 'https://sunnah.com/nasai:5537',
+    language: 'Arabic',
+    tags: ['stress', 'anxiety', 'grief']
+  },
+  {
+    id: "82",
+    faith: Faiths.Islam,
+    category: Categories.Scripture,
+    title: 'Prayer for Strength and Mercy (Qur’an 2:286)',
+    text: 'رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ، وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا',
+    transliteration: "Rabbana wa la tuhammilna ma la taqata lana bih, wa'fu anna, waghfir lana, warhamna.",
+    translation: 'Our Lord, do not burden us with more than we have strength to bear. Pardon us, forgive us, and have mercy on us.',
+    source: 'https://quran.com/2/286',
+    language: 'Arabic',
+    tags: ['burnout', 'forgiveness', 'mercy']
+  },
+  {
+    id: "83",
+    faith: Faiths.Islam,
+    category: Categories.Meditation,
+    title: 'Dua for Guidance (Istikhara)',
+    text: 'O Allah, I seek Your guidance in my decision, for You know and I do not. Choose the best path for me, grant me benefit in it, and make me content with the outcome.',
+    tags: ['courage', 'guidance', 'trust']
+  },
+  {
+    id: "84",
+    faith: Faiths.Islam,
+    category: Categories.Meditation,
+    title: 'Dua for Community and Belonging',
+    text: 'O Allah, unite our hearts and let no one among us feel alone. Remove prejudice from our midst and make us instruments of Your mercy, so that everyone finds acceptance and love in our community.',
+    tags: ['loneliness', 'community', 'love']
+  },
+  {
+    id: "85",
+    faith: Faiths.Islam,
+    category: Categories.Meditation,
+    title: 'Dua of Gratitude for Blessings',
+    text: 'O Allah, help me remember You and give thanks for Your countless blessings. I praise You for the small and great gifts in my life, and I am grateful for every mercy You have bestowed upon me.',
+    tags: ['gratitude', 'love', 'focus']
+  },
+  {
+    id: "86",
+    faith: Faiths.Judaism,
+    category: Categories.Liturgical,
+    title: 'Hashkiveinu (Prayer for Peaceful Rest)',
+    text: 'הַשְׁכִּיבֵנוּ יְיָ אֱלֹהֵֽינוּ לְשָׁלוֹם, וְהַעֲמִידֵֽנוּ מַלְכֵּֽנוּ לְחַיִּים. וּפְרוֹשׂ עָלֵֽינוּ סֻכַּת שְׁלוֹמֶֽךָ.',
+    transliteration: "Hashkiveinu Adonai Eloheinu l'shalom, v'ha'amideinu Malkeinu l'chayyim. Ufros aleinu sukkat sh'lomekha.",
+    translation: 'Cause us, O Lord our God, to lie down in peace, and raise us up to life. Spread over us Your shelter of peace.',
+    source: 'https://www.sefaria.org/sheets/29587?lang=en',
+    language: 'Hebrew',
+    tags: ['burnout', 'stress', 'comfort']
+  },
+  {
+    id: "87",
+    faith: Faiths.Judaism,
+    category: Categories.Scripture,
+    title: "Chazak v'Ematz (Joshua 1:9)",
+    text: 'חֲזַק וֶאֱמָץ, אַל־תַּעֲרֹץ וְאַל־תֵּחָת, כִּי עִמְּךָ יְיָ אֱלֹהֶיךָ בְּכֹל אֲשֶׁר תֵּלֵךְ.',
+    transliteration: "Chazak ve'ematz, al ta'arotz v'al teichat, ki imkha Adonai Eloheikha b'khol asher teileikh.",
+    translation: 'Be strong and courageous; do not be terrified or dismayed, for the Lord your God is with you wherever you go.',
+    source: 'https://www.sefaria.org/Joshua.1.9',
+    language: 'Hebrew',
+    tags: ['courage', 'fear', 'strength']
+  },
+  {
+    id: "88",
+    faith: Faiths.Judaism,
+    category: Categories.Meditation,
+    title: 'Prayer of Embracing All Identities',
+    text: "Eloheinu v'Elohei avoteinu v'imoteinu (Our God and God of our ancestors), You have created each of us b'tzelem Elohim, in Your image. Help us open our hearts to everyone, no matter who they are or whom they love, so that all Your children feel cherished and at home.",
+    tags: ['love', 'belonging', 'community']
+  },
+  {
+    id: "89",
+    faith: Faiths.Judaism,
+    category: Categories.Liturgical,
+    title: 'Shehecheyanu (Gratitude for the Moment)',
+    text: 'בָּרוּךְ אַתָּה יְיָ אֱלֹהֵינוּ מֶלֶךְ הָעוֹלָם, שֶׁהֶחֱיָנוּ וְקִיְּמָנוּ וְהִגִּיעָנוּ לַזְּמַן הַזֶּה.',
+    transliteration: "Baruch atah Adonai Eloheinu, Melech ha'olam, shehecheyanu, v'kiy'manu, v'higiyanu lazman hazeh.",
+    translation: 'Blessed are You, Adonai our God, Ruler of the universe, who has kept us alive, sustained us, and enabled us to reach this moment.',
+    source: 'https://www.chabad.org/library/article_cdo/aid/91120/jewish/Shehecheyanu.htm',
+    language: 'Hebrew',
+    tags: ['gratitude', 'joy', 'thankfulness']
+  },
+  {
+    id: "90",
+    faith: Faiths.Judaism,
+    category: Categories.Meditation,
+    title: 'Prayer for Healing the Earth (Tikkun Olam)',
+    text: 'Ribbono Shel Olam (Master of the Universe), grant us the strength to help heal our planet. When we feel despair at the harm done to the earth, remind us of our sacred responsibility in tikkun olam — repairing the world. Inspire us to act with wisdom and courage for the sake of future generations.',
+    tags: ['climate', 'anxiety', 'hope']
+  },
+  {
+    id: "91",
+    faith: Faiths.General,
+    category: Categories.Meditation,
+    title: 'Loving-Kindness Meditation (Metta)',
+    text: 'May all beings be happy. May all beings be healthy. May all beings be safe. May all beings live with ease and be free from suffering.',
+    tags: ['love', 'compassion', 'stress']
+  },
+  {
+    id: "92",
+    faith: Faiths.General,
+    category: Categories.Meditation,
+    title: 'Meditation on Perception (Epictetus)',
+    text: 'People are disturbed not by things, but by the view they take of them.',
+    source: 'http://classics.mit.edu/Epictetus/epicench.html',
+    tags: ['stress', 'focus', 'perspective', 'stoicism']
+  },
+  {
+    id: "93",
+    faith: Faiths.General,
+    category: Categories.Affirmation,
+    title: 'Digital Detox Affirmation',
+    text: 'I set aside my devices and the online noise to find rest. In this digital age, I give myself permission to unplug and be present in the quiet moment.',
+    tags: ['burnout', 'focus', 'stress']
+  },
+  {
+    id: "94",
+    faith: Faiths.General,
+    category: Categories.Affirmation,
+    title: 'Affirmation for Rest and Renewal',
+    text: 'I am more than my productivity. I give myself permission to slow down, to rest, and to heal. Taking care of myself is both necessary and good.',
+    tags: ['burnout', 'stress', 'healing']
+  },
+  {
+    id: "95",
+    faith: Faiths.General,
+    category: Categories.Affirmation,
+    title: 'Affirmation of Belonging',
+    text: 'I am worthy of love and belonging. I do not have to change who I am or whom I love to be accepted. I celebrate myself openly and know that I matter in this world.',
+    tags: ['love', 'belonging', 'loneliness']
+  },
+  {
+    id: "96",
+    faith: Faiths.General,
+    category: Categories.Affirmation,
+    title: 'Affirmation for Courageous Decisions',
+    text: 'I have the courage and clarity to make the choices that are right for me. I will not let fear decide my future. I trust myself to walk the path that aligns with my values.',
+    tags: ['courage', 'fear', 'trust']
+  },
+  {
+    id: "97",
+    faith: Faiths.General,
+    category: Categories.Meditation,
+    title: 'Meditation for Climate Anxiety',
+    text: 'When I feel overwhelmed by climate news, I pause and take a deep breath. I remember that even small actions make a difference. I ground myself in hope, and commit to caring for the earth one day at a time.',
+    tags: ['climate', 'anxiety', 'hope']
+  },
+  {
+    id: "98",
+    faith: Faiths.General,
+    category: Categories.Affirmation,
+    title: 'Affirmation of Letting Go',
+    text: 'I release the burden of anger and resentment. I forgive others and myself — not to excuse hurtful actions, but to free my heart from the past. I move forward with peace and compassion.',
+    tags: ['forgiveness', 'healing', 'love']
+  },
+  {
+    id: "99",
+    faith: Faiths.General,
+    category: Categories.Affirmation,
+    title: "Affirmation of Gratitude",
+    text: "I take a moment to appreciate the small blessings around me. I am thankful for simple things — a kind word, a warm meal, a new day. In gratitude, I find contentment and peace.",
+    tags: ["gratitude", "joy", "focus"],
+  },
+  {
+    id: "100",
+    faith: Faiths.General,
+    category: Categories.Chant,
+    title: "Mantra of Compassion (Om Mani Padme Hum)",
+    text: "ॐ मणि पद्मे हूँ",
+    transliteration: "Om Mani Padme Hum",
+    translation: "“Hail to the Jewel in the Lotus,” a mantra for universal compassion.",
+    language: "Sanskrit",
+    tags: ['love', 'compassion', 'focus']
+  }
 ] as const satisfies readonly Prayer[];
 /*──────────────────────  H E L P E R S  ──────────────────────*/
 
@@ -195,6 +429,11 @@ export const prayersByCategory: Record<Category, Prayer[]> = {
   health: [],
   discernment: [],
   any_time: [],
+  scripture: [],
+  meditation: [],
+  liturgical: [],
+  affirmation: [],
+  chant: [],
 };
 prayers.forEach((p) => prayersByCategory[p.category].push(p));
 
