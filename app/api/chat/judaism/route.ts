@@ -37,7 +37,16 @@ export async function POST(req: Request) {
       ? forwardedFor.split(",")[0].trim()
       : "not available";
 
-    await logQuestion(latestMessage, "RabbiGPT", ipAddress);
+    try {
+      // Try to log the question, but don't let failures stop execution
+      await logQuestion(latestMessage, "RabbiGPT", ipAddress);
+    } catch (loggingError) {
+      // Just log the error to console and continue
+      console.error(
+        "Failed to log question, continuing execution:",
+        loggingError
+      );
+    }
 
     // Moderate the user input
     const moderationResponse = await openai.moderations.create({
