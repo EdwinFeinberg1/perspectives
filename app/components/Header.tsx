@@ -10,6 +10,7 @@ import {
   Menu,
   ChevronDown,
   ChevronUp,
+  
 } from "lucide-react";
 import {
   Sheet,
@@ -236,6 +237,8 @@ const Header: React.FC<{
                   >
                     <Sparkles size={12} className="relative z-10" />
                   </Link>
+
+                  
                 </div>
               ) : (
                 <div className="col-span-12 flex flex-col gap-2">
@@ -358,6 +361,8 @@ const Header: React.FC<{
                       <Sparkles className="h-4 w-4 mr-2 text-[#e6d3a3]" />
                       <span className="text-sm font-medium">Need Prayer</span>
                     </Link>
+
+                    
                   </div>
                 ) : (
                   <>
