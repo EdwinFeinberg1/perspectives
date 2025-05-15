@@ -10,7 +10,10 @@ export const runtime = "edge";
  */
 export async function POST(req: Request) {
   console.log("🔑 Keys in process.env:", Object.keys(process.env));
-  console.log("🔑 OPENAI_API_KEY:", process.env.OPENAI_API_KEY?.slice(0,8) || "(missing)");
+  console.log(
+    "🔑 OPENAI_API_KEY:",
+    process.env.OPENAI_API_KEY?.slice(0, 8) || "(missing)"
+  );
 
   if (!process.env.OPENAI_API_KEY) {
     return NextResponse.json(
@@ -39,7 +42,6 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
     // Forward the request to the appropriate API route
     const targetUrl = new URL(apiRoute, req.url);
     const response = await fetch(targetUrl, {
