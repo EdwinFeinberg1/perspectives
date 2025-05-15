@@ -3,10 +3,11 @@ import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import OpenAI from "openai";
-import { logQuestion } from "../../../../lib/logging";
+//import { logQuestion } from "../../../../lib/logging";
 
 import { getTodayParsha } from "@/lib/tools/parshah/getTodayParsha";
 import { summarizeParshah } from "@/lib/tools/parshah/summarizeParshah";
+import { logQuestion } from "@/lib/logging";
 
 const {
   ASTRADB_DB_KEYSPACE,
@@ -27,10 +28,27 @@ const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 export async function POST(req: Request) {
   //moderate the prompt that users submit.
   try {
-    const { messages } = await req.json();
+    // Safely parse request body
+    let messages;
+    try {
+      const body = await req.json();
+      messages = body.messages;
+      if (!messages || !Array.isArray(messages)) {
+        throw new Error("Invalid messages format");
+      }
+    } catch (parseError) {
+      console.error("Error parsing request body:", parseError);
+      return new Response(
+        JSON.stringify({
+          error: "Invalid request format",
+          details: parseError.message,
+        }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
+    }
 
     const latestMessage = messages.at(-1)?.content || "";
-
+/*
     // Extract IP address from request headers
     const forwardedFor = req.headers.get("x-forwarded-for");
     const ipAddress = forwardedFor
@@ -47,7 +65,7 @@ export async function POST(req: Request) {
         loggingError
       );
     }
-
+*/
     // Moderate the user input
     const moderationResponse = await openai.moderations.create({
       input: latestMessage,
