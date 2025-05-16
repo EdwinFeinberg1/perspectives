@@ -181,7 +181,7 @@ const Header: React.FC<{
                 {/* Center: Sephira wordmark */}
                 <div>
                   <span className="text-lg font-sans font-bold text-transparent bg-clip-text bg-[#d7c080] tracking-wide">
-                    Ask-Sephira
+                    Sephira
                   </span>
                 </div>
 

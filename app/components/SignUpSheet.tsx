@@ -250,12 +250,12 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
               </p>
               <p>
                 While we draw from trusted sources across several traditions,
-                Saphira is currently in open beta, therefore, some responses may
+                Sephira is currently in open beta, therefore, some responses may
                 be incomplete, imprecise, or miss the nuance you&apos;re looking
                 for. We&apos;re actively improving accuracy every day and your
                 feedback is a key part of that refinement. If you spot an error,
                 feel something is missing, or simply have an idea to make
-                Saphira better, please reach out at edwin@ask‑sephira.com.
+                Sephira better, please reach out at asksephira@gmail.com.
               </p>
             </div>
           </div>
