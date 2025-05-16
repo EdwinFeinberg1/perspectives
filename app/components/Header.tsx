@@ -10,7 +10,6 @@ import {
   Menu,
   ChevronDown,
   ChevronUp,
-  
 } from "lucide-react";
 import {
   Sheet,
@@ -20,7 +19,8 @@ import {
   SheetHeader,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import PrayerLink from "./Prayer/PrayerLink";
+//import Link from "next/link";
 
 const Header: React.FC<{
   isPrayerPage?: boolean;
@@ -230,15 +230,10 @@ const Header: React.FC<{
                   </button>
 
                   {/* Prayer button */}
-                  <Link
-                    href="/prayer"
-                    className="relative flex items-center justify-center p-1.5 bg-[#0c1320] rounded-full border border-[#e6d3a3]/40 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/70 transition-all duration-300 hover:shadow-[0_0_15px_rgba(230,211,163,0.4)] animate-subtle-glow"
-                    aria-label="Need Prayer"
-                  >
-                    <Sparkles size={12} className="relative z-10" />
-                  </Link>
-
-                  
+                  <PrayerLink
+                    variant="ghost"
+                    className="bg-[#0c1320] border border-[#e6d3a3]/40 hover:bg-[#1c2434] hover:border-[#e6d3a3]/70"
+                  />
                 </div>
               ) : (
                 <div className="col-span-12 flex flex-col gap-2">
@@ -354,15 +349,10 @@ const Header: React.FC<{
                     </button>
 
                     {/* Prayer button */}
-                    <Link
-                      href="/prayer"
-                      className="inline-flex items-center bg-[#0c1320] px-4 py-2 rounded-full border border-[#e6d3a3]/20 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/30 transition-all duration-300 animate-breathing animate-aura"
-                    >
-                      <Sparkles className="h-4 w-4 mr-2 text-[#e6d3a3]" />
-                      <span className="text-sm font-medium">Need Prayer</span>
-                    </Link>
-
-                    
+                    <PrayerLink
+                      variant="ghost"
+                      className="bg-[#0c1320] border border-[#e6d3a3]/20 hover:bg-[#1c2434] hover:border-[#e6d3a3]/30"
+                    />
                   </div>
                 ) : (
                   <>
