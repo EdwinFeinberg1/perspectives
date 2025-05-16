@@ -230,12 +230,12 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
         <AccordionItem id="contact" title="Contact">
           <div className="space-y-2">
             <p>
-              If you, discover a bug, have a suggestion to make Saphira better,
+              If you, discover a bug, have a suggestion to make Sephira better,
               or feel called to lend your skills and get involved
             </p>
             <div className="mt-2">
               <span>send a note to </span>
-              <span className="text-[#e6d3a3]/90">edwin@ask‑sephira.com</span>
+              <span className="text-[#e6d3a3]/90">asksephira@gmail.com</span>
               <span> and we will respond as soon as we can.</span>
             </div>
             <p className="mt-2">Thank you for helping this project grow.</p>
