@@ -58,9 +58,8 @@ export const prayers = [
     faith: Faiths.Judaism,
     category: Categories.Healing,
     title: "Mi Sheberach (Prayer for Healing)",
-    text: "May the One who blessed our ancestors, Abraham, Isaac and Jacob, Sarah, Rebecca, Rachel and Leah, bless and heal <NAME>. May the Holy One send them a complete healing of body and spirit, swiftly and soon, and let us say, Amen.",
-    translation:
-      "May the One who blessed our ancestors—Abraham, Isaac and Jacob; Sarah, Rebecca, Rachel and Leah—bless and heal those who are ill: <NAME>. May the Holy Blessed One grant them a complete recovery of body and spirit, swiftly and mercifully. We praise You, God, who heals the sick, and let us say: Amen.",
+    text: "May the One who blessed our ancestors, Abraham, Isaac and Jacob, Sarah, Rebecca, Rachel and Leah, bless and heal {your name}. May the Holy One send them a complete healing of body and spirit, swiftly and soon, and let us say, Amen.",
+     
     tags: ["healing"],
   },
   {

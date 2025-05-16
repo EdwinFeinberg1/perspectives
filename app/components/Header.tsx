@@ -179,8 +179,8 @@ const Header: React.FC<{
                 </div>
 
                 {/* Center: Sephira wordmark */}
-                <div>
-                  <span className="text-lg font-sans font-bold text-transparent bg-clip-text bg-[#d7c080] tracking-wide">
+                <div className="absolute left-1/2 transform -translate-x-1/2">
+                  <span className="text-2xl sm:text-3xl font-normal text-transparent bg-clip-text bg-[#d7c080] tracking-wide">
                     Sephira
                   </span>
                 </div>
@@ -273,15 +273,19 @@ const Header: React.FC<{
             {/* Desktop layout - only visible on md screens and up - TWO ROW LAYOUT */}
             <div className="hidden md:flex w-full flex-col h-full py-2">
               {/* First row: Logo, ChatsSheet, and Menu */}
-              <div className="flex items-center justify-between pb-2 flex-1">
-                <div className="flex items-center space-x-2 sm:space-x-4">
+              <div className="flex items-center justify-between pb-2 flex-1 relative">
+                <div className="flex items-center space-x-4">
                   <ChatsSheet />
-                  <span className="text-base sm:text-lg md:text-2xl font-sans font-bold text-transparent bg-clip-text bg-[#d7c080] tracking-wide">
+                </div>
+
+                {/* Center: Sephira wordmark */}
+                <div className="absolute left-1/2 transform -translate-x-1/2">
+                  <span className="text-3xl md:text-4xl font-normal text-transparent bg-clip-text bg-[#d7c080] tracking-wide">
                     Sephira
                   </span>
                 </div>
 
-                <div className="flex items-center space-x-1 sm:space-x-3">
+                <div className="flex items-center space-x-3">
                   <Sheet>
                     <SheetTrigger asChild>
                       <Button
