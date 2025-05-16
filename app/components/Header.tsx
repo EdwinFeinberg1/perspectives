@@ -181,7 +181,7 @@ const Header: React.FC<{
                 {/* Center: Sephira wordmark */}
                 <div>
                   <span className="text-lg font-sans font-bold text-transparent bg-clip-text bg-[#d7c080] tracking-wide">
-                    Ask-Sephira
+                    Sephira
                   </span>
                 </div>
 
@@ -232,7 +232,7 @@ const Header: React.FC<{
                   {/* Prayer button */}
                   <PrayerLink
                     variant="ghost"
-                    className="bg-[#0c1320] border border-[#e6d3a3]/40 hover:bg-[#1c2434] hover:border-[#e6d3a3]/70"
+                    className="bg-[#0c1320] border border-[#e6d3a3]/40 hover:bg-[#1c2434] hover:border-[#e6d3a3]/70 hover:scale-[1.02] active:scale-[0.98] px-3 py-1.5 text-xs"
                   />
                 </div>
               ) : (
@@ -351,7 +351,7 @@ const Header: React.FC<{
                     {/* Prayer button */}
                     <PrayerLink
                       variant="ghost"
-                      className="bg-[#0c1320] border border-[#e6d3a3]/20 hover:bg-[#1c2434] hover:border-[#e6d3a3]/30"
+                      className="bg-[#0c1320] border border-[#e6d3a3]/40 hover:bg-[#1c2434] hover:border-[#e6d3a3]/70 hover:scale-[1.02] active:scale-[0.98] px-3 py-1.5 text-xs"
                     />
                   </div>
                 ) : (

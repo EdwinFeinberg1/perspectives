@@ -2,7 +2,6 @@
 
 import React from "react";
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface PrayerLinkProps {
@@ -11,20 +10,18 @@ interface PrayerLinkProps {
   className?: string;
 }
 
-export default function PrayerLink({ 
+export default function PrayerLink({
   variant = "default",
-  showIcon = true,
-  className = ""
+  className = "",
 }: PrayerLinkProps) {
   return (
     <Link href="/prayer" passHref>
       <Button
         variant={variant}
-        className={`flex items-center gap-2 ${className}`}
+        className={`relative flex items-center justify-center px-4 py-2 bg-[#0c1320] rounded-full border border-[#e6d3a3]/40 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/70 transition-all duration-300 hover:shadow-[0_0_15px_rgba(230,211,163,0.4)] animate-subtle-glow ${className}`}
       >
-        {showIcon && <Sparkles className="h-4 w-4" />}
-        <span>Prayer</span>
+        <span className="text-sm font-medium">Need Prayer?</span>
       </Button>
     </Link>
   );
-} 
+}
