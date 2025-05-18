@@ -26,12 +26,6 @@ export const metadata = {
     "It's for the seeker, the skeptic, the believer, and the curious.",
 };
 
-export const viewport = {
-  width: "device-width",
-  initialScale: 1,
-  viewportFit: "cover",
-};
-
 const RootLayout = ({ children }) => {
   return (
     <html
