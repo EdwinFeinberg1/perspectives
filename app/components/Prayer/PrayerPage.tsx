@@ -10,23 +10,125 @@ import { useFavorites } from "@/app/context/FavoritesContext";
 import { useRouter } from "next/navigation";
 import {
   prayers as prayersData,
-  Categories,
   Category,
+  Prayer,
+  Faiths,
 } from "../../constants/prayers";
 
-const DEFAULT_SELECTED: Category[] = Object.values(Categories);
+import Fuse from "fuse.js";
+
+const FAITH_SYNONYMS: Record<string, string[]> = {
+  [Faiths.Judaism]: ["jewish", "judaism", "jew", "hebrew", "israelite"],
+  [Faiths.Islam]: ["islamic", "islam", "muslim", "quran", "muhammad"],
+  [Faiths.Christianity]: [
+    "christian",
+    "christianity",
+    "christ",
+    "jesus",
+    "gospel",
+  ],
+  [Faiths.General]: ["universal", "general", "secular", "any", "all"],
+};
+
+const CATEGORY_SYNONYMS: Record<string, string[]> = {
+  morning: ["morning", "dawn", "sunrise", "wake", "awakening", "early"],
+  healing: ["healing", "health", "cure", "recovery", "wellness"],
+  gratitude: ["gratitude", "thankful", "appreciation", "thanks", "blessing"],
+  general: ["general", "universal", "common", "basic"],
+  wealth: ["wealth", "prosperity", "abundance", "success"],
+  health: ["health", "wellness", "wellbeing", "strength"],
+  discernment: ["discernment", "wisdom", "guidance", "direction"],
+  any_time: ["anytime", "always", "whenever", "daily"],
+  scripture: ["scripture", "bible", "torah", "quran", "holy text"],
+  meditation: ["meditation", "mindfulness", "contemplation", "reflection"],
+  liturgical: ["liturgical", "service", "worship", "ritual"],
+  affirmation: ["affirmation", "positive", "declaration", "statement"],
+  chant: ["chant", "mantra", "repetition", "singing"],
+};
+
+interface ExtendedPrayer extends Prayer {
+  tags?: string[];
+  __searchBlob?: string;
+}
+
+// Prepare search blobs
+(prayersData as unknown as ExtendedPrayer[]).forEach((p) => {
+  const faithWords = FAITH_SYNONYMS[p.faith].join(" ");
+  const catWords = CATEGORY_SYNONYMS[p.category].join(" ");
+  const tagWords = (p.tags ?? []).join(" ");
+  p.__searchBlob = [p.title, p.text, faithWords, catWords, tagWords]
+    .join(" ")
+    .toLowerCase();
+});
+
+// No default categories selected to show all prayers initially
+const DEFAULT_SELECTED: Category[] = [];
+
+// Helper to parse a raw user query into faith / category filters and remaining free text
+const parseSearchQuery = (raw: string) => {
+  const words = raw.toLowerCase().trim().split(/\s+/);
+
+  let detectedFaith: string | null = null;
+  const detectedCategories = new Set<string>();
+  const freeWords: string[] = [];
+
+  words.forEach((w) => {
+    // Faith check first (unique)
+    if (!detectedFaith) {
+      for (const [faithKey, syns] of Object.entries(FAITH_SYNONYMS)) {
+        if (syns.includes(w)) {
+          detectedFaith = faithKey;
+          return; // continue next word
+        }
+      }
+    }
+
+    // Category check (can match multiple)
+    let matchedCategory = false;
+    for (const [catKey, syns] of Object.entries(CATEGORY_SYNONYMS)) {
+      if (syns.includes(w)) {
+        detectedCategories.add(catKey);
+        matchedCategory = true;
+        break;
+      }
+    }
+
+    if (!matchedCategory) {
+      freeWords.push(w);
+    }
+  });
+
+  return {
+    faith: detectedFaith,
+    categories: detectedCategories,
+    freeText: freeWords.join(" ").trim(),
+  } as const;
+};
 
 const PrayerPage: React.FC = () => {
+  const fuseInstance = useMemo(
+    () =>
+      new Fuse(prayersData, {
+        keys: ["__searchBlob"],
+        threshold: 0.35, // allow mild typos
+        includeScore: true,
+      }),
+    []
+  );
+
   const router = useRouter();
   const contentRef = useRef<HTMLDivElement>(null);
   const headerOffset = 170;
   const [showFavorites, setShowFavorites] = useState(true);
   const { favorites } = useFavorites();
 
+  // Coerce favorites to a generic Set<unknown> for local type convenience
+  const favoritesSet: Set<unknown> = favorites as unknown as Set<unknown>;
+
   // Refresh the page once when component mounts to ensure favorites are loaded
   React.useEffect(() => {
     router.refresh();
-  }, []); // Empty dependency array means this runs once on mount
+  }, [router]); // Empty dependency array means this runs once on mount
 
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(
     () => new Set(DEFAULT_SELECTED)
@@ -53,70 +155,75 @@ const PrayerPage: React.FC = () => {
   }, []);
 
   // Get favorite prayers
-  const favoritePrayers = useMemo(() => {
-    return prayersData.filter((prayer) => favorites.has(prayer.id));
-  }, [favorites]);
+  const favoritePrayers = useMemo<Prayer[]>(() => {
+    return prayersData.filter((prayer: Prayer) => favoritesSet.has(prayer.id));
+  }, [favoritesSet]);
 
-  // Filter prayers based on selected categories and search
-  const filteredPrayers = useMemo(() => {
-    return prayersData.filter((prayer) => {
-      // Skip favorited prayers to avoid duplication
-      if (favorites.has(prayer.id)) {
-        return false;
-      }
+  // Filter favorite prayers based on search and categories
+  const filteredFavoritePrayers = useMemo<Prayer[]>(() => {
+    // 1. Category gating
+    const { faith, categories, freeText } = parseSearchQuery(search);
 
-      // Category filter
-      if (
-        selectedCategories.size > 0 &&
-        !selectedCategories.has(prayer.category)
-      ) {
-        return false;
-      }
+    // Combine user-selected categories with those inferred from query
+    const categoryFilterSet = new Set<string>([
+      ...selectedCategories,
+      ...Array.from(categories),
+    ]);
 
-      // Search filter
-      if (
-        search &&
-        !prayer.title.toLowerCase().includes(search.toLowerCase()) &&
-        !prayer.text.toLowerCase().includes(search.toLowerCase())
-      ) {
-        return false;
-      }
-
-      return true;
+    const base = favoritePrayers.filter((p) => {
+      const catOk = categoryFilterSet.size
+        ? categoryFilterSet.has(p.category)
+        : true;
+      const faithOk = faith ? p.faith === faith : true;
+      return catOk && faithOk;
     });
-  }, [selectedCategories, search, favorites]);
+
+    // If there is no remaining free text, we are done
+    if (!freeText) return base;
+
+    const resultIds = new Set(
+      fuseInstance.search(freeText).map((r) => r.item.id)
+    );
+
+    return base.filter((p) => resultIds.has(p.id as any));
+  }, [favoritePrayers, selectedCategories, search, fuseInstance]);
 
   const toggleFavoritesSection = () => {
     setShowFavorites(!showFavorites);
   };
 
-  // Filter favorite prayers based on search and categories
-  const filteredFavoritePrayers = useMemo(() => {
-    if (!search && selectedCategories.size === 0) {
-      return favoritePrayers;
-    }
+  // Filter prayers based on selected categories and search
+  const filteredPrayers = useMemo<Prayer[]>(() => {
+    // 1. Category gating
+    const { faith, categories, freeText } = parseSearchQuery(search);
 
-    return favoritePrayers.filter((prayer) => {
-      // Category filter
-      if (
-        selectedCategories.size > 0 &&
-        !selectedCategories.has(prayer.category)
-      ) {
-        return false;
-      }
+    // Combine chip-selected categories with categories inferred from query
+    const categoryFilterSet = new Set<string>([
+      ...selectedCategories,
+      ...Array.from(categories),
+    ]);
 
-      // Search filter
-      if (
-        search &&
-        !prayer.title.toLowerCase().includes(search.toLowerCase()) &&
-        !prayer.text.toLowerCase().includes(search.toLowerCase())
-      ) {
-        return false;
-      }
+    // 1. Fast structural filters (category & faith)
+    const base = prayersData.filter((p) => {
+      // Respect favorites toggle (exclude already-favorited)
+      if (favoritesSet.has(p.id)) return false;
 
-      return true;
+      const catOk = categoryFilterSet.size
+        ? categoryFilterSet.has(p.category)
+        : true;
+      const faithOk = faith ? p.faith === faith : true;
+      return catOk && faithOk;
     });
-  }, [favoritePrayers, selectedCategories, search]);
+
+    // 2. Fuzzy search on remaining free text (if any)
+    if (!freeText) return base;
+
+    const resultIds = new Set(
+      fuseInstance.search(freeText).map((r) => r.item.id) // sorted by Fuse score already
+    );
+
+    return base.filter((p) => resultIds.has(p.id as any));
+  }, [search, selectedCategories, favoritesSet, fuseInstance]);
 
   return (
     <main className="w-full min-h-screen flex flex-col relative">
@@ -138,6 +245,31 @@ const PrayerPage: React.FC = () => {
         }}
       >
         <div className="max-w-[1400px] mx-auto w-full pb-5">
+          {/* Category filters */}
+          {selectedCategories && Object.entries(counts).length > 0 && (
+            <div className="px-4 py-3 mb-4">
+              <div className="flex flex-wrap gap-2 justify-center">
+                {Object.entries(counts).map(([category, count]) => (
+                  <button
+                    key={category}
+                    onClick={() => toggleCategory(category)}
+                    className={`group relative px-4 py-2 rounded-full border transition-all duration-200 ${
+                      selectedCategories.has(category)
+                        ? "bg-[#e6d3a3]/20 border-[#e6d3a3]/50 text-[#e6d3a3]"
+                        : "bg-[#0c1320] border-[#e6d3a3]/20 text-[#e6d3a3]/70 hover:border-[#e6d3a3]/30 hover:bg-[#1c2434]"
+                    }`}
+                  >
+                    <span className="text-sm">{category}</span>
+                    <span className="ml-1.5 text-xs opacity-60">({count})</span>
+                    {selectedCategories.has(category) && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#e6d3a3] rounded-full" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <ScrollArea className="h-[calc(100vh-180px)] w-full rounded-md">
             <div className="px-4 py-2">
               {/* Favorites Section */}
