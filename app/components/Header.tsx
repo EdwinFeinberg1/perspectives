@@ -31,9 +31,9 @@ const Header: React.FC<{
   isPrayerPage = false,
   prayerSearch = "",
   onPrayerSearch,
-  selectedCategories,
-  togglePrayerCategory,
-  counts = {},
+  // selectedCategories,
+  // togglePrayerCategory,
+  // counts = {},
 }) => {
   const { currentTheme, selectNewTheme } = useTheme();
   const [subHeaderExpanded, setSubHeaderExpanded] = useState(false);
@@ -278,32 +278,18 @@ const Header: React.FC<{
                 <div className="col-span-12 flex flex-col gap-2">
                   {/* Mobile Search bar for prayer page */}
                   <div className="w-full">
-                    <input
-                      type="text"
-                      value={prayerSearch}
-                      onChange={(e) => onPrayerSearch?.(e.target.value)}
-                      placeholder="Search prayers..."
-                      className="w-full bg-[#0c1320] rounded-full border border-[#e6d3a3]/30 text-sm text-[#e6d3a3] px-3 py-1.5 focus:outline-none focus:border-[#e6d3a3]/70 focus:ring-1 focus:ring-[#e6d3a3]/30"
-                    />
-                  </div>
-
-                  {/* Mobile category filters below search bar */}
-                  <div className="w-full flex items-center space-x-1.5 overflow-x-auto scrollbar-hide pb-1">
-                    {selectedCategories &&
-                      togglePrayerCategory &&
-                      Object.entries(counts).map(([category, count]) => (
-                        <button
-                          key={category}
-                          onClick={() => togglePrayerCategory(category)}
-                          className={`shrink-0 whitespace-nowrap text-xs px-2 py-1 rounded-full border transition-all ${
-                            selectedCategories.has(category)
-                              ? "bg-[#e6d3a3]/20 border-[#e6d3a3]/50 text-[#e6d3a3]"
-                              : "bg-[#0c1320] border-[#e6d3a3]/20 text-[#e6d3a3]/70 hover:border-[#e6d3a3]/30"
-                          }`}
-                        >
-                          {category} ({count})
-                        </button>
-                      ))}
+                    <div className="relative w-full">
+                      <input
+                        type="text"
+                        value={prayerSearch}
+                        onChange={(e) => onPrayerSearch?.(e.target.value)}
+                        placeholder="Search prayers using natural language..."
+                        className="w-full bg-[#0c1320] rounded-full border border-[#e6d3a3]/30 text-[#e6d3a3] px-4 py-2 focus:outline-none focus:border-[#e6d3a3]/70 focus:ring-2 focus:ring-[#e6d3a3]/20 text-sm placeholder:text-[#e6d3a3]/40 transition-all duration-200"
+                      />
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#e6d3a3]/40 text-xs">
+                        Press Enter
+                      </div>
+                    </div>
                   </div>
                 </div>
               )}
@@ -352,7 +338,7 @@ const Header: React.FC<{
                 </div>
               </div>
 
-              {/* Second row: Theme and Prayer buttons OR Search and Categories for Prayer page */}
+              {/* Second row: Theme and Prayer buttons OR Search for Prayer page */}
               <div className="flex items-center justify-between pt-2 border-t border-[#e6d3a3]/10 flex-1">
                 {!isPrayerPage ? (
                   <div className="flex items-center space-x-3">
@@ -389,37 +375,18 @@ const Header: React.FC<{
                     />
                   </div>
                 ) : (
-                  <>
-                    {/* Search bar - now on the left */}
-                    <div className="w-[200px] lg:w-[240px]">
+                  <div className="w-full">
+                    <div className="relative w-full max-w-3xl mx-auto">
                       <input
                         type="text"
                         value={prayerSearch}
                         onChange={(e) => onPrayerSearch?.(e.target.value)}
-                        placeholder="Search prayers..."
-                        className="w-full bg-[#0c1320] rounded-full border border-[#e6d3a3]/30 text-sm text-[#e6d3a3] px-3 py-1.5 focus:outline-none focus:border-[#e6d3a3]/70 focus:ring-1 focus:ring-[#e6d3a3]/30"
+                        placeholder="Search prayers using natural language (e.g. 'healing morning Jewish', 'gratitude before meals')..."
+                        className="w-full bg-[#0c1320] rounded-full border border-[#e6d3a3]/30 text-[#e6d3a3] px-5 py-2.5 focus:outline-none focus:border-[#e6d3a3]/70 focus:ring-2 focus:ring-[#e6d3a3]/20 text-base placeholder:text-[#e6d3a3]/40 transition-all duration-200"
                       />
+                      
                     </div>
-
-                    {/* Prayer categories filter - now on the right */}
-                    <div className="flex items-center space-x-2 overflow-x-auto scrollbar-hide ml-4">
-                      {selectedCategories &&
-                        togglePrayerCategory &&
-                        Object.entries(counts).map(([category, count]) => (
-                          <button
-                            key={category}
-                            onClick={() => togglePrayerCategory(category)}
-                            className={`whitespace-nowrap text-xs px-3 py-1.5 rounded-full border transition-all ${
-                              selectedCategories.has(category)
-                                ? "bg-[#e6d3a3]/20 border-[#e6d3a3]/50 text-[#e6d3a3]"
-                                : "bg-[#0c1320] border-[#e6d3a3]/20 text-[#e6d3a3]/70 hover:border-[#e6d3a3]/30"
-                            }`}
-                          >
-                            {category} ({count})
-                          </button>
-                        ))}
-                    </div>
-                  </>
+                  </div>
                 )}
               </div>
             </div>
