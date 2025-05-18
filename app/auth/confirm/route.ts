@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
       token_hash,
     });
     if (!error) {
+      // Profile is automatically created by database trigger
       // redirect user to specified redirect URL or root of app
       redirect(next);
     }

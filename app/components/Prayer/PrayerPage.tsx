@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import PrayerCard from "./PrayerCard";
 import { ChevronDown, ChevronUp, Star } from "lucide-react";
 import { useFavorites } from "@/app/context/FavoritesContext";
+import { useRouter } from "next/navigation";
 import {
   prayers as prayersData,
   Categories,
@@ -16,10 +17,16 @@ import {
 const DEFAULT_SELECTED: Category[] = Object.values(Categories);
 
 const PrayerPage: React.FC = () => {
+  const router = useRouter();
   const contentRef = useRef<HTMLDivElement>(null);
   const headerOffset = 170;
   const [showFavorites, setShowFavorites] = useState(true);
   const { favorites } = useFavorites();
+
+  // Refresh the page once when component mounts to ensure favorites are loaded
+  React.useEffect(() => {
+    router.refresh();
+  }, []); // Empty dependency array means this runs once on mount
 
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(
     () => new Set(DEFAULT_SELECTED)
