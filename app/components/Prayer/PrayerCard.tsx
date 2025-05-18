@@ -30,7 +30,7 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
 }) => {
   const [expanded, setExpanded] = useState(false);
   const [showTools, setShowTools] = useState(false);
-  const { favorites, toggleFavorite } = useFavorites();
+  const { favorites, toggleFavorite, isLoading } = useFavorites();
 
   // Local state to prevent flickering when toggling favorites
   const [isFavorited, setIsFavorited] = useState(
@@ -187,14 +187,17 @@ const PrayerCard: React.FC<PrayerCardProps> = ({
           onClick={handleFavorite}
           title={isFavorited ? "Remove from favorites" : "Add to favorites"}
           className={`hover:text-yellow-300 transition-colors p-2 -m-2 ${
-            isFavorited ? "text-yellow-400" : "text-[#e6d3a3]/70"
-          }`}
+            isLoading ? "opacity-50 cursor-not-allowed" : ""
+          } ${isFavorited ? "text-yellow-400" : "text-[#e6d3a3]/70"}`}
+          disabled={isLoading}
           type="button"
         >
           <StarIcon
             size={18}
             fill={isFavorited ? "currentColor" : "none"}
-            className="pointer-events-none"
+            className={`pointer-events-none ${
+              isLoading ? "animate-pulse" : ""
+            }`}
           />
         </button>
         {hasSourceUrl && (

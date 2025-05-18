@@ -15,6 +15,9 @@ import {
 import { Button } from "@/components/ui/button";
 import PrayerLink from "./Prayer/PrayerLink";
 import LoginLink from "./LoginLink";
+import SignOutButton from "./SignOutButton";
+import { createClient } from "@/utils/supabase/client";
+import type { User } from "@supabase/supabase-js";
 //import Link from "next/link";
 
 const Header: React.FC<{
@@ -39,6 +42,8 @@ const Header: React.FC<{
   const [showingPrompts, setShowingPrompts] = useState(false);
   const subHeaderRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const supabase = createClient();
 
   // Prayer section state
   const [expandedSection, setExpandedSection] = useState<
@@ -99,22 +104,16 @@ const Header: React.FC<{
     if (subHeaderExpanded && subHeaderRef.current) {
       const height = subHeaderRef.current.scrollHeight;
       setSubHeaderHeight(height);
-
-      // Set a CSS variable for the content offset
       document.documentElement.style.setProperty(
         "--theme-subheader-height",
         `${height}px`
       );
-
-      // Add a class to the body to control the glassy effect
       document.body.classList.add("theme-subheader-open");
     } else {
       document.documentElement.style.setProperty(
         "--theme-subheader-height",
         "0px"
       );
-
-      // Remove the class when closed
       document.body.classList.remove("theme-subheader-open");
     }
   }, [subHeaderExpanded]);
@@ -129,7 +128,6 @@ const Header: React.FC<{
     window.addEventListener("closeThemePopover", handleCloseSubheader);
     return () => {
       window.removeEventListener("closeThemePopover", handleCloseSubheader);
-      // Clean up when component unmounts
       document.body.classList.remove("theme-subheader-open");
     };
   }, []);
@@ -145,13 +143,38 @@ const Header: React.FC<{
       setExpandedSection(section);
     }
 
-    // Dispatch a custom event that the page layout can listen for
     window.dispatchEvent(
       new CustomEvent("themeSubheaderToggled", {
         detail: { expanded: !subHeaderExpanded || expandedSection !== section },
       })
     );
   };
+
+  useEffect(() => {
+    const getInitialSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setUser(session?.user ?? null);
+      console.log(
+        "Initial auth state:",
+        session?.user ? "logged in" : "logged out"
+      );
+    };
+    getInitialSession();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+      console.log(
+        "Auth state changed:",
+        session?.user ? "logged in" : "logged out"
+      );
+    });
+
+    return () => subscription.unsubscribe();
+  }, [supabase.auth]);
 
   return (
     <>
@@ -212,7 +235,8 @@ const Header: React.FC<{
                       </div>
                     </SheetContent>
                   </Sheet>
-                  <LoginLink />
+                  {/* Sign in/out button moved into header navigation to avoid duplicate display */}
+                  {user ? <SignOutButton /> : <LoginLink />}
                 </div>
               </div>
 
@@ -323,7 +347,8 @@ const Header: React.FC<{
                       </div>
                     </SheetContent>
                   </Sheet>
-                  <LoginLink />
+                  {/* Sign in/out button moved into header navigation to avoid duplicate display */}
+                  {user ? <SignOutButton /> : <LoginLink />}
                 </div>
               </div>
 
