@@ -11,6 +11,7 @@ export const config = {
     "/login",
     "/auth/:path*",
     "/private",
-    "/api/chat/:path*",
+    "/prayer-auth",
+    "/chat-auth/:path*",
   ],
 };
