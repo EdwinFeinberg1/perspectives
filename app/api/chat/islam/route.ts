@@ -2,7 +2,7 @@ import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import OpenAI from "openai";
-//import { logQuestion } from "../../../../lib/logging";
+import { logQuestion } from "@/lib/logging";
 
 const {
   ASTRADB_DB_KEYSPACE,
@@ -23,12 +23,21 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
   const latestMessage = messages.at(-1)?.content || "";
   // Extract IP address from request headers
-  // const forwardedFor = req.headers.get("x-forwarded-for");
-  //  const ipAddress = forwardedFor
-  //   ? forwardedFor.split(",")[0].trim()
-  //   : "not available";
+  const forwardedFor = req.headers.get("x-forwarded-for");
+  const ipAddress = forwardedFor
+    ? forwardedFor.split(",")[0].trim()
+    : "not available";
 
-  //await logQuestion(latestMessage, "ImamGPT", ipAddress);
+  try {
+    // Try to log the question, but don't let failures stop execution
+    await logQuestion(latestMessage, "ImamGPT", ipAddress);
+  } catch (loggingError) {
+    // Just log the error to console and continue
+    console.error(
+      "Failed to log question, continuing execution:",
+      loggingError
+    );
+  }
   // Moderate the user input
   const moderationResponse = await openai.moderations.create({
     input: latestMessage,

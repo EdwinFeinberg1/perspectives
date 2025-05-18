@@ -13,7 +13,7 @@ import {
   Category,
 } from "../../constants/prayers";
 
-const DEFAULT_SELECTED: Category[] = [Categories.Morning, Categories.General];
+const DEFAULT_SELECTED: Category[] = Object.values(Categories);
 
 const PrayerPage: React.FC = () => {
   const contentRef = useRef<HTMLDivElement>(null);

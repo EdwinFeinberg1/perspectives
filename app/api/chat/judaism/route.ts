@@ -3,7 +3,7 @@ import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
 import OpenAI from "openai";
-//import { logQuestion } from "../../../../lib/logging";
+import { logQuestion } from "@/lib/logging";
 
 import { getTodayParsha } from "@/lib/tools/parshah/getTodayParsha";
 import { summarizeParshah } from "@/lib/tools/parshah/summarizeParshah";
@@ -48,7 +48,7 @@ export async function POST(req: Request) {
     }
 
     const latestMessage = messages.at(-1)?.content || "";
-/*
+
     // Extract IP address from request headers
     const forwardedFor = req.headers.get("x-forwarded-for");
     const ipAddress = forwardedFor
@@ -65,7 +65,7 @@ export async function POST(req: Request) {
         loggingError
       );
     }
-*/
+
     // Moderate the user input
     const moderationResponse = await openai.moderations.create({
       input: latestMessage,

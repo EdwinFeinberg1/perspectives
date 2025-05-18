@@ -4,13 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import SignUpSheet from "./SignUpSheet";
 import ChatsSheet from "./ChatsSheet";
 import { useTheme, ThemePopoverContent } from "../features/theme";
-import {
-  Sparkles,
-  RefreshCw,
-  Menu,
-  ChevronDown,
-  ChevronUp,
-} from "lucide-react";
+import { Sparkles, RefreshCw, Menu } from "lucide-react";
 import {
   Sheet,
   SheetTrigger,
@@ -20,6 +14,7 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import PrayerLink from "./Prayer/PrayerLink";
+import LoginLink from "./LoginLink";
 //import Link from "next/link";
 
 const Header: React.FC<{
@@ -49,6 +44,14 @@ const Header: React.FC<{
   const [expandedSection, setExpandedSection] = useState<
     "theme" | "need-pray" | "need-prayer" | null
   >(null);
+
+  // Tooltip state for Sparkles
+  const [showSparklesTooltip, setShowSparklesTooltip] = useState(false);
+  useEffect(() => {
+    setShowSparklesTooltip(true);
+    const timer = setTimeout(() => setShowSparklesTooltip(false), 9000);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Calculate the header offset for the overlay
   const calculateHeaderOffset = useCallback(() => {
@@ -152,7 +155,7 @@ const Header: React.FC<{
 
   return (
     <>
-      <header className="fixed top-0 left-0 w-full z-50 px-2 sm:px-4 md:px-6">
+      <header className="fixed top-0 left-0 w-full z-50 px-2  sm:px-4 md:px-6">
         {/* Glassmorphism container with padding for rounded corners */}
         <div className="mx-auto max-w-[1400px] relative mt-2 flex flex-col">
           {/* Glassmorphism background with blur effect */}
@@ -209,6 +212,7 @@ const Header: React.FC<{
                       </div>
                     </SheetContent>
                   </Sheet>
+                  <LoginLink />
                 </div>
               </div>
 
@@ -217,7 +221,10 @@ const Header: React.FC<{
                 <div className="col-span-12 flex justify-center items-center space-x-2 mt-1">
                   {/* Theme button */}
                   <button
-                    onClick={() => toggleSubHeader("theme")}
+                    onClick={() => {
+                      toggleSubHeader("theme");
+                      setShowSparklesTooltip(false);
+                    }}
                     className={`relative flex items-center justify-center p-1.5 bg-[#0c1320] rounded-full border border-[#e6d3a3]/40 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/70 transition-all duration-300 hover:shadow-[0_0_15px_rgba(230,211,163,0.4)] animate-subtle-glow ${
                       expandedSection === "theme"
                         ? "shadow-[0_0_15px_rgba(230,211,163,0.4)] bg-dark"
@@ -226,7 +233,15 @@ const Header: React.FC<{
                     aria-expanded={expandedSection === "theme"}
                     aria-controls="theme-subheader"
                   >
-                    <Sparkles size={12} className="relative z-10" />
+                    <span className="relative">
+                      <Sparkles size={12} className="relative z-10" />
+                      {showSparklesTooltip && (
+                        <span className="absolute left-1/2 -translate-x-1/2 -bottom-12 px-3 py-1.5 bg-black/90 text-[#ddc39a] text-xs rounded-md whitespace-nowrap z-20 border border-[#ddc39a]/30 shadow-lg">
+                          Discover prompts and sample questions to ask
+                          <span className="absolute left-1/2 -translate-x-1/2 top-full w-2 h-2 bg-black/90 border-l border-t border-[#ddc39a] rotate-45"></span>
+                        </span>
+                      )}
+                    </span>
                   </button>
 
                   {/* Prayer button */}
@@ -308,6 +323,7 @@ const Header: React.FC<{
                       </div>
                     </SheetContent>
                   </Sheet>
+                  <LoginLink />
                 </div>
               </div>
 
@@ -339,17 +355,6 @@ const Header: React.FC<{
                           selectNewTheme();
                         }}
                       />
-                      {expandedSection === "theme" ? (
-                        <ChevronUp
-                          size={16}
-                          className="ml-2 text-[#e6d3a3]/70"
-                        />
-                      ) : (
-                        <ChevronDown
-                          size={16}
-                          className="ml-2 text-[#e6d3a3]/70"
-                        />
-                      )}
                     </button>
 
                     {/* Prayer button */}
@@ -529,6 +534,20 @@ const Header: React.FC<{
 
         .scrollbar-hide::-webkit-scrollbar {
           display: none; /* Chrome, Safari, Opera */
+        }
+
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+            transform: translateY(8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.4s ease;
         }
       `}</style>
     </>
