@@ -9,10 +9,6 @@ export const runtime = "edge";
  * based on the selectedModel parameter in the request body
  */
 export async function POST(req: Request) {
-  // Enhanced debugging
-  
-
- 
   try {
     // Clone the request to read the body
     const clonedReq = req.clone();
@@ -34,6 +30,7 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+
     // Log the target URL being used
     const targetUrl = new URL(apiRoute, req.url);
     console.log("🔄 Forwarding to:", targetUrl.toString());
@@ -41,53 +38,24 @@ export async function POST(req: Request) {
     // Forward the request to the appropriate API route
     const response = await fetch(targetUrl, {
       method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Forward any other relevant headers
+        ...Object.fromEntries(
+          Array.from(req.headers.entries()).filter(([key]) =>
+            ["x-forwarded-for", "user-agent"].includes(key.toLowerCase())
+          )
+        ),
+      },
       body: JSON.stringify(body),
     });
 
-    // Log response status
-    console.log("📥 Response status:", response.status, response.statusText);
-
-    // Ensure error status codes are properly forwarded
-    if (!response.ok) {
-      console.error(
-        "❌ Error response from API:",
-        response.status,
-        response.statusText
-      );
-      // Clone the response so we can safely read its body for logging
-      const errorClone = response.clone();
-      try {
-        const errorText = await errorClone.text();
-        console.error("❌ Error details:", errorText.slice(0, 500));
-      } catch {
-        console.error("❌ Could not read error details");
-      }
-      return new Response(response.body, {
-        status: response.status,
-        statusText: response.statusText,
-        headers: {
-          "Cache-Control": "no-transform",
-          "Content-Type":
-            response.headers.get("Content-Type") || "application/json",
-        },
-      });
-    }
-
-    // Return the response with proper headers to prevent compression issues
-    return new Response(response.body, {
-      headers: {
-        "Cache-Control": "no-transform",
-        "Content-Type":
-          response.headers.get("Content-Type") || "application/json",
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-      },
-    });
+    // Return the response from the model-specific endpoint
+    return response;
   } catch (error) {
     console.error("Error in chat route:", error);
     return NextResponse.json(
-      { error: "An error occurred processing your request" },
+      { error: "Failed to process chat request" },
       { status: 500 }
     );
   }

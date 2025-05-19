@@ -1,27 +1,44 @@
 // src/data/prayers.ts
 
 export const Faiths = {
-  Judaism: "judaism",
-  Islam: "islam",
+  Judaism:      "judaism",
+  Islam:        "islam",
   Christianity: "christianity",
-  General: "general",
+
+  
+  Buddhism:     "buddhism",     
+  Hinduism:     "hinduism",     
+  General:      "general",      
 } as const;
 export type Faith = (typeof Faiths)[keyof typeof Faiths];
 
+
 export const Categories = {
-  Morning: "morning",
-  Healing: "healing",
-  Gratitude: "gratitude",
-  General: "general", // catch-all
-  Wealth: "wealth",
-  Health: "health",
-  Discernment: "discernment",
-  AnyTime: "any_time",
-  Scripture: "scripture",
-  Meditation: "meditation",
-  Liturgical: "liturgical",
-  Affirmation: "affirmation",
-  Chant: "chant",
+  Morning:        "morning",
+  Healing:        "healing",
+  Gratitude:      "gratitude",
+  General:        "general",
+  Wealth:         "wealth",
+  Health:         "health",
+  Discernment:    "discernment",
+  AnyTime:        "any_time",
+  Scripture:      "scripture",
+  Meditation:     "meditation",
+  Liturgical:     "liturgical",
+  Affirmation:    "affirmation",
+  Chant:          "chant",
+
+  
+  Supplication:   "supplication",
+  Invocation:     "invocation",
+  Plea:           "plea",
+  Psalm:          "psalm",        // shared by Judaism & Christianity
+  Litany:         "litany",
+  Mantra:         "mantra",       // eastern traditions
+  Dua:            "dua",          // Islamic supplication
+  Sutra:          "sutra",        // Buddhist scripture
+  PositiveEnergy: "positive_energy",
+  HoldingSpace:   "holding_space",
 } as const;
 export type Category = (typeof Categories)[keyof typeof Categories];
 
@@ -412,28 +429,42 @@ export const prayersById = Object.fromEntries(
 ) as Record<Prayer["id"], (typeof prayers)[number]>;
 
 export const prayersByFaith: Record<Faith, Prayer[]> = {
-  judaism: [],
-  islam: [],
+  judaism:      [],
+  islam:        [],
   christianity: [],
-  general: [],
+  buddhism:     [],   // new
+  hinduism:     [],   // new
+  general:      [],
 };
-prayers.forEach((p) => prayersByFaith[p.faith].push(p));
 
 export const prayersByCategory: Record<Category, Prayer[]> = {
-  morning: [],
-  healing: [],
-  gratitude: [],
-  general: [],
-  wealth: [],
-  health: [],
-  discernment: [],
-  any_time: [],
-  scripture: [],
-  meditation: [],
-  liturgical: [],
-  affirmation: [],
-  chant: [],
+  morning:         [],
+  healing:         [],
+  gratitude:       [],
+  general:         [],
+  wealth:          [],
+  health:          [],
+  discernment:     [],
+  any_time:        [],
+  scripture:       [],
+  meditation:      [],
+  liturgical:      [],
+  affirmation:     [],
+  chant:           [],
+
+  // new
+  supplication:    [],
+  invocation:      [],
+  plea:            [],
+  psalm:           [],
+  litany:          [],
+  mantra:          [],
+  dua:             [],
+  sutra:           [],
+  positive_energy: [],
+  holding_space:   [],
 };
+
 prayers.forEach((p) => prayersByCategory[p.category].push(p));
 
 /*────────────  Example consumers  ────────────*/
