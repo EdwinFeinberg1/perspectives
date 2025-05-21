@@ -208,7 +208,7 @@ export default function SharedConversationPage() {
               </button>
             </div>
             <p className="text-[#e6d3a3]/70 text-sm font-medium">
-              © {new Date().getFullYear()} Sephira • All rights reserved
+              Sephira • Made with ❤️
             </p>
           </div>
         </div>
