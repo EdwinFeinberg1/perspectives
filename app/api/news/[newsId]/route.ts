@@ -3,11 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { newsId: string } }
+  context: { params: Promise<{ newsId: string }> }
 ) {
   try {
     const supabase = await createClient();
-    const newsId = params.newsId;
+    const { newsId } = await context.params;
 
     const { data, error } = await supabase
       .from("news")
@@ -28,7 +28,8 @@ export async function GET(
     }
 
     return NextResponse.json(data);
-  } catch (error) {
+  } catch (err) {
+    console.error("Error in news API:", err);
     return new NextResponse(
       JSON.stringify({ error: "Internal Server Error" }),
       {
