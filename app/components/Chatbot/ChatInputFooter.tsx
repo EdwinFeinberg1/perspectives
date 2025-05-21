@@ -44,7 +44,7 @@ const AvatarButton: React.FC<{
             alt={personality.title}
             width={48}
             height={48}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover object-top scale-300"
           />
         ) : (
           <span>{personality.emoji}</span>
@@ -124,7 +124,7 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
   };
 
   return (
-    <CardFooter className="flex flex-col p-0 sticky bottom-[env(safe-area-inset-bottom)] left-0 right-0 z-20 py-4 sm:py-8 sm:px-4">
+    <CardFooter className="flex flex-col p-0 sticky bottom-[env(safe-area-inset-bottom)] left-0 right-0 z-20 py-4 sm:py-4 sm:px-4">
       <div className="w-full max-w-3xl mx-auto px-6 sm:px-8 flex flex-col items-center">
         {/* Avatar selection row */}
         <div className="flex justify-center gap-3 sm:gap-4 mb-4 pb-2 w-[92%] sm:w-full bg-black/30 backdrop-blur-sm rounded-full px-2 sm:px-4 py-2">

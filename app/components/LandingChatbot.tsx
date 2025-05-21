@@ -11,17 +11,27 @@ import {
   extractFollowUpQuestions,
   removeFollowUpSection,
 } from "../constants/message-utils";
+import { useConversations } from "../context/ConversationsContext";
 
 interface LandingChatbotProps {
   conversationId: string;
   selectedModels: ModelName[];
+  /**
+   * Callback to update the currently-selected model(s) in the parent page. The
+   * LandingChatbot will always pass an array containing exactly one model – the
+   * one the user most recently selected via the chat footer UI.
+   */
+  setSelectedModels: (models: ModelName[]) => void;
   onFirstMessage?: (models: ModelName[]) => void;
+  onLoadingChange?: (loading: boolean) => void;
 }
 
 const LandingChatbot: React.FC<LandingChatbotProps> = ({
   conversationId,
   selectedModels,
+  setSelectedModels,
   onFirstMessage,
+  onLoadingChange,
 }) => {
   const selectedModel = selectedModels.length > 0 ? selectedModels[0] : null;
   const chatInputRef = useRef<HTMLDivElement>(null);
@@ -36,6 +46,9 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   // Add state to track pending model changes for immediate UI feedback
   const [pendingModelChange, setPendingModelChange] =
     useState<ModelName | null>(null);
+
+  // Access conversation updater so we can persist the running transcript.
+  const { updateConversation } = useConversations();
 
   // Debounced scroll function to prevent rapid consecutive scrolls
   const smoothScrollToInput = useCallback(() => {
@@ -141,27 +154,56 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
     console.log(`Chat status changed: ${status}`);
   }, [status]);
 
-  // Log messages when they update
+  // Notify parent about loading state
   useEffect(() => {
-    if (messages.length > 0) {
-      console.log(`Messages updated (${messages.length}):`, messages);
+    onLoadingChange?.(isLoading);
+  }, [isLoading, onLoadingChange]);
 
-      if (!hasNotifiedFirst) {
-        const hasUserMessage = messages.some((m) => m.role === "user");
-        if (hasUserMessage) {
-          onFirstMessage?.(selectedModels);
-          setHasNotifiedFirst(true);
-        }
+  // Persist transcript only when new messages are added and streaming is done
+  const lastSavedCount = useRef(0);
+
+  useEffect(() => {
+    if (messages.length === 0) return;
+
+    console.log(`Messages updated (${messages.length}):`, messages);
+
+    if (!hasNotifiedFirst) {
+      const hasUserMessage = messages.some((m) => m.role === "user");
+      if (hasUserMessage) {
+        onFirstMessage?.(selectedModels);
+        setHasNotifiedFirst(true);
       }
-
-      // Log the last message
-      const lastMessage = messages[messages.length - 1];
-      console.log(`Last message (${lastMessage.role}):`, {
-        content: lastMessage.content,
-        id: lastMessage.id,
-      });
     }
-  }, [messages, onFirstMessage, selectedModels, hasNotifiedFirst]);
+
+    // Log the last message
+    const lastMessage = messages[messages.length - 1];
+    console.log(`Last message (${lastMessage.role}):`, {
+      content: lastMessage.content,
+      id: lastMessage.id,
+    });
+
+    // Persist only when: a) not streaming b) we have more messages than last save
+    if (!isLoading && messages.length > lastSavedCount.current) {
+      updateConversation(conversationId, {
+        messages: messages.map((m) => {
+          if (m.role === "assistant") {
+            return {
+              role: m.role as "assistant",
+              content: m.content,
+              model: messageModels[m.id] || selectedModel,
+            };
+          } else {
+            return {
+              role: m.role as "user",
+              content: m.content,
+            };
+          }
+        }),
+      });
+      lastSavedCount.current = messages.length;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages, isLoading]);
 
   // Log error state
   useEffect(() => {
@@ -226,24 +268,24 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
 
   // Handler for model selection from ChatInputFooter
   const handleModelSelect = (model: string) => {
-    if (model) {
-      console.log(`LandingChatbot: Switching to model ${model}`);
-      const modelName = model as ModelName;
+    if (!model) return;
 
-      // Set pending model change for immediate UI feedback
-      setPendingModelChange(modelName);
+    console.log(`LandingChatbot: Switching to model ${model}`);
+    const modelName = model as ModelName;
 
-      // Show a brief toast notification that model was switched
-      if (typeof window !== "undefined" && selectedModel !== modelName) {
-        const event = new CustomEvent("showToast", {
-          detail: { message: `Switched to ${modelName}`, type: "info" },
-        });
-        window.dispatchEvent(event);
-      }
+    // 1. Update local UI state immediately so the footer reflects the change.
+    setPendingModelChange(modelName);
 
-      // Always notify parent to update the global state
-      // This will update PersonalitiesSection
-      onFirstMessage?.([modelName]);
+    // 2. Propagate the change upward so PersonalitiesSection (and the global
+    //    conversation state) stays in sync.
+    setSelectedModels([modelName]);
+
+    // 3. Optionally display a toast for user feedback.
+    if (typeof window !== "undefined" && selectedModel !== modelName) {
+      const event = new CustomEvent("showToast", {
+        detail: { message: `Switched to ${modelName}`, type: "info" },
+      });
+      window.dispatchEvent(event);
     }
   };
 

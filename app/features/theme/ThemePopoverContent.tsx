@@ -14,6 +14,7 @@ import {
 import { ModelName } from "../../types";
 import { useParams } from "next/navigation";
 import { useConversations } from "../../context/ConversationsContext";
+import { createClient as createSupabaseClient } from "@/utils/supabase/client";
 
 interface ThemePrompt {
   model: string;
@@ -63,33 +64,32 @@ const ThemePopoverContent: React.FC<ThemePopoverContentProps> = ({
   const fetchPrompts = async () => {
     setIsLoading(true);
     try {
-      // Always fetch prompts for every model so we can show regardless of selection
-      const results = await Promise.all(
-        ALL_MODELS.map(async (model) => {
-          const response = await fetch("/api/chat/theme", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              model,
-              seed: currentTheme,
-              questionCount: 3,
-              tone: "reflective, introspective",
-            }),
-          });
-          return await response.json();
-        })
-      );
+      // Initialize Supabase client (browser-side)
+      const supabase = createSupabaseClient();
 
-      // Organize prompts by model
+      // Fetch all saved prompts for the current theme (seed) and default params
+      const { data, error } = await supabase
+        .from("theme_prompts")
+        .select("model, prompts")
+        .eq("seed", currentTheme)
+        .eq("question_count", 3)
+        .eq("tone", "reflective, introspective");
+
+      if (error) {
+        console.error("Supabase fetch error:", error);
+        return;
+      }
+
       const newPrompts: Record<string, string> = {};
-      results.forEach((result: ThemePrompt) => {
-        if (result?.model && result?.prompts)
-          newPrompts[result.model] = result.prompts;
+      (data ?? []).forEach((row: { model: string; prompts: string }) => {
+        if (row.model && row.prompts) {
+          newPrompts[row.model] = row.prompts;
+        }
       });
 
       setPrompts(newPrompts);
     } catch (error) {
-      console.error("Error fetching prompts:", error);
+      console.error("Error fetching prompts from Supabase:", error);
     } finally {
       setIsLoading(false);
     }

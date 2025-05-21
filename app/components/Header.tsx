@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import SignUpSheet from "./SignUpSheet";
 import ChatsSheet from "./ChatsSheet";
+import NewsSheet from "./NewsSheet";
 import { useTheme, ThemePopoverContent } from "../features/theme";
 import { Sparkles, RefreshCw, Menu } from "lucide-react";
 import {
@@ -176,6 +177,10 @@ const Header: React.FC<{
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
 
+  // Shared button style for header actions
+  const headerActionButton =
+    "flex items-center gap-x-2 px-4 py-2 rounded-full border text-[#e6d3a3] bg-[#0c1320] border-[#e6d3a3]/30 hover:bg-[#1c2434] hover:border-[#e6d3a3]/60 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#e6d3a3]/30";
+
   return (
     <>
       <header className="fixed top-0 left-0 w-full z-50 px-2  sm:px-4 md:px-6">
@@ -197,8 +202,8 @@ const Header: React.FC<{
             <div className="w-full grid grid-cols-12 gap-2 items-center md:hidden">
               {/* First row */}
               <div className="col-span-12 flex justify-between items-center mb-1">
-                {/* Left: Chat bubble - 48pt hit area */}
-                <div className="flex items-center">
+                {/* Left: Chat bubble only */}
+                <div className="flex items-center space-x-1">
                   <div className="w-12 h-12 flex items-center justify-center">
                     <ChatsSheet />
                   </div>
@@ -240,38 +245,42 @@ const Header: React.FC<{
                 </div>
               </div>
 
-              {/* Second row with Theme and Prayer buttons - or search for prayer page */}
+              {/* Second row with Theme, News, and Prayer buttons - or search for prayer page */}
               {!isPrayerPage ? (
-                <div className="col-span-12 flex justify-center items-center space-x-2 mt-1">
+                <div className="col-span-12 flex justify-center items-center gap-x-3 mt-1">
                   {/* Theme button */}
                   <button
                     onClick={() => {
                       toggleSubHeader("theme");
                       setShowSparklesTooltip(false);
                     }}
-                    className={`relative flex items-center justify-center p-1.5 bg-[#0c1320] rounded-full border border-[#e6d3a3]/40 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/70 transition-all duration-300 hover:shadow-[0_0_15px_rgba(230,211,163,0.4)] animate-subtle-glow ${
+                    className={`${headerActionButton} ${
                       expandedSection === "theme"
-                        ? "shadow-[0_0_15px_rgba(230,211,163,0.4)] bg-dark"
+                        ? "bg-[#1c2434] border-[#e6d3a3]/60"
                         : ""
                     }`}
                     aria-expanded={expandedSection === "theme"}
                     aria-controls="theme-subheader"
                   >
-                    <span className="relative">
-                      <Sparkles size={12} className="relative z-10" />
-                      {showSparklesTooltip && (
-                        <span className="absolute left-1/2 -translate-x-1/2 -bottom-12 px-3 py-1.5 bg-black/90 text-[#ddc39a] text-xs rounded-md whitespace-nowrap z-20 border border-[#ddc39a]/30 shadow-lg">
-                          Discover prompts and sample questions to ask
-                          <span className="absolute left-1/2 -translate-x-1/2 top-full w-2 h-2 bg-black/90 border-l border-t border-[#ddc39a] rotate-45"></span>
-                        </span>
-                      )}
-                    </span>
+                    <Sparkles size={16} />
+                    <span className="font-medium text-xs">Theme</span>
+                    <RefreshCw
+                      size={12}
+                      className="ml-1"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        selectNewTheme();
+                      }}
+                    />
                   </button>
-
+                  {/* News button */}
+                  <div>
+                    <NewsSheet />
+                  </div>
                   {/* Prayer button */}
                   <PrayerLink
                     variant="ghost"
-                    className="bg-[#0c1320] border border-[#e6d3a3]/40 hover:bg-[#1c2434] hover:border-[#e6d3a3]/70 hover:scale-[1.02] active:scale-[0.98] px-3 py-1.5 text-xs"
+                    className={`${headerActionButton} text-xs`}
                   />
                 </div>
               ) : (
@@ -338,42 +347,42 @@ const Header: React.FC<{
                 </div>
               </div>
 
-              {/* Second row: Theme and Prayer buttons OR Search for Prayer page */}
-              <div className="flex items-center justify-between pt-2 border-t border-[#e6d3a3]/10 flex-1">
+              {/* Second row: Theme, News, and Prayer buttons OR Search for Prayer page */}
+              <div className="flex items-center justify-center gap-x-3 w-full pt-2 border-t border-[#e6d3a3]/10 flex-1">
                 {!isPrayerPage ? (
-                  <div className="flex items-center space-x-3">
+                  <>
                     {/* Theme button */}
                     <button
                       onClick={() => toggleSubHeader("theme")}
-                      className={`inline-flex items-center bg-[#0c1320] px-4 py-2 rounded-full border border-[#e6d3a3]/20 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/30 transition-all duration-300 animate-breathing animate-aura relative ${
+                      className={`${headerActionButton} ${
                         expandedSection === "theme"
-                          ? "bg-[#1c2434] border-[#e6d3a3]/30"
+                          ? "bg-[#1c2434] border-[#e6d3a3]/60"
                           : ""
                       }`}
                       aria-expanded={expandedSection === "theme"}
                       aria-controls="theme-subheader"
                     >
-                      <Sparkles className="h-4 w-4 mr-2 text-[#e6d3a3]" />
-                      <span className="text-sm font-medium">
-                        Contemplating{" "}
-                        <span className="italic">{currentTheme}</span>
-                      </span>
+                      <Sparkles className="h-4 w-4" />
+                      <span className="font-medium text-sm">Theme</span>
                       <RefreshCw
                         size={14}
-                        className="ml-2 animate-subtle-glow"
+                        className="ml-1"
                         onClick={(e) => {
                           e.stopPropagation();
                           selectNewTheme();
                         }}
                       />
                     </button>
-
+                    {/* News button */}
+                    <div>
+                      <NewsSheet />
+                    </div>
                     {/* Prayer button */}
                     <PrayerLink
                       variant="ghost"
-                      className="bg-[#0c1320] border border-[#e6d3a3]/40 hover:bg-[#1c2434] hover:border-[#e6d3a3]/70 hover:scale-[1.02] active:scale-[0.98] px-3 py-1.5 text-xs"
+                      className={`${headerActionButton} text-sm`}
                     />
-                  </div>
+                  </>
                 ) : (
                   <div className="w-full">
                     <div className="relative w-full max-w-3xl mx-auto">
@@ -384,7 +393,6 @@ const Header: React.FC<{
                         placeholder="Search prayers using natural language (e.g. 'healing morning Jewish', 'gratitude before meals')..."
                         className="w-full bg-[#0c1320] rounded-full border border-[#e6d3a3]/30 text-[#e6d3a3] px-5 py-2.5 focus:outline-none focus:border-[#e6d3a3]/70 focus:ring-2 focus:ring-[#e6d3a3]/20 text-base placeholder:text-[#e6d3a3]/40 transition-all duration-200"
                       />
-                      
                     </div>
                   </div>
                 )}

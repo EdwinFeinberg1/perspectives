@@ -2,9 +2,18 @@
 
 import React from "react";
 import Image from "next/image";
-import { Heart } from "lucide-react";
+import { Heart, Share2 } from "lucide-react";
 
-const Footer: React.FC = () => {
+interface FooterProps {
+  /**
+   * When provided, a "Share" button will be rendered that calls this
+   * function. Intended for chat pages so conversations can be shared.
+   */
+  onShare?: () => void;
+  shareDisabled?: boolean;
+}
+
+const Footer: React.FC<FooterProps> = ({ onShare, shareDisabled = false }) => {
   return (
     <footer className="sticky bottom-[env(safe-area-inset-bottom)] left-0 w-full z-40">
       <div className="mx-auto max-w-[1400px] relative mb-2 px-4 sm:px-6">
@@ -36,7 +45,25 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Right section with year */}
-          <div className="text-xs md:text-sm text-[#e6d3a3]/80">2025</div>
+          <div className="flex items-center gap-4">
+            {onShare && (
+              <button
+                onClick={onShare}
+                disabled={shareDisabled}
+                className={`flex items-center gap-1 transition-colors duration-200 ${
+                  shareDisabled
+                    ? "opacity-50 cursor-not-allowed"
+                    : "text-[#e6d3a3]/80 hover:text-[#e6d3a3]"
+                }`}
+              >
+                <Share2 className="h-4 w-4" />
+                <span className="text-xs md:text-sm">Share</span>
+              </button>
+            )}
+            <span className="text-xs md:text-sm text-[#e6d3a3]/80">
+              {new Date().getFullYear()}
+            </span>
+          </div>
         </div>
       </div>
     </footer>
