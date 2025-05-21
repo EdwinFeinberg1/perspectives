@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 
 // Standalone script to fetch and store news in Supabase
-const crypto = require("crypto");
-const { createClient } = require("@supabase/supabase-js");
-const OpenAI = require("openai");
-const { v4: uuidv4 } = require("uuid");
-require("dotenv").config();
+import { createClient } from "@supabase/supabase-js";
+import OpenAI from "openai";
+import { v4 as uuidv4 } from "uuid";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // Faith types
 const FAITH_TYPES = ["rabbi", "pastor", "imam", "buddha"];

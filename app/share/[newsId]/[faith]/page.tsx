@@ -9,7 +9,7 @@ import ReactMarkdown from "react-markdown";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import Link from "next/link";
-import { Home, Share2 } from "lucide-react";
+import { Home, Share2, Heart } from "lucide-react";
 import { motion } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 
@@ -30,6 +30,11 @@ export default function SharedPerspectivePage({
   useEffect(() => {
     const fetchData = async () => {
       try {
+        console.log("Fetching perspective for:", {
+          newsId: resolvedParams.newsId,
+          faith: resolvedParams.faith,
+        });
+
         // Fetch perspective from Supabase
         const { data, error } = await supabase
           .from("perspectives")
@@ -38,10 +43,16 @@ export default function SharedPerspectivePage({
           .eq("faith", resolvedParams.faith)
           .single();
 
+        console.log("Supabase response:", { data, error });
+
         if (error || !data) {
           throw new Error("Perspective not found");
         }
 
+        console.log(
+          "Setting perspective:",
+          data.perspective.substring(0, 100) + "..."
+        );
         setPerspective(data.perspective);
 
         // Fetch the news title and description
@@ -251,9 +262,10 @@ export default function SharedPerspectivePage({
                 <span className="font-medium">Share Perspective</span>
               </button>
             </div>
-            <p className="text-[#e6d3a3]/70 text-sm font-medium">
-              © {new Date().getFullYear()} Faith Perspectives • All rights
-              reserved
+            <p className="text-[#e6d3a3]/70 text-sm font-medium flex items-center gap-1">
+              {new Date().getFullYear()}{" "}
+               Sephira
+              <Heart className="h-3 w-3 md:h-4 md:w-4 text-[#e6d3a3]/80 fill-[#e6d3a3]/50 inline-block" />{" "}
             </p>
           </div>
         </div>
