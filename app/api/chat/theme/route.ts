@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { kv } from "@vercel/kv";
 import { themeSeeds } from "../../../../lib/constants";
+import { createClient } from "@supabase/supabase-js";
 // Flatten sub-themes from the record into a simple string[] for easier validation
 const flatSeeds: string[] = Object.values(themeSeeds).flat();
 const { OPENAI_API_KEY } = process.env;
@@ -158,7 +159,22 @@ export async function POST(req: Request) {
       tone,
       prompts: reply,
     };
+    // after const response = { model, seed, questionCount, tone, prompts }
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SERVICE_ROLE_KEY! // service-role so it can write
+    );
 
+    await supabase.from("theme_prompts").upsert(
+      {
+        model: response.model,
+        seed: response.seed,
+        question_count: response.questionCount,
+        tone: response.tone,
+        prompts: response.prompts,
+      },
+      { onConflict: "model,seed,question_count,tone" }
+    );
     // Cache the response
     if (process.env.USE_CACHE === "true" && kv) {
       await kv.set(cacheKey, response, { ex: CACHE_TTL });

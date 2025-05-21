@@ -19,6 +19,7 @@ export default function ChatPage() {
     typeof params.conversationId === "string" ? params.conversationId : "";
   const [messagesSent, setMessagesSent] = useState(false);
   const [headerOffset, setHeaderOffset] = useState(150);
+  const [chatLoading, setChatLoading] = useState(false);
 
   const chatbotRef = useRef<HTMLDivElement>(null);
   const personalitiesRef = useRef<HTMLDivElement>(null);
@@ -95,6 +96,63 @@ export default function ChatPage() {
     setMessagesSent(true);
   };
 
+  // ----- Sharing logic -----
+  const handleShareConversation = async () => {
+    if (chatLoading) {
+      // show toast informing to wait
+      if (typeof window !== "undefined") {
+        const event = new CustomEvent("showToast", {
+          detail: {
+            message: "Please wait for the response to finish before sharing",
+            type: "info",
+          },
+        });
+        window.dispatchEvent(event);
+      }
+      return;
+    }
+    if (!conversation) return;
+
+    try {
+      const res = await fetch("/api/share-conversation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ conversation }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || "Unable to share conversation");
+      }
+
+      const shareUrl = `${window.location.origin}/conversation-share/${data.id}`;
+
+      // Copy the URL to clipboard for user convenience.
+      await navigator.clipboard.writeText(shareUrl);
+
+      // Show a toast so the user knows it worked.
+      if (typeof window !== "undefined") {
+        const event = new CustomEvent("showToast", {
+          detail: {
+            message: "Share link copied to clipboard!",
+            type: "success",
+          },
+        });
+        window.dispatchEvent(event);
+      }
+    } catch (err) {
+      console.error(err);
+
+      if (typeof window !== "undefined") {
+        const event = new CustomEvent("showToast", {
+          detail: { message: "Failed to share conversation", type: "error" },
+        });
+        window.dispatchEvent(event);
+      }
+    }
+  };
+
   return (
     <>
       {/* Stars background */}
@@ -127,7 +185,7 @@ export default function ChatPage() {
             marginBottom: "70px",
           }}
         >
-          <div className="max-w-[1400px] mx-auto w-full pb-5">
+          <div className="max-w-[1400px] mx-auto w-full pb-4">
             <PersonalitiesSection
               ref={personalitiesRef}
               selectedModels={conversation.selectedModels}
@@ -147,19 +205,21 @@ export default function ChatPage() {
                 <LandingChatbot
                   conversationId={conversationId}
                   selectedModels={conversation.selectedModels}
+                  setSelectedModels={setSelectedModels}
                   onFirstMessage={(msgModels) => {
                     // Always use the first model in the array for naming
                     const modelName = msgModels[0] || "AI";
                     const name = `${modelName} Conversation`;
                     markConversationStarted(name);
                   }}
+                  onLoadingChange={setChatLoading}
                 />
               </div>
             </div>
           </div>
         </div>
 
-        <Footer/>
+        <Footer onShare={handleShareConversation} shareDisabled={chatLoading} />
       </main>
     </>
   );

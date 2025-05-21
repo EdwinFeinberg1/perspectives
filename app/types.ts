@@ -1,4 +1,6 @@
 // Define shared type for models across components
+export type FaithType = "rabbi" | "pastor" | "buddha" | "imam";
+
 export type ModelName =
   | "RabbiGPT"
   | "BuddhaGPT"
@@ -19,4 +21,13 @@ export interface Conversation {
   name: string;
   selectedModels: ModelName[];
   hasStarted: boolean;
+  /**
+   * Full transcript for this conversation. Each message contains a role ("user" or "assistant")
+   * and the raw markdown/text content returned by the model or entered by the user.
+   * This will be persisted so that conversations can later be shared publicly.
+   */
+  messages: {
+    role: "user" | "assistant";
+    content: string;
+  }[];
 }

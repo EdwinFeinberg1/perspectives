@@ -78,41 +78,45 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
     return () => {};
   }, [minSpeed, maxSpeed, minDelay, maxDelay]);
 
+  // Continuous animation loop — run once on mount
   useEffect(() => {
-    const moveStar = () => {
-      if (star) {
-        setStar((prevStar) => {
-          if (!prevStar) return null;
-          const newX =
-            prevStar.x +
-            prevStar.speed * Math.cos((prevStar.angle * Math.PI) / 180);
-          const newY =
-            prevStar.y +
-            prevStar.speed * Math.sin((prevStar.angle * Math.PI) / 180);
-          const newDistance = prevStar.distance + prevStar.speed;
-          const newScale = 1 + newDistance / 100;
-          if (
-            newX < -20 ||
-            newX > window.innerWidth + 20 ||
-            newY < -20 ||
-            newY > window.innerHeight + 20
-          ) {
-            return null;
-          }
-          return {
-            ...prevStar,
-            x: newX,
-            y: newY,
-            distance: newDistance,
-            scale: newScale,
-          };
-        });
-      }
+    let rafId: number;
+
+    const animate = () => {
+      setStar((prev) => {
+        if (!prev) return prev; // nothing to move yet
+
+        const newX =
+          prev.x + prev.speed * Math.cos((prev.angle * Math.PI) / 180);
+        const newY =
+          prev.y + prev.speed * Math.sin((prev.angle * Math.PI) / 180);
+        const newDistance = prev.distance + prev.speed;
+        const newScale = 1 + newDistance / 100;
+
+        if (
+          newX < -20 ||
+          newX > window.innerWidth + 20 ||
+          newY < -20 ||
+          newY > window.innerHeight + 20
+        ) {
+          return null; // star left the screen — wait for next spawn
+        }
+
+        return {
+          ...prev,
+          x: newX,
+          y: newY,
+          distance: newDistance,
+          scale: newScale,
+        };
+      });
+
+      rafId = requestAnimationFrame(animate);
     };
 
-    const animationFrame = requestAnimationFrame(moveStar);
-    return () => cancelAnimationFrame(animationFrame);
-  }, [star]);
+    rafId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
 
   return (
     <svg

@@ -1,6 +1,12 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import { Conversation } from "../types";
 
 interface ConversationsContextValue {
@@ -40,27 +46,31 @@ export const ConversationsProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   }, [conversations]);
 
-  const createConversation = () => {
+  const createConversation = useCallback(() => {
     const id = crypto.randomUUID();
     const newConv: Conversation = {
       id,
       name: "New Conversation",
       selectedModels: [],
       hasStarted: false,
+      messages: [],
     };
     setConversations((prev) => [...prev, newConv]);
     return id;
-  };
+  }, []);
 
-  const deleteConversation = (id: string) => {
+  const deleteConversation = useCallback((id: string) => {
     setConversations((prev) => prev.filter((c) => c.id !== id));
-  };
+  }, []);
 
-  const updateConversation = (id: string, updates: Partial<Conversation>) => {
-    setConversations((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
-    );
-  };
+  const updateConversation = useCallback(
+    (id: string, updates: Partial<Conversation>) => {
+      setConversations((prev) =>
+        prev.map((c) => (c.id === id ? { ...c, ...updates } : c))
+      );
+    },
+    []
+  );
 
   return (
     <ConversationsContext.Provider
