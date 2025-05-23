@@ -32,7 +32,9 @@ export async function POST(req: Request) {
     const ipAddress = forwardedFor
       ? forwardedFor.split(",")[0].trim()
       : "not available";
+    await logQuestion(latestMessage, "PastorGPT", ipAddress);
 
+    /*
     try {
       // Try to log the question, but don't let failures stop execution
       await logQuestion(latestMessage, "PastorGPT", ipAddress);
@@ -43,7 +45,10 @@ export async function POST(req: Request) {
         loggingError
       );
     }
+    */
 
+
+    /*
     // Moderate the user input
     const moderationResponse = await openai.moderations.create({
       input: latestMessage,
@@ -65,6 +70,7 @@ export async function POST(req: Request) {
         { status: 400, headers: { "Content-Type": "application/json" } }
       );
     }
+    */
 
     let docContext = "";
 
