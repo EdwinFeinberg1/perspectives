@@ -35,17 +35,20 @@ export async function signup(formData: FormData) {
     password: formData.get("password") as string,
   };
 
-  const { error } = await supabase.auth.signUp({
-    ...data,
-    options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/confirm`,
-    },
-  });
+  // Sign up the user
+  const { error: signUpError } = await supabase.auth.signUp(data);
 
-  if (error) {
+  if (signUpError) {
     redirect("/error");
   }
 
-  // Redirect to a verification pending page instead of home
-  redirect("/verify-email");
+  // Since email verification is disabled, we can immediately sign in
+  const { error: signInError } = await supabase.auth.signInWithPassword(data);
+
+  if (signInError) {
+    redirect("/error");
+  }
+
+  revalidatePath("/", "layout");
+  redirect("/");
 }
