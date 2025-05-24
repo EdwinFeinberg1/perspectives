@@ -25,6 +25,38 @@ const db = client.db(ASTRADB_API_ENDPOINT_JEWISH!, {
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
+// Simple helper to classify user sentiment with OpenAI
+async function detectSentiment(
+  text: string,
+  openaiClient: OpenAI
+): Promise<"positive" | "negative" | "neutral"> {
+  try {
+    const resp = await openaiClient.chat.completions.create({
+      model: "gpt-3.5-turbo-0125",
+      temperature: 0,
+      max_tokens: 1,
+      messages: [
+        {
+          role: "system",
+          content:
+            "Classify the following user utterance as Positive, Negative, or Neutral. Respond with only the single word label in lowercase (positive, negative, or neutral).",
+        },
+        { role: "user", content: text },
+      ],
+    });
+
+    const labelRaw = resp.choices?.[0]?.message?.content?.trim().toLowerCase();
+    if (labelRaw === "positive" || labelRaw === "negative") return labelRaw;
+    return "neutral"; // default / fallback
+  } catch (err) {
+    console.error(
+      "RabbiGPT: Sentiment detection failed, defaulting to neutral",
+      err
+    );
+    return "neutral";
+  }
+}
+
 export async function POST(req: Request) {
   //moderate the prompt that users submit.
   try {
@@ -140,17 +172,44 @@ export async function POST(req: Request) {
     const docContext = retrievedChunks
       .map(({ ref, text }) => `${ref}:\n${text}`)
       .join("\n\n");
-    const SYSTEM_PROMPT = `
-      You are RabbiGPT, speaking in the warm, story‑driven voice of Rabbi Simon Jacobson (author of *Toward a Meaningful Life*).
+
+    // Detect the user's sentiment so RabbiGPT can meet them "where they're at"
+    const userSentiment = await detectSentiment(latestMessage, openai);
+
+    // Dynamic guidance based on sentiment
+    const guidanceMap: Record<"positive" | "neutral" | "negative", string> = {
+      positive:
+        "Offer a warm, brief response. Still invite them to share anything personal that might help you guide them better.",
+      neutral:
+        "Begin with a gentle question or two to better understand their background and intentions before teaching. Keep your initial reply under 150 words.",
+      negative:
+        'Start with an empathetic acknowledgement (e.g. "I sense this might be weighing on you…") and then ask 1–2 open-ended questions for more personal context. Keep the reply very short (≤ 120 words).',
+    };
+
+    const SENTIMENT_GUIDANCE = `\nThe user's current sentiment appears to be **${userSentiment}**.\n${guidanceMap[userSentiment]}`;
+
+    // Base system prompt (kept separate so we can append sentiment guidance without redeclaration conflicts)
+    const BASE_SYSTEM_PROMPT = `
+אתה רב מוסמך   (“RabbiGPT”) — פוסק הלכה ומחנך ברוח היהדות האורתודוקסית.
       
       ### Rabbinic Ethos & Voice
-      - Write as a caring Chabad mentor: conversational, encouraging, and personal ("my friend," "you can…").
+      - Write as a caring Chabad mentor: conversational, encouraging, and personal.
+      - Quote 2-3 p’sukim or ma’amrei Chazal verbatim, with references.
+      - Summarize one classical commentator (Ramban, Meshech Chochmah, etc.) in ≤1 line.
       - Weave in gentle Hebrew/Yiddish terms **and** immediately give the English meaning in parentheses.
-      -  AVOID generic metaphors like "tapestry of life," "journey," or "intricately woven."      
+      - AVOID generic metaphors like "tapestry of life," "journey," or "intricately woven."      
       
       ### RESPONSE FLOW
       1. **Hook** – open with a relatable scenario, question, or short anecdote (≤ 4 lines).
-      2. **Depth** – unpack the Chassidic concept or text that illuminates the issue.
+      *Before moving on, if the user's question is broad or missing context, ask a clarifying question.*
+       ### Conversational Engagement
+       - Ask 1–2 open-ended questions ("Can you share more about…?", "How does that land with you?") before deep teaching.
+       - Only after clarity, proceed with Hook→Depth→Application.
+
+      2. **Depth** – - Include one short *mashal* (parable) or real-life anecdote to illuminate the idea.
+       - unpack the Chassidic concept or text that illuminates the issue.
+       - If the user's question is broad or missing context, ask a clarifying question.
+
       3. **Application** – give a practical takeaway the user can implement today.
       
       ### Function and Style
@@ -191,6 +250,9 @@ export async function POST(req: Request) {
       2. Second suggested question?
       3. Third suggested question?
       `;
+
+    const systemPromptFinal = `${BASE_SYSTEM_PROMPT}\n${SENTIMENT_GUIDANCE}`;
+
     // 4) Kick off the streaming chat with your system prompt
     try {
       console.log(
@@ -237,11 +299,11 @@ export async function POST(req: Request) {
       You MUST call the tools in this order: getTodayParsha FIRST, then summarizeParshah SECOND.
       
       IF THE USER DID NOT ASK FOR A PARSHAH SUMMARY, USE THIS SYSTEM PROMPT:
-      ${SYSTEM_PROMPT}
+      ${systemPromptFinal}
       `,
         messages,
         temperature: 0.7,
-        maxTokens: 500,
+        maxTokens: 700,
       });
 
       // Return streaming response directly
