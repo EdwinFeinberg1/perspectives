@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
@@ -58,11 +58,7 @@ export default function EmailNotificationSettings() {
   });
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
-  useEffect(() => {
-    loadSettings();
-  }, []);
-
-  const loadSettings = async () => {
+  const loadSettings = useCallback(async () => {
     try {
       const {
         data: { session },
@@ -102,7 +98,11 @@ export default function EmailNotificationSettings() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [supabase, router]);
+
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
 
   const saveSettings = async () => {
     setIsSaving(true);
