@@ -5,7 +5,7 @@ import Header from "../Header";
 import Footer from "../Footer";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import PrayerCard from "./PrayerCard";
-import { ChevronDown, ChevronUp, Star } from "lucide-react";
+import { ChevronDown, ChevronUp, Star, Settings } from "lucide-react";
 import { useFavorites } from "@/app/context/FavoritesContext";
 import { useRouter } from "next/navigation";
 import {
@@ -275,22 +275,35 @@ const PrayerPage: React.FC = () => {
               {/* Favorites Section */}
               {filteredFavoritePrayers.length > 0 && (
                 <div className="mb-6">
-                  <div
-                    className="flex items-center gap-2 mb-4 cursor-pointer"
-                    onClick={toggleFavoritesSection}
-                  >
-                    <Star className="w-5 h-5 text-yellow-400 fill-current" />
-                    <h2 className="text-xl font-semibold text-[#e6d3a3]">
-                      Favorites
-                    </h2>
-                    {showFavorites ? (
-                      <ChevronUp className="w-5 h-5 text-[#e6d3a3]/70" />
-                    ) : (
-                      <ChevronDown className="w-5 h-5 text-[#e6d3a3]/70" />
-                    )}
-                    <span className="text-sm text-[#e6d3a3]/70 ml-2">
-                      ({filteredFavoritePrayers.length})
-                    </span>
+                  <div className="flex items-center justify-between mb-4">
+                    <div
+                      className="flex items-center gap-2 cursor-pointer"
+                      onClick={toggleFavoritesSection}
+                    >
+                      <Star className="w-5 h-5 text-yellow-400 fill-current" />
+                      <h2 className="text-xl font-semibold text-[#e6d3a3]">
+                        Favorites
+                      </h2>
+                      {showFavorites ? (
+                        <ChevronUp className="w-5 h-5 text-[#e6d3a3]/70" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-[#e6d3a3]/70" />
+                      )}
+                      <span className="text-sm text-[#e6d3a3]/70 ml-2">
+                        ({filteredFavoritePrayers.length})
+                      </span>
+                    </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push("/prayer/settings");
+                      }}
+                      className="flex items-center gap-2 px-3 py-1.5 text-sm text-[#e6d3a3]/70 hover:text-[#e6d3a3] border border-[#e6d3a3]/20 hover:border-[#e6d3a3]/40 rounded-full transition-all duration-200"
+                      title="Email notification settings"
+                    >
+                      <Settings className="w-4 h-4" />
+                      <span>Email Notifications</span>
+                    </button>
                   </div>
 
                   {showFavorites && (
