@@ -5,7 +5,7 @@ import SignUpSheet from "./SignUpSheet";
 import ChatsSheet from "./ChatsSheet";
 import NewsSheet from "./NewsSheet";
 import { useTheme, ThemePopoverContent } from "../features/theme";
-import { Sparkles, RefreshCw, Menu } from "lucide-react";
+import { Sparkles, RefreshCw, Menu, Filter, ChevronDown } from "lucide-react";
 import {
   Sheet,
   SheetTrigger,
@@ -13,6 +13,14 @@ import {
   SheetTitle,
   SheetHeader,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuCheckboxItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import PrayerLink from "./Prayer/PrayerLink";
 import LoginLink from "./LoginLink";
@@ -32,9 +40,9 @@ const Header: React.FC<{
   isPrayerPage = false,
   prayerSearch = "",
   onPrayerSearch,
-  // selectedCategories,
-  // togglePrayerCategory,
-  // counts = {},
+  selectedCategories,
+  togglePrayerCategory,
+  counts = {},
 }) => {
   const { currentTheme, selectNewTheme } = useTheme();
   const [subHeaderExpanded, setSubHeaderExpanded] = useState(false);
@@ -300,6 +308,70 @@ const Header: React.FC<{
                       </div>
                     </div>
                   </div>
+                  {/* Category filter dropdown for mobile */}
+                  {selectedCategories && Object.entries(counts).length > 0 && (
+                    <div className="flex justify-center">
+                      <DropdownMenu>
+                        <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-200 bg-[#0c1320] border-[#e6d3a3]/20 text-[#e6d3a3]/70 hover:border-[#e6d3a3]/30 hover:bg-[#1c2434] focus:outline-none focus:ring-2 focus:ring-[#e6d3a3]/20">
+                          <Filter className="w-3 h-3" />
+                          <span className="text-xs">
+                            Categories
+                            {selectedCategories.size > 0 && (
+                              <span className="ml-1 text-xs bg-[#e6d3a3]/20 text-[#e6d3a3] px-1 py-0.5 rounded-full">
+                                {selectedCategories.size}
+                              </span>
+                            )}
+                          </span>
+                          <ChevronDown className="w-3 h-3" />
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-[200px] bg-[#121927] border-[#e6d3a3]/20 text-[#e6d3a3]">
+                          <DropdownMenuLabel className="text-[#e6d3a3]/90 text-xs">
+                            Filter by Category
+                          </DropdownMenuLabel>
+                          <DropdownMenuSeparator className="bg-[#e6d3a3]/20" />
+                          {Object.entries(counts).map(([category, count]) => (
+                            <DropdownMenuCheckboxItem
+                              key={category}
+                              checked={selectedCategories.has(category)}
+                              onCheckedChange={() =>
+                                togglePrayerCategory?.(category)
+                              }
+                              className="text-[#e6d3a3]/80 hover:bg-[#1c2434] hover:text-[#e6d3a3] focus:bg-[#1c2434] focus:text-[#e6d3a3] data-[state=checked]:text-[#e6d3a3]"
+                            >
+                              <div className="flex items-center justify-between w-full">
+                                <span className="text-xs capitalize">
+                                  {category.replace("_", " ")}
+                                </span>
+                                <span className="text-xs opacity-60">
+                                  ({count})
+                                </span>
+                              </div>
+                            </DropdownMenuCheckboxItem>
+                          ))}
+                          {selectedCategories.size > 0 && (
+                            <>
+                              <DropdownMenuSeparator className="bg-[#e6d3a3]/20" />
+                              <div className="px-2 py-1">
+                                <button
+                                  onClick={() => {
+                                    // Clear all categories
+                                    Object.keys(counts).forEach((category) => {
+                                      if (selectedCategories.has(category)) {
+                                        togglePrayerCategory?.(category);
+                                      }
+                                    });
+                                  }}
+                                  className="text-xs text-[#e6d3a3]/60 hover:text-[#e6d3a3] transition-colors"
+                                >
+                                  Clear all filters
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -394,6 +466,77 @@ const Header: React.FC<{
                         className="w-full bg-[#0c1320] rounded-full border border-[#e6d3a3]/30 text-[#e6d3a3] px-5 py-2.5 focus:outline-none focus:border-[#e6d3a3]/70 focus:ring-2 focus:ring-[#e6d3a3]/20 text-base placeholder:text-[#e6d3a3]/40 transition-all duration-200"
                       />
                     </div>
+                    {/* Category filter dropdown for desktop */}
+                    {selectedCategories &&
+                      Object.entries(counts).length > 0 && (
+                        <div className="flex justify-center mt-2">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger className="flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-200 bg-[#0c1320] border-[#e6d3a3]/20 text-[#e6d3a3]/70 hover:border-[#e6d3a3]/30 hover:bg-[#1c2434] focus:outline-none focus:ring-2 focus:ring-[#e6d3a3]/20">
+                              <Filter className="w-4 h-4" />
+                              <span className="text-sm">
+                                Categories
+                                {selectedCategories.size > 0 && (
+                                  <span className="ml-1 text-xs bg-[#e6d3a3]/20 text-[#e6d3a3] px-1.5 py-0.5 rounded-full">
+                                    {selectedCategories.size}
+                                  </span>
+                                )}
+                              </span>
+                              <ChevronDown className="w-4 h-4" />
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-[220px] bg-[#121927] border-[#e6d3a3]/20 text-[#e6d3a3]">
+                              <DropdownMenuLabel className="text-[#e6d3a3]/90">
+                                Filter by Category
+                              </DropdownMenuLabel>
+                              <DropdownMenuSeparator className="bg-[#e6d3a3]/20" />
+                              {Object.entries(counts).map(
+                                ([category, count]) => (
+                                  <DropdownMenuCheckboxItem
+                                    key={category}
+                                    checked={selectedCategories.has(category)}
+                                    onCheckedChange={() =>
+                                      togglePrayerCategory?.(category)
+                                    }
+                                    className="text-[#e6d3a3]/80 hover:bg-[#1c2434] hover:text-[#e6d3a3] focus:bg-[#1c2434] focus:text-[#e6d3a3] data-[state=checked]:text-[#e6d3a3]"
+                                  >
+                                    <div className="flex items-center justify-between w-full">
+                                      <span className="text-sm capitalize">
+                                        {category.replace("_", " ")}
+                                      </span>
+                                      <span className="text-xs opacity-60">
+                                        ({count})
+                                      </span>
+                                    </div>
+                                  </DropdownMenuCheckboxItem>
+                                )
+                              )}
+                              {selectedCategories.size > 0 && (
+                                <>
+                                  <DropdownMenuSeparator className="bg-[#e6d3a3]/20" />
+                                  <div className="px-2 py-1.5">
+                                    <button
+                                      onClick={() => {
+                                        // Clear all categories
+                                        Object.keys(counts).forEach(
+                                          (category) => {
+                                            if (
+                                              selectedCategories.has(category)
+                                            ) {
+                                              togglePrayerCategory?.(category);
+                                            }
+                                          }
+                                        );
+                                      }}
+                                      className="text-xs text-[#e6d3a3]/60 hover:text-[#e6d3a3] transition-colors"
+                                    >
+                                      Clear all filters
+                                    </button>
+                                  </div>
+                                </>
+                              )}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      )}
                   </div>
                 )}
               </div>
