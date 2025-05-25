@@ -245,31 +245,6 @@ const PrayerPage: React.FC = () => {
         }}
       >
         <div className="max-w-[1400px] mx-auto w-full pb-5">
-          {/* Category filters */}
-          {selectedCategories && Object.entries(counts).length > 0 && (
-            <div className="px-4 py-3 mb-4">
-              <div className="flex flex-wrap gap-2 justify-center">
-                {Object.entries(counts).map(([category, count]) => (
-                  <button
-                    key={category}
-                    onClick={() => toggleCategory(category)}
-                    className={`group relative px-4 py-2 rounded-full border transition-all duration-200 ${
-                      selectedCategories.has(category)
-                        ? "bg-[#e6d3a3]/20 border-[#e6d3a3]/50 text-[#e6d3a3]"
-                        : "bg-[#0c1320] border-[#e6d3a3]/20 text-[#e6d3a3]/70 hover:border-[#e6d3a3]/30 hover:bg-[#1c2434]"
-                    }`}
-                  >
-                    <span className="text-sm">{category}</span>
-                    <span className="ml-1.5 text-xs opacity-60">({count})</span>
-                    {selectedCategories.has(category) && (
-                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#e6d3a3] rounded-full" />
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
           <ScrollArea className="h-[calc(100vh-180px)] w-full rounded-md">
             <div className="px-4 py-2">
               {/* Favorites Section */}
