@@ -1,4 +1,4 @@
-//judaism/route.ts
+// judaism/route.ts
 import { openai as aiSdkOpenai } from "@ai-sdk/openai";
 import { streamText } from "ai";
 import { DataAPIClient } from "@datastax/astra-db-ts";
@@ -7,7 +7,6 @@ import { logQuestion } from "@/lib/logging";
 
 import { getTodayParsha } from "@/lib/tools/parshah/getTodayParsha";
 import { summarizeParshah } from "@/lib/tools/parshah/summarizeParshah";
-//import { logQuestion } from "@/lib/logging";
 
 const {
   ASTRADB_DB_KEYSPACE,
@@ -17,7 +16,6 @@ const {
   OPENAI_API_KEY,
 } = process.env;
 
-// Initialize clients
 const client = new DataAPIClient(ASTRA_DB_APPLICATION_TOKEN_JEWISH!);
 const db = client.db(ASTRADB_API_ENDPOINT_JEWISH!, {
   keyspace: ASTRADB_DB_KEYSPACE!,
@@ -25,13 +23,11 @@ const db = client.db(ASTRADB_API_ENDPOINT_JEWISH!, {
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
-// Simple helper to classify user sentiment with OpenAI
 async function detectSentiment(
-  text: string,
-  openaiClient: OpenAI
+  text: string
 ): Promise<"positive" | "negative" | "neutral"> {
   try {
-    const resp = await openaiClient.chat.completions.create({
+    const resp = await openai.chat.completions.create({
       model: "gpt-3.5-turbo-0125",
       temperature: 0,
       max_tokens: 1,
@@ -39,294 +35,111 @@ async function detectSentiment(
         {
           role: "system",
           content:
-            "Classify the following user utterance as Positive, Negative, or Neutral. Respond with only the single word label in lowercase (positive, negative, or neutral).",
+            "Classify sentiment: positive, negative, or neutral. Respond only with the single lowercase word.",
         },
         { role: "user", content: text },
       ],
     });
-
-    const labelRaw = resp.choices?.[0]?.message?.content?.trim().toLowerCase();
-    if (labelRaw === "positive" || labelRaw === "negative") return labelRaw;
-    return "neutral"; // default / fallback
-  } catch (err) {
-    console.error(
-      "RabbiGPT: Sentiment detection failed, defaulting to neutral",
-      err
+    return (
+      (resp.choices[0]?.message?.content?.trim().toLowerCase() as
+        | "positive"
+        | "negative"
+        | "neutral") || "neutral"
     );
+  } catch {
     return "neutral";
   }
 }
 
 export async function POST(req: Request) {
-  //moderate the prompt that users submit.
   try {
-    // Safely parse request body
-    let messages;
-    try {
-      const body = await req.json();
-      messages = body.messages;
-      if (!messages || !Array.isArray(messages)) {
-        throw new Error("Invalid messages format");
-      }
-    } catch (parseError) {
-      console.error("Error parsing request body:", parseError);
-      return new Response(
-        JSON.stringify({
-          error: "Invalid request format",
-          details: parseError.message,
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
-
+    const { messages } = await req.json();
     const latestMessage = messages.at(-1)?.content || "";
+    const ipAddress =
+      req.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
 
-    // Extract IP address from request headers
-    const forwardedFor = req.headers.get("x-forwarded-for");
-    const ipAddress = forwardedFor
-      ? forwardedFor.split(",")[0].trim()
-      : "not available";
     await logQuestion(latestMessage, "RabbiGPT", ipAddress);
 
-    /*
-    try {
-      // Try to log the question, but don't let failures stop execution
-      await logQuestion(latestMessage, "RabbiGPT", ipAddress);
-    } catch (loggingError) {
-      // Just log the error to console and continue
-      console.error(
-        "Failed to log question, continuing execution:",
-        loggingError
-      );
-    }
-    */
-
-    /*
-    // Moderate the user input
-    const moderationResponse = await openai.moderations.create({
-      input: latestMessage,
-    });
-
-    // Check if content is flagged
-    const flagged = moderationResponse.results[0]?.flagged;
-
-    if (flagged) {
-      console.warn(
-        "RabbiGPT: Content moderation flagged input",
-        moderationResponse.results[0]
-      );
-      return new Response(
-        JSON.stringify({
-          error:
-            "Your message may contain content that violates our usage policies.",
-          flagged: true,
-        }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
-    }
-    */
-
-    // 1) Create an embedding for the user query
     const embeddingResponse = await openai.embeddings.create({
       model: "text-embedding-3-small",
       input: latestMessage,
-      encoding_format: "float",
     });
-    const fullVector = embeddingResponse.data[0].embedding;
 
-    const vector = fullVector.slice(0, 1024);
+    const vector = embeddingResponse.data[0].embedding.slice(0, 1024);
 
-    let retrievedChunks: { ref: string; text: string }[] = [];
+    let retrievedChunks;
     try {
-      if (!db) {
-        throw new Error("Database client is not initialized");
-      }
-      const collection = await db.collection(ASTRADB_DB_COLLECTION_JEWISH!);
-
-      const cursor = collection.find(/* no filter */ null, {
-        sort: {
-          $vector: vector,
-        },
-        limit: 10,
-      });
-      const docs = await cursor.toArray();
+      const collection = db.collection(ASTRADB_DB_COLLECTION_JEWISH!);
+      const docs = await collection
+        .find(null, { sort: { $vector: vector }, limit: 5 })
+        .toArray();
       retrievedChunks = docs.map((d) => ({ ref: d.ref, text: d.text }));
-    } catch (err) {
-      console.error("RabbiGPT: Vector search failed:", err);
-      // Provide a fallback if vector search fails
-
+    } catch {
       retrievedChunks = [
         {
-          ref: "Fallback",
-          text: "The Torah (תּוֹרָה) is the compilation of the first five books of the Hebrew Bible: Genesis, Exodus, Leviticus, Numbers, and Deuteronomy. These five books are also called the Pentateuch or the Chumash. The Torah contains the 613 mitzvot (commandments) that guide Jewish life and practice.",
+          ref: "Pirkei Avot 1:14",
+          text: "If I am not for myself, who will be for me?...",
         },
         {
-          ref: "Shabbat",
-          text: "Shabbat (שַׁבָּת) is the day of rest observed in Judaism from Friday evening to Saturday evening. It commemorates God's rest on the seventh day of Creation and the Exodus from Egypt. Shabbat observance includes lighting candles, special prayers, meals, and refraining from work.",
+          ref: "Berakhot 5a",
+          text: "If suffering befalls a person, let him examine his deeds...",
         },
       ];
     }
 
-    // 3) Build a single context block
-    //    e.g. "<ref>: <text>\n\n<ref2>: <text2>"
     const docContext = retrievedChunks
       .map(({ ref, text }) => `${ref}:\n${text}`)
       .join("\n\n");
+    const sentiment = await detectSentiment(latestMessage);
 
-    // Detect the user's sentiment so RabbiGPT can meet them "where they're at"
-    const userSentiment = await detectSentiment(latestMessage, openai);
+    const BASE_SYSTEM_PROMPT = `
+You are RabbiGPT – a knowledgeable and authoritative Jewish scholar. You are a Rabbi and a Chassidic Rebbe.
 
-    // Dynamic guidance based on sentiment
-    const guidanceMap: Record<"positive" | "neutral" | "negative", string> = {
-      positive:
-        "Offer a warm, brief response. Still invite them to share anything personal that might help you guide them better.",
-      neutral:
-        "Begin with a gentle question or two to better understand their background and intentions before teaching. Keep your initial reply under 150 words.",
+Guidelines:
+- Be authoritative, precise, and deeply rooted in Torah, Talmud, and classical Jewish texts.
+- Explicitly quote and reference texts.
+- Clarify unclear user queries immediately.
+- Provide practical advice clearly.
+
+Relevant context:\n${docContext}
+
+End with follow-up questions:\n## Follow-up Questions\n1. Question one?\n2. Question two?\n3. Question three?`;
+
+    const guidanceMap = {
+      positive: "Offer concise encouragement and clarity.",
+      neutral: "Clarify user's intent before providing depth.",
       negative:
-        'Start with an empathetic acknowledgement (e.g. "I sense this might be weighing on you…") and then ask 1–2 open-ended questions for more personal context. Keep the reply very short (≤ 120 words).',
+        "Start with empathy, clarify concern, then give clear teachings.",
     };
 
-    const SENTIMENT_GUIDANCE = `\nThe user's current sentiment appears to be **${userSentiment}**.\n${guidanceMap[userSentiment]}`;
+    const systemPromptFinal = `${BASE_SYSTEM_PROMPT}\nSentiment detected: ${sentiment}. ${guidanceMap[sentiment]}`;
 
-    // Base system prompt (kept separate so we can append sentiment guidance without redeclaration conflicts)
-    const BASE_SYSTEM_PROMPT = `
-אתה רב מוסמך   (“RabbiGPT”) — פוסק הלכה ומחנך ברוח היהדות האורתודוקסית.
-      
-      ### Rabbinic Ethos & Voice
-      - Write as a caring Chabad mentor: conversational, encouraging, and personal.
-      - Quote 2-3 p’sukim or ma’amrei Chazal verbatim, with references.
-      - Summarize one classical commentator (Ramban, Meshech Chochmah, etc.) in ≤1 line.
-      - Weave in gentle Hebrew/Yiddish terms **and** immediately give the English meaning in parentheses.
-      - AVOID generic metaphors like "tapestry of life," "journey," or "intricately woven."      
-      
-      ### RESPONSE FLOW
-      1. **Hook** – open with a relatable scenario, question, or short anecdote (≤ 4 lines).
-      *Before moving on, if the user's question is broad or missing context, ask a clarifying question.*
-       ### Conversational Engagement
-       - Ask 1–2 open-ended questions ("Can you share more about…?", "How does that land with you?") before deep teaching.
-       - Only after clarity, proceed with Hook→Depth→Application.
+    const isParshaQuery = /parsh(a|ah)|torah portion|this week/i.test(
+      latestMessage
+    );
 
-      2. **Depth** – - Include one short *mashal* (parable) or real-life anecdote to illuminate the idea.
-       - unpack the Chassidic concept or text that illuminates the issue.
-       - If the user's question is broad or missing context, ask a clarifying question.
+    const result = streamText({
+      model: aiSdkOpenai("gpt-4o-mini"),
+      tools: { getTodayParsha, summarizeParshah },
+      system: isParshaQuery
+        ? "Handle parsha query by calling tools sequentially."
+        : systemPromptFinal,
+      messages,
+      temperature: 0.7,
+      maxTokens: 700,
+    });
 
-      3. **Application** – give a practical takeaway the user can implement today.
-      
-      ### Function and Style
-      - denounce hatred, coercion, or violence, and respond to hostile texts with a Jewish ethic of dignity, peace, and truth.
-      - Uphold Ramban's mystical and theological vision, presenting angels, prophecy, and divine providence as real and metaphysically vital.
-      
-      FORMAT YOUR RESPONSES FOR READABILITY:
-      - Use ### headings for main sections or topics
-      - Add blank lines between paragraphs
-      - Keep paragraphs concise (3-4 lines maximum) 
-      - If using bullet points, add spacing between items
-      - Use markdown formatting consistently
-      - Use > for Torah quotations
-      - **Do NOT include the words "Hook", "Depth", or "Application".**
-      - Natural transitions are fine ("First…", "On a deeper level…", "Practically speaking…"), but no section headers.
-      
-      
-      When citing sources:
-      - When you quote or paraphrase from one of the provided passages, append its reference in square brackets immediately after the quote.  
-        For example: "In the beginning God created the heavens and the earth" [Genesis 1:1].  
-      - If you summarize a teaching, still mention its source: e.g. (Guide for the Perplexed 1:2).  
-      - Use a bullet or block-quote format when giving multiple sourced points.
-      
-      
-      Here are the relevant excerpts you may draw upon :
-      ${docContext}
-      
-      Now answer the user's question, and be scrupulous about citing each time you use one of the above passages.
-      
-      If the user asks for "this week's parshah in a nutshell" or "<Parsha> in a nutshell":
-       1) Call the getTodayParsha tool (or use its output's parshaName/parshaRef).
-       2) Call the summarizeParsha tool with that name & ref.
-       3) End with a link to the full text on Sefaria.
-      IMPORTANT: Always end your response with a 'Follow-up Questions' section using exactly this format:
-      
-      ## Follow-up Questions : potential questions that user might ask next
-      1. First suggested question?
-      2. Second suggested question?
-      3. Third suggested question?
-      `;
-
-    const systemPromptFinal = `${BASE_SYSTEM_PROMPT}\n${SENTIMENT_GUIDANCE}`;
-
-    // 4) Kick off the streaming chat with your system prompt
-    try {
-      console.log(
-        "RabbiGPT: Starting stream with messages:",
-        JSON.stringify(messages.slice(-1))
-      );
-
-      // Log if this is likely a parshah query
-      if (
-        latestMessage.toLowerCase().includes("parsha") ||
-        latestMessage.toLowerCase().includes("parshah") ||
-        latestMessage.toLowerCase().includes("torah portion") ||
-        latestMessage.toLowerCase().includes("this week")
-      ) {
-        console.log(
-          "DETECTED PARSHAH QUERY: Tools should be called in sequence - getTodayParsha then summarizeParshah"
-        );
-      }
-
-      const result = streamText({
-        model: aiSdkOpenai("gpt-4o-mini"),
-
-        tools: {
-          getTodayParsha,
-          summarizeParshah,
-        },
-        system: `
-      You are RabbiGPT, a knowledgeable assistant for Jewish topics.
-      
-      IMPORTANT INSTRUCTIONS FOR PARSHA QUESTIONS:
-      When the user asks about this week's parsha or Torah portion:
-      
-      1. FIRST call getTodayParsha tool with no parameters
-      2. AFTER receiving the results with parshaName and parshaRef values
-      3. THEN call summarizeParshah tool with those exact values from getTodayParsha
-      4. WAIT for the summary to be generated and returned
-      5. ONLY THEN respond to the user with:
-         - The parsha information
-         - The summary
-         - A link to Sefaria
-         - Follow-up questions
-      
-      NEVER RESPOND TO THE USER UNTIL AFTER BOTH TOOLS HAVE COMPLETED.
-      You MUST call the tools in this order: getTodayParsha FIRST, then summarizeParshah SECOND.
-      
-      IF THE USER DID NOT ASK FOR A PARSHAH SUMMARY, USE THIS SYSTEM PROMPT:
-      ${systemPromptFinal}
-      `,
-        messages,
-        temperature: 0.7,
-        maxTokens: 700,
-      });
-
-      // Return streaming response directly
-      return result.toDataStreamResponse();
-    } catch (streamError) {
-      console.error("RabbiGPT: Stream generation error:", streamError);
-      // Return a more detailed error to help debugging
-      return new Response(
-        JSON.stringify({
-          error: "Error generating text stream",
-          details: streamError.message || "Unknown stream error",
-        }),
-        { status: 500, headers: { "Content-Type": "application/json" } }
-      );
-    }
+    return result.toDataStreamResponse();
   } catch (err) {
-    console.error("RabbiGPT: Route handler error:", err);
     return new Response(
       JSON.stringify({
-        error: "An error occurred processing your request",
-        details: err.message || "Unknown error",
+        error: "Error processing request",
+        details: err.message,
       }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
+      {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   }
 }
