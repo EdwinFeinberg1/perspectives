@@ -30,43 +30,100 @@ async function shouldSendNotification(
   const now = new Date();
   const userTimezone = user.notification_timezone || "UTC";
 
-  // Convert current time to user's timezone
-  const userTime = new Date(
-    now.toLocaleString("en-US", { timeZone: userTimezone })
+  // Get current time in user's timezone
+  const formatter = new Intl.DateTimeFormat("en-US", {
+    timeZone: userTimezone,
+    hour: "numeric",
+    minute: "numeric",
+    hour12: false,
+  });
+
+  const timeParts = formatter.formatToParts(now);
+  const userHour = parseInt(
+    timeParts.find((p) => p.type === "hour")?.value || "0"
   );
-  const userHour = userTime.getHours();
-  const userMinute = userTime.getMinutes();
+  const userMinute = parseInt(
+    timeParts.find((p) => p.type === "minute")?.value || "0"
+  );
 
   // Parse user's preferred notification time
   const [prefHour, prefMinute] = user.notification_time.split(":").map(Number);
+
+  console.log(
+    `User ${user.email} - Current time in ${userTimezone}: ${userHour}:${userMinute}, Preferred time: ${prefHour}:${prefMinute}`
+  );
 
   // Check if it's within 30 minutes of the preferred time
   const currentMinutes = userHour * 60 + userMinute;
   const preferredMinutes = prefHour * 60 + prefMinute;
   const timeDiff = Math.abs(currentMinutes - preferredMinutes);
 
-  if (timeDiff > 30 && timeDiff < 24 * 60 - 30) {
+  // Handle edge case where preferred time is near midnight
+  const timeDiffAcrossMidnight = Math.min(timeDiff, 24 * 60 - timeDiff);
+
+  console.log(`Time difference: ${timeDiffAcrossMidnight} minutes`);
+
+  if (timeDiffAcrossMidnight > 30) {
+    console.log(`Not within 30-minute window`);
     return false; // Not the right time
   }
 
   // Check frequency
   if (!user.last_notification_sent) {
+    console.log(`Never sent before - sending notification`);
     return true; // Never sent before
   }
 
   const lastSent = new Date(user.last_notification_sent);
-  const daysSinceLastSent =
-    (now.getTime() - lastSent.getTime()) / (1000 * 60 * 60 * 24);
+  const hoursSinceLastSent =
+    (now.getTime() - lastSent.getTime()) / (1000 * 60 * 60);
+
+  console.log(
+    `Last sent: ${user.last_notification_sent}, Hours since: ${hoursSinceLastSent}`
+  );
 
   switch (user.notification_frequency) {
     case "daily":
-      return daysSinceLastSent >= 1;
+      // For testing, allow if more than 1 hour has passed
+      const shouldSendDaily = hoursSinceLastSent >= 1;
+      console.log(`Daily frequency - should send: ${shouldSendDaily}`);
+      return shouldSendDaily;
     case "weekly":
-      // Check if it's Monday and hasn't been sent this week
-      return userTime.getDay() === 1 && daysSinceLastSent >= 1;
+      // Get day of week in user's timezone
+      const dayFormatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: userTimezone,
+        weekday: "short",
+      });
+      const dayName = dayFormatter.format(now);
+      const dayMap: Record<string, number> = {
+        Sun: 0,
+        Mon: 1,
+        Tue: 2,
+        Wed: 3,
+        Thu: 4,
+        Fri: 5,
+        Sat: 6,
+      };
+      const userDay = dayMap[dayName] ?? 0;
+      // Check if it's Monday (1) and enough time has passed
+      const shouldSendWeekly = userDay === 1 && hoursSinceLastSent >= 24;
+      console.log(
+        `Weekly frequency - day: ${dayName} (${userDay}), should send: ${shouldSendWeekly}`
+      );
+      return shouldSendWeekly;
     case "monthly":
-      // Check if it's the 1st and hasn't been sent this month
-      return userTime.getDate() === 1 && daysSinceLastSent >= 1;
+      // Get date in user's timezone
+      const dateFormatter = new Intl.DateTimeFormat("en-US", {
+        timeZone: userTimezone,
+        day: "numeric",
+      });
+      const userDate = parseInt(dateFormatter.format(now));
+      // Check if it's the 1st and enough time has passed
+      const shouldSendMonthly = userDate === 1 && hoursSinceLastSent >= 24;
+      console.log(
+        `Monthly frequency - date: ${userDate}, should send: ${shouldSendMonthly}`
+      );
+      return shouldSendMonthly;
     default:
       return false;
   }
