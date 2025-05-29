@@ -162,7 +162,9 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
           className={`flex items-center w-[92%] sm:w-full px-3 sm:px-6 py-2.5 sm:py-4 rounded-2xl 
             ${isFocused ? "bg-black" : "bg-black/90"} 
             border-2 ${
-              isFocused ? "border-[#e6d3a3]/80" : "border-[#e6d3a3]/50"
+              isFocused
+                ? "border-[#e6d3a3]/80 dark:border-white/80"
+                : "border-[#8B4513]/50 dark:border-white/50"
             } 
             shadow-[0_0_15px_rgba(230,211,163,0.2)] transition-all duration-300 backdrop-blur-sm
             hover:shadow-[0_0_18px_rgba(230,211,163,0.3)]`}

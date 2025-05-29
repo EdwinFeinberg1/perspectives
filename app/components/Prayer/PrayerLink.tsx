@@ -18,7 +18,7 @@ export default function PrayerLink({
     <Link href="/prayer" passHref>
       <Button
         variant={variant}
-        className={`relative flex items-center justify-center px-4 py-2 bg-[#0c1320] rounded-full border border-[#e6d3a3]/40 text-[#e6d3a3] hover:bg-[#1c2434] hover:border-[#e6d3a3]/70 transition-all duration-300 hover:shadow-[0_0_15px_rgba(230,211,163,0.4)] ${className}`}
+        className={`relative flex items-center justify-center px-4 py-2 bg-background/50 backdrop-blur-sm rounded-lg border border-border/50 text-foreground hover:bg-background/80 hover:border-border transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/30 hover:scale-[1.02] hover:shadow-lg ${className}`}
       >
         <span className="text-sm font-medium">Need Prayer?</span>
       </Button>

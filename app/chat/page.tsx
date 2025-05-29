@@ -22,7 +22,7 @@ export default function ChatIndexPage() {
   // Loading state while redirecting
   return (
     <div className="w-full h-screen flex items-center justify-center">
-      <div className="text-foreground text-xl">Ask Sephira</div>
+      <div className="text-foreground text-xl">Sephira</div>
     </div>
   );
 }
