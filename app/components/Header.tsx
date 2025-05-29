@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import SignUpSheet from "./SignUpSheet";
 import ChatsSheet from "./ChatsSheet";
 import NewsSheet from "./NewsSheet";
 import { Sparkles, Menu, Filter, ChevronDown } from "lucide-react";
@@ -54,7 +53,7 @@ const Header: React.FC<{
 
   // Prayer section state
   const [expandedSection, setExpandedSection] = useState<
-    "need-pray" | "need-prayer" | null
+    "need-pray" | "need-prayer" | "faq" | "about" | "contact" | null
   >(null);
 
   // Calculate the header offset for the overlay
@@ -111,7 +110,12 @@ const Header: React.FC<{
   }, []);
 
   const toggleSubHeader = (
-    section: "need-pray" | "need-prayer" = "need-pray"
+    section:
+      | "need-pray"
+      | "need-prayer"
+      | "faq"
+      | "about"
+      | "contact" = "need-pray"
   ) => {
     if (expandedSection === section) {
       setSubHeaderExpanded(false);
@@ -156,7 +160,7 @@ const Header: React.FC<{
 
   // Shared button style for header actions
   const headerActionButton =
-    "flex items-center gap-x-2 px-4 py-2 rounded-full border text-foreground bg-background border-border hover:bg-muted hover:border-border transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/30";
+    "flex items-center gap-x-2 px-4 py-2 rounded-lg border text-foreground bg-background/50 backdrop-blur-sm border-border/50 hover:bg-background/80 hover:border-border transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/30 hover:scale-[1.02] hover:shadow-lg";
 
   return (
     <>
@@ -195,7 +199,6 @@ const Header: React.FC<{
 
                 {/* Right: Menu - 48pt hit area */}
                 <div className="flex items-center">
-                  <ThemeToggle />
                   <Sheet>
                     <SheetTrigger asChild>
                       <Button
@@ -215,19 +218,112 @@ const Header: React.FC<{
                           Menu
                         </SheetTitle>
                       </SheetHeader>
-                      <div className="flex flex-col space-y-4">
-                        <SignUpSheet inline={true} />
+                      <div className="flex flex-col space-y-4 pt-4">
+                        <div className="px-4">
+                          {user ? <SignOutButton /> : <LoginLink />}
+                        </div>
+                        <div className="border-t border-border pt-4">
+                          <div className="border-b border-border">
+                            <button
+                              onClick={() =>
+                                setExpandedSection(
+                                  expandedSection === "faq" ? null : "faq"
+                                )
+                              }
+                              className="w-full text-left px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex justify-between items-center"
+                            >
+                              <span>FAQ</span>
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform ${expandedSection === "faq" ? "rotate-180" : ""}`}
+                              />
+                            </button>
+                            {expandedSection === "faq" && (
+                              <div className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
+                                <p className="mb-2">
+                                  Please note that our AI perspectives should
+                                  not be your final religious authority. They
+                                  are trained on their respective religious
+                                  texts and traditions, but are still in their
+                                  first version.
+                                </p>
+                                <p>
+                                  We are continuously working to improve their
+                                  responses and make them more accurate and
+                                  helpful. They aim to provide guidance through
+                                  the lens of their religious corpus.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="border-b border-border">
+                            <button
+                              onClick={() =>
+                                setExpandedSection(
+                                  expandedSection === "about" ? null : "about"
+                                )
+                              }
+                              className="w-full text-left px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex justify-between items-center"
+                            >
+                              <span>About</span>
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform ${expandedSection === "about" ? "rotate-180" : ""}`}
+                              />
+                            </button>
+                            {expandedSection === "about" && (
+                              <div className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
+                                <p>
+                                  We believe there is beauty in every religion.
+                                  It's about finding a perspective that speaks
+                                  your language and resonates with your soul.
+                                  Each tradition offers unique wisdom and
+                                  insights into life's deepest questions.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="border-b border-border">
+                            <button
+                              onClick={() =>
+                                setExpandedSection(
+                                  expandedSection === "contact"
+                                    ? null
+                                    : "contact"
+                                )
+                              }
+                              className="w-full text-left px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex justify-between items-center"
+                            >
+                              <span>Contact</span>
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform ${expandedSection === "contact" ? "rotate-180" : ""}`}
+                              />
+                            </button>
+                            {expandedSection === "contact" && (
+                              <div className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
+                                <p>
+                                  Have suggestions or want to report bugs? Email
+                                  us at{" "}
+                                  <a
+                                    href="mailto:asksephira@gmail.com"
+                                    className="text-foreground hover:underline"
+                                  >
+                                    asksephira@gmail.com
+                                  </a>
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </SheetContent>
                   </Sheet>
-                  {/* Sign in/out button moved into header navigation to avoid duplicate display */}
-                  {user ? <SignOutButton /> : <LoginLink />}
                 </div>
               </div>
 
               {/* Second row with News and Prayer buttons - or search for prayer page */}
               {!isPrayerPage ? (
-                <div className="col-span-12 flex justify-center items-center gap-x-3 mt-1">
+                <div className="col-span-12 flex justify-center items-center gap-x-3 mt-1 mb-2">
                   {/* News button */}
                   <div>
                     <NewsSheet />
@@ -237,6 +333,7 @@ const Header: React.FC<{
                     variant="ghost"
                     className={`${headerActionButton} text-xs`}
                   />
+                  <ThemeToggle />
                 </div>
               ) : (
                 <div className="col-span-12 flex flex-col gap-2">
@@ -339,7 +436,6 @@ const Header: React.FC<{
                 </div>
 
                 <div className="flex items-center space-x-3">
-                  <ThemeToggle />
                   <Sheet>
                     <SheetTrigger asChild>
                       <Button
@@ -359,13 +455,106 @@ const Header: React.FC<{
                           Menu
                         </SheetTitle>
                       </SheetHeader>
-                      <div className="flex flex-col space-y-4">
-                        <SignUpSheet inline={true} />
+                      <div className="flex flex-col space-y-4 pt-4">
+                        <div className="px-4">
+                          {user ? <SignOutButton /> : <LoginLink />}
+                        </div>
+                        <div className="border-t border-border pt-4">
+                          <div className="border-b border-border">
+                            <button
+                              onClick={() =>
+                                setExpandedSection(
+                                  expandedSection === "faq" ? null : "faq"
+                                )
+                              }
+                              className="w-full text-left px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex justify-between items-center"
+                            >
+                              <span>FAQ</span>
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform ${expandedSection === "faq" ? "rotate-180" : ""}`}
+                              />
+                            </button>
+                            {expandedSection === "faq" && (
+                              <div className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
+                                <p className="mb-2">
+                                  Please note that our AI perspectives should
+                                  not be your final religious authority. They
+                                  are trained on their respective religious
+                                  texts and traditions, but are still in their
+                                  first version.
+                                </p>
+                                <p>
+                                  We are continuously working to improve their
+                                  responses and make them more accurate and
+                                  helpful. They aim to provide guidance through
+                                  the lens of their religious corpus.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="border-b border-border">
+                            <button
+                              onClick={() =>
+                                setExpandedSection(
+                                  expandedSection === "about" ? null : "about"
+                                )
+                              }
+                              className="w-full text-left px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex justify-between items-center"
+                            >
+                              <span>About</span>
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform ${expandedSection === "about" ? "rotate-180" : ""}`}
+                              />
+                            </button>
+                            {expandedSection === "about" && (
+                              <div className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
+                                <p>
+                                  We believe there is beauty in every religion.
+                                  It's about finding a perspective that speaks
+                                  your language and resonates with your soul.
+                                  Each tradition offers unique wisdom and
+                                  insights into life's deepest questions.
+                                </p>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="border-b border-border">
+                            <button
+                              onClick={() =>
+                                setExpandedSection(
+                                  expandedSection === "contact"
+                                    ? null
+                                    : "contact"
+                                )
+                              }
+                              className="w-full text-left px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors flex justify-between items-center"
+                            >
+                              <span>Contact</span>
+                              <ChevronDown
+                                className={`w-4 h-4 transition-transform ${expandedSection === "contact" ? "rotate-180" : ""}`}
+                              />
+                            </button>
+                            {expandedSection === "contact" && (
+                              <div className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
+                                <p>
+                                  Have suggestions or want to report bugs? Email
+                                  us at{" "}
+                                  <a
+                                    href="mailto:asksephira@gmail.com"
+                                    className="text-foreground hover:underline"
+                                  >
+                                    asksephira@gmail.com
+                                  </a>
+                                </p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </SheetContent>
                   </Sheet>
-                  {/* Sign in/out button moved into header navigation to avoid duplicate display */}
-                  {user ? <SignOutButton /> : <LoginLink />}
                 </div>
               </div>
 
@@ -382,6 +571,7 @@ const Header: React.FC<{
                       variant="ghost"
                       className={`${headerActionButton} text-sm`}
                     />
+                    <ThemeToggle />
                   </>
                 ) : (
                   <div className="w-full">

@@ -1,6 +1,6 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { IM_Fell_English } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
 import { ConversationsProvider } from "./context/ConversationsContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
 import { Analytics } from "@vercel/analytics/next";
@@ -14,8 +14,7 @@ const inter = Inter({
   variable: "--font-fallback",
 });
 
-const imFellEnglish = IM_Fell_English({
-  weight: "400",
+const bricolageGrotesque = Bricolage_Grotesque({
   subsets: ["latin"],
   variable: "--font-sans", // Change to be the default font
 });
@@ -30,7 +29,7 @@ const RootLayout = ({ children }) => {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${imFellEnglish.variable} h-full`}
+      className={`${inter.variable} ${bricolageGrotesque.variable} h-full`}
       suppressHydrationWarning
     >
       <body className="min-h-screen w-full bg-background text-foreground flex flex-col overflow-hidden overscroll-none font-[var(--font-sans)]">

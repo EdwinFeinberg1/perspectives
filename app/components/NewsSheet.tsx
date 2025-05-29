@@ -123,7 +123,7 @@ const NewsSheet = () => {
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="flex items-center gap-x-2 px-4 py-2 rounded-full border text-foreground bg-background border-border hover:bg-muted hover:border-foreground/60 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
+          className="flex items-center gap-x-2 px-4 py-2 rounded-lg border text-foreground bg-background/50 backdrop-blur-sm border-border/50 hover:bg-background/80 hover:border-border transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/30 hover:scale-[1.02] hover:shadow-lg"
         >
           <Newspaper className="h-5 w-5" />
           <span className="font-medium text-xs">News</span>

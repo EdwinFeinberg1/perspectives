@@ -17,6 +17,7 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ["var(--font-sans)"],
+        playfair: ["var(--font-sans)"],
       },
       typography: {
         DEFAULT: {
