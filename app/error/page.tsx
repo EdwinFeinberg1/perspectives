@@ -5,8 +5,19 @@ import { ShootingStars } from "@/components/ui/shooting-stars";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 export default function ErrorPage() {
+  const router = useRouter();
+
+  const handleGoHome = () => {
+    router.push("/");
+  };
+
+  const handleTryAgain = () => {
+    window.location.reload();
+  };
+
   return (
     <>
       {/* Stars background */}
@@ -33,7 +44,7 @@ export default function ErrorPage() {
               Something went wrong
             </h1>
             <p className="text-foreground text-center mb-6">
-              {error?.digest || "An unexpected error occurred"}
+              An unexpected error occurred
             </p>
             <ul className="text-muted-foreground space-y-2 mb-8 list-disc list-inside">
               <li>Try refreshing the page</li>
@@ -43,7 +54,7 @@ export default function ErrorPage() {
             </ul>
             <div className="space-y-3">
               <Button
-                onClick={() => reset()}
+                onClick={handleTryAgain}
                 className="w-full bg-secondary text-secondary-foreground border border-border hover:bg-secondary/80 hover:border-border/70 px-4 py-2 rounded-lg transition-all duration-300 hover:shadow-lg"
               >
                 Try again
