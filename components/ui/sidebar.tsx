@@ -3,7 +3,6 @@ import { cn } from "@/lib/utils";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { IconArrowLeft, IconMenu2 } from "@tabler/icons-react";
 
 interface Links {
   label: string;
