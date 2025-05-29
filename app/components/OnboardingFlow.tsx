@@ -206,7 +206,7 @@ export default function OnboardingFlow({
             <div className="flex items-center justify-center mb-3 sm:mb-4">
               <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 text-foreground mr-2" />
               <h2 className="text-xl sm:text-2xl font-light text-foreground">
-                Welcome to AskSephira
+                Welcome to Sephira
               </h2>
             </div>
             <p className="text-muted-foreground text-sm sm:text-base">
