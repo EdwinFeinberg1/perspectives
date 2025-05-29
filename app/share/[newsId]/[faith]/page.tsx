@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { use } from "react";
 import { FaithType } from "@/app/types";
 import { FAITH_LABELS } from "@/app/constants/faith";
-import { Loader2, Sparkles, Heart } from "lucide-react";
+import { Loader2, Heart } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { ShootingStars } from "@/components/ui/shooting-stars";

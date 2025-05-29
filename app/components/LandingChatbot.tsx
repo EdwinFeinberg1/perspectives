@@ -44,8 +44,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   const [messageModels, setMessageModels] = useState<Record<string, ModelName>>(
     {}
   );
-  const [hasNotifiedFirst, setHasNotifiedFirst] = React.useState(false);
-  const [hasSentInitialPrompt, setHasSentInitialPrompt] = React.useState(false);
+  const [hasNotifiedFirst, setHasNotifiedFirst] = useState(false);
   const hasSentInitialPromptRef = useRef(false);
 
   // Add state to track pending model changes for immediate UI feedback
@@ -220,7 +219,6 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   // Reset the initial prompt ref when conversation changes
   useEffect(() => {
     hasSentInitialPromptRef.current = false;
-    setHasSentInitialPrompt(false);
   }, [conversationId]);
 
   const sendPrompt = useCallback(
@@ -310,7 +308,6 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
       ) {
         console.log("Sending initial prompt:", userIntent.initialPrompt);
         hasSentInitialPromptRef.current = true;
-        setHasSentInitialPrompt(true);
         sendPrompt(userIntent.initialPrompt);
       }
     }, 500); // Give enough time for initialization
