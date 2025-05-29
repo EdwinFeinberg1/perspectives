@@ -70,7 +70,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
   };
 
   const signUpButton = (
-    <Button className="bg-gradient-to-r from-[#e6d3a3] to-[#d4b978] text-black hover:from-[#d4b978] hover:to-[#e6d3a3] font-medium py-2 px-4 w-full">
+    <Button className="bg-gradient-to-r from-accent to-accent/80 text-accent-foreground hover:from-accent/80 hover:to-accent font-medium py-2 px-4 w-full">
       Sign Up
     </Button>
   );
@@ -91,14 +91,14 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
     const isOpen = openItem === id;
 
     return (
-      <div className="border-b border-[#e6d3a3]/20">
+      <div className="border-b border-border">
         <button
           onClick={() => toggleAccordionItem(id)}
           className="flex justify-between items-center w-full px-4 py-3 text-left"
         >
-          <span className="text-[#e6d3a3] font-medium">{title}</span>
+          <span className="text-foreground font-medium">{title}</span>
           <svg
-            className={`w-5 h-5 text-[#e6d3a3] transition-transform ${
+            className={`w-5 h-5 text-foreground transition-transform ${
               isOpen ? "rotate-180" : ""
             }`}
             fill="none"
@@ -118,7 +118,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
             isOpen ? "max-h-[1000px] py-3" : "max-h-0"
           }`}
         >
-          <div className="px-4 text-gray-400 text-sm">{children}</div>
+          <div className="px-4 text-muted-foreground text-sm">{children}</div>
         </div>
       </div>
     );
@@ -134,7 +134,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
         <SheetTitle className="text-xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-[#e6d3a3] via-[#f0e4c3] to-[#e6d3a3]">
           Sign Up for Sephira
         </SheetTitle>
-        <SheetDescription className="text-center text-[#e6d3a3]/70">
+        <SheetDescription className="text-center text-muted-foreground">
           Join our community to get updates about new features and releases.
         </SheetDescription>
       </SheetHeader>
@@ -143,15 +143,15 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
         {success ? (
           <div className="flex flex-col items-center justify-center flex-grow space-y-4">
             <div className="text-center space-y-1">
-              <p className="text-lg font-medium text-[#e6d3a3]">
+              <p className="text-lg font-medium text-foreground">
                 Thanks for signing up!
               </p>
-              <p className="text-sm text-gray-400">
+              <p className="text-sm text-muted-foreground">
                 We&apos;ll be in touch soon.
               </p>
             </div>
             <SheetClose asChild>
-              <Button className="bg-gradient-to-r from-[#e6d3a3] to-[#d4b978] text-black hover:from-[#d4b978] hover:to-[#e6d3a3] py-2 px-4 mt-4">
+              <Button className="bg-gradient-to-r from-accent to-accent/80 text-accent-foreground hover:from-accent/80 hover:to-accent py-2 px-4 mt-4">
                 Close
               </Button>
             </SheetClose>
@@ -164,7 +164,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
             <div className="space-y-2">
               <Label
                 htmlFor="email"
-                className="text-sm font-medium text-[#e6d3a3]"
+                className="text-sm font-medium text-foreground"
               >
                 Email
               </Label>
@@ -175,7 +175,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isSubmitting}
-                className="w-full bg-black/70 border-[#e6d3a3]/30 focus:border-[#e6d3a3] focus:ring-[#e6d3a3]/50 text-gray-200 placeholder:text-gray-500"
+                className="w-full bg-card border-border focus:border-ring focus:ring-ring/50 text-foreground placeholder:text-muted-foreground"
               />
             </div>
 
@@ -188,12 +188,12 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="w-full mt-auto bg-gradient-to-r from-[#e6d3a3] to-[#d4b978] text-black hover:from-[#d4b978] hover:to-[#e6d3a3] py-2"
+              className="w-full mt-auto bg-gradient-to-r from-accent to-accent/80 text-accent-foreground hover:from-accent/80 hover:to-accent py-2"
             >
               {isSubmitting ? "Submitting..." : "Subscribe for Updates"}
             </Button>
 
-            <p className="text-xs text-center text-gray-500">
+            <p className="text-xs text-center text-muted-foreground">
               We&apos;ll never share your email with anyone else.
             </p>
           </form>
@@ -235,7 +235,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
             </p>
             <div className="mt-2">
               <span>send a note to </span>
-              <span className="text-[#e6d3a3]/90">asksephira@gmail.com</span>
+              <span className="text-foreground/90">asksephira@gmail.com</span>
               <span> and we will respond as soon as we can.</span>
             </div>
             <p className="mt-2">Thank you for helping this project grow.</p>
@@ -245,7 +245,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
         <AccordionItem id="faq" title="FAQ">
           <div className="space-y-2">
             <div>
-              <p className="font-medium text-[#e6d3a3]/90">
+              <p className="font-medium text-foreground/90">
                 How reliable are the answers I get right now?
               </p>
               <p>
@@ -278,7 +278,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
               <SheetTitle className="text-xl font-bold text-center text-transparent bg-clip-text bg-gradient-to-r from-[#e6d3a3] via-[#f0e4c3] to-[#e6d3a3]">
                 Sign Up for Sephira
               </SheetTitle>
-              <SheetDescription className="text-center text-[#e6d3a3]/70">
+              <SheetDescription className="text-center text-muted-foreground">
                 Join our community to get updates about new features and
                 releases.
               </SheetDescription>
@@ -288,15 +288,15 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
               {success ? (
                 <div className="flex flex-col items-center justify-center flex-grow space-y-4">
                   <div className="text-center space-y-1">
-                    <p className="text-lg font-medium text-[#e6d3a3]">
+                    <p className="text-lg font-medium text-foreground">
                       Thanks for signing up!
                     </p>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-muted-foreground">
                       We&apos;ll be in touch soon.
                     </p>
                   </div>
                   <SheetClose asChild>
-                    <Button className="bg-gradient-to-r from-[#e6d3a3] to-[#d4b978] text-black hover:from-[#d4b978] hover:to-[#e6d3a3] py-2 px-4 mt-4">
+                    <Button className="bg-gradient-to-r from-accent to-accent/80 text-accent-foreground hover:from-accent/80 hover:to-accent py-2 px-4 mt-4">
                       Close
                     </Button>
                   </SheetClose>
@@ -309,7 +309,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
                   <div className="space-y-2">
                     <Label
                       htmlFor="email"
-                      className="text-sm font-medium text-[#e6d3a3]"
+                      className="text-sm font-medium text-foreground"
                     >
                       Email
                     </Label>
@@ -320,7 +320,7 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       disabled={isSubmitting}
-                      className="w-full bg-black/70 border-[#e6d3a3]/30 focus:border-[#e6d3a3] focus:ring-[#e6d3a3]/50 text-gray-200 placeholder:text-gray-500"
+                      className="w-full bg-card border-border focus:border-ring focus:ring-ring/50 text-foreground placeholder:text-muted-foreground"
                     />
                   </div>
 
@@ -333,12 +333,12 @@ const SignUpSheet: React.FC<SignUpSheetProps> = ({ inline = false }) => {
                   <Button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full mt-auto bg-gradient-to-r from-[#e6d3a3] to-[#d4b978] text-black hover:from-[#d4b978] hover:to-[#e6d3a3] py-2"
+                    className="w-full mt-auto bg-gradient-to-r from-accent to-accent/80 text-accent-foreground hover:from-accent/80 hover:to-accent py-2"
                   >
                     {isSubmitting ? "Submitting..." : "Subscribe for Updates"}
                   </Button>
 
-                  <p className="text-xs text-center text-gray-500">
+                  <p className="text-xs text-center text-muted-foreground">
                     We&apos;ll never share your email with anyone else.
                   </p>
                 </form>

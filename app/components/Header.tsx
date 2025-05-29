@@ -4,8 +4,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import SignUpSheet from "./SignUpSheet";
 import ChatsSheet from "./ChatsSheet";
 import NewsSheet from "./NewsSheet";
-import { useTheme, ThemePopoverContent } from "../features/theme";
-import { Sparkles, RefreshCw, Menu, Filter, ChevronDown } from "lucide-react";
+import { Sparkles, Menu, Filter, ChevronDown } from "lucide-react";
 import {
   Sheet,
   SheetTrigger,
@@ -27,6 +26,7 @@ import LoginLink from "./LoginLink";
 import SignOutButton from "./SignOutButton";
 import { createClient } from "@/utils/supabase/client";
 import type { User } from "@supabase/supabase-js";
+import { ThemeToggle } from "./theme-toggle";
 //import Link from "next/link";
 
 const Header: React.FC<{
@@ -44,11 +44,9 @@ const Header: React.FC<{
   togglePrayerCategory,
   counts = {},
 }) => {
-  const { currentTheme, selectNewTheme } = useTheme();
   const [subHeaderExpanded, setSubHeaderExpanded] = useState(false);
   const [subHeaderHeight, setSubHeaderHeight] = useState(0);
   const [overlayTop, setOverlayTop] = useState("0px");
-  const [showingPrompts, setShowingPrompts] = useState(false);
   const subHeaderRef = React.useRef<HTMLDivElement>(null);
   const contentRef = React.useRef<HTMLDivElement>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -56,16 +54,8 @@ const Header: React.FC<{
 
   // Prayer section state
   const [expandedSection, setExpandedSection] = useState<
-    "theme" | "need-pray" | "need-prayer" | null
+    "need-pray" | "need-prayer" | null
   >(null);
-
-  // Tooltip state for Sparkles
-  const [showSparklesTooltip, setShowSparklesTooltip] = useState(false);
-  useEffect(() => {
-    setShowSparklesTooltip(true);
-    const timer = setTimeout(() => setShowSparklesTooltip(false), 9000);
-    return () => clearTimeout(timer);
-  }, []);
 
   // Calculate the header offset for the overlay
   const calculateHeaderOffset = useCallback(() => {
@@ -86,27 +76,6 @@ const Header: React.FC<{
   useEffect(() => {
     setOverlayTop(calculateHeaderOffset());
   }, [subHeaderHeight, calculateHeaderOffset]);
-
-  // Handle showPrompts change from ThemePopoverContent
-  const handleShowPromptsChange = useCallback(
-    (isShowingPrompts: boolean) => {
-      setShowingPrompts(isShowingPrompts);
-
-      // Force remeasure the subheader after state update
-      setTimeout(() => {
-        if (subHeaderRef.current && subHeaderExpanded) {
-          const height = subHeaderRef.current.scrollHeight;
-          setSubHeaderHeight(height);
-          document.documentElement.style.setProperty(
-            "--theme-subheader-height",
-            `${height}px`
-          );
-          setOverlayTop(calculateHeaderOffset());
-        }
-      }, 10);
-    },
-    [subHeaderExpanded, calculateHeaderOffset]
-  );
 
   // Measure subheader height when expanded
   useEffect(() => {
@@ -142,7 +111,7 @@ const Header: React.FC<{
   }, []);
 
   const toggleSubHeader = (
-    section: "theme" | "need-pray" | "need-prayer" = "theme"
+    section: "need-pray" | "need-prayer" = "need-pray"
   ) => {
     if (expandedSection === section) {
       setSubHeaderExpanded(false);
@@ -187,7 +156,7 @@ const Header: React.FC<{
 
   // Shared button style for header actions
   const headerActionButton =
-    "flex items-center gap-x-2 px-4 py-2 rounded-full border text-[#e6d3a3] bg-[#0c1320] border-[#e6d3a3]/30 hover:bg-[#1c2434] hover:border-[#e6d3a3]/60 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#e6d3a3]/30";
+    "flex items-center gap-x-2 px-4 py-2 rounded-full border text-foreground bg-background border-border hover:bg-muted hover:border-border transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/30";
 
   return (
     <>
@@ -195,7 +164,7 @@ const Header: React.FC<{
         {/* Glassmorphism container with padding for rounded corners */}
         <div className="mx-auto max-w-[1400px] relative mt-2 flex flex-col">
           {/* Glassmorphism background with blur effect */}
-          <div className="absolute inset-0 bg-dark backdrop-blur-lg rounded-xl border border-[#e6d3a3]/15 shadow-[0_8px_32px_rgba(0,0,0,0.2)] after:absolute after:inset-0 after:bg-gradient-to-b after:from-[#e6d3a3]/5 after:to-transparent after:rounded-xl"></div>
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-lg rounded-xl border border-border shadow-[0_8px_32px_rgba(0,0,0,0.2)] after:absolute after:inset-0 after:bg-gradient-to-b after:from-muted/10 after:to-transparent after:rounded-xl"></div>
 
           {/* Main header content */}
           <div
@@ -219,29 +188,32 @@ const Header: React.FC<{
 
                 {/* Center: Sephira wordmark */}
                 <div className="absolute left-1/2 transform -translate-x-1/2">
-                  <span className="text-2xl sm:text-3xl font-normal text-transparent bg-clip-text bg-[#d7c080] tracking-wide">
+                  <span className="text-2xl sm:text-3xl font-normal text-foreground tracking-wide">
                     Sephira
                   </span>
                 </div>
 
                 {/* Right: Menu - 48pt hit area */}
                 <div className="flex items-center">
+                  <ThemeToggle />
                   <Sheet>
                     <SheetTrigger asChild>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-[#e6d3a3] hover:bg-[#1c2434] w-12 h-12"
+                        className="text-foreground hover:bg-muted w-12 h-12"
                       >
                         <Menu className="h-6 w-6" />
                       </Button>
                     </SheetTrigger>
                     <SheetContent
                       side="right"
-                      className="w-[250px] sm:w-[300px] bg-[#080d14] border-l border-[#e6d3a3]/30"
+                      className="w-[250px] sm:w-[300px] bg-background border-l border-border"
                     >
                       <SheetHeader>
-                        <SheetTitle className="text-[#e6d3a3]">Menu</SheetTitle>
+                        <SheetTitle className="text-foreground">
+                          Menu
+                        </SheetTitle>
                       </SheetHeader>
                       <div className="flex flex-col space-y-4">
                         <SignUpSheet inline={true} />
@@ -253,34 +225,9 @@ const Header: React.FC<{
                 </div>
               </div>
 
-              {/* Second row with Theme, News, and Prayer buttons - or search for prayer page */}
+              {/* Second row with News and Prayer buttons - or search for prayer page */}
               {!isPrayerPage ? (
                 <div className="col-span-12 flex justify-center items-center gap-x-3 mt-1">
-                  {/* Theme button */}
-                  <button
-                    onClick={() => {
-                      toggleSubHeader("theme");
-                      setShowSparklesTooltip(false);
-                    }}
-                    className={`${headerActionButton} ${
-                      expandedSection === "theme"
-                        ? "bg-[#1c2434] border-[#e6d3a3]/60"
-                        : ""
-                    }`}
-                    aria-expanded={expandedSection === "theme"}
-                    aria-controls="theme-subheader"
-                  >
-                    <Sparkles size={16} />
-                    <span className="font-medium text-xs">Theme</span>
-                    <RefreshCw
-                      size={12}
-                      className="ml-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        selectNewTheme();
-                      }}
-                    />
-                  </button>
                   {/* News button */}
                   <div>
                     <NewsSheet />
@@ -301,9 +248,9 @@ const Header: React.FC<{
                         value={prayerSearch}
                         onChange={(e) => onPrayerSearch?.(e.target.value)}
                         placeholder="Search prayers using natural language..."
-                        className="w-full bg-[#0c1320] rounded-full border border-[#e6d3a3]/30 text-[#e6d3a3] px-4 py-2 focus:outline-none focus:border-[#e6d3a3]/70 focus:ring-2 focus:ring-[#e6d3a3]/20 text-sm placeholder:text-[#e6d3a3]/40 transition-all duration-200"
+                        className="w-full bg-card rounded-full border border-border text-foreground px-4 py-2 focus:outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 text-sm placeholder:text-muted-foreground transition-all duration-200"
                       />
-                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-[#e6d3a3]/40 text-xs">
+                      <div className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">
                         Press Enter
                       </div>
                     </div>
@@ -312,23 +259,23 @@ const Header: React.FC<{
                   {selectedCategories && Object.entries(counts).length > 0 && (
                     <div className="flex justify-center">
                       <DropdownMenu>
-                        <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-200 bg-[#0c1320] border-[#e6d3a3]/20 text-[#e6d3a3]/70 hover:border-[#e6d3a3]/30 hover:bg-[#1c2434] focus:outline-none focus:ring-2 focus:ring-[#e6d3a3]/20">
+                        <DropdownMenuTrigger className="flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all duration-200 bg-card border-border text-muted-foreground hover:border-border hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring/20">
                           <Filter className="w-3 h-3" />
                           <span className="text-xs">
                             Categories
                             {selectedCategories.size > 0 && (
-                              <span className="ml-1 text-xs bg-[#e6d3a3]/20 text-[#e6d3a3] px-1 py-0.5 rounded-full">
+                              <span className="ml-1 text-xs bg-muted text-foreground px-1 py-0.5 rounded-full">
                                 {selectedCategories.size}
                               </span>
                             )}
                           </span>
                           <ChevronDown className="w-3 h-3" />
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="w-[200px] bg-[#121927] border-[#e6d3a3]/20 text-[#e6d3a3]">
-                          <DropdownMenuLabel className="text-[#e6d3a3]/90 text-xs">
+                        <DropdownMenuContent className="w-[200px] bg-popover border-border text-popover-foreground">
+                          <DropdownMenuLabel className="text-foreground text-xs">
                             Filter by Category
                           </DropdownMenuLabel>
-                          <DropdownMenuSeparator className="bg-[#e6d3a3]/20" />
+                          <DropdownMenuSeparator className="bg-border" />
                           {Object.entries(counts).map(([category, count]) => (
                             <DropdownMenuCheckboxItem
                               key={category}
@@ -336,7 +283,7 @@ const Header: React.FC<{
                               onCheckedChange={() =>
                                 togglePrayerCategory?.(category)
                               }
-                              className="text-[#e6d3a3]/80 hover:bg-[#1c2434] hover:text-[#e6d3a3] focus:bg-[#1c2434] focus:text-[#e6d3a3] data-[state=checked]:text-[#e6d3a3]"
+                              className="text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground data-[state=checked]:text-foreground"
                             >
                               <div className="flex items-center justify-between w-full">
                                 <span className="text-xs capitalize">
@@ -350,7 +297,7 @@ const Header: React.FC<{
                           ))}
                           {selectedCategories.size > 0 && (
                             <>
-                              <DropdownMenuSeparator className="bg-[#e6d3a3]/20" />
+                              <DropdownMenuSeparator className="bg-border" />
                               <div className="px-2 py-1">
                                 <button
                                   onClick={() => {
@@ -361,7 +308,7 @@ const Header: React.FC<{
                                       }
                                     });
                                   }}
-                                  className="text-xs text-[#e6d3a3]/60 hover:text-[#e6d3a3] transition-colors"
+                                  className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                                 >
                                   Clear all filters
                                 </button>
@@ -386,28 +333,31 @@ const Header: React.FC<{
 
                 {/* Center: Sephira wordmark */}
                 <div className="absolute left-1/2 transform -translate-x-1/2">
-                  <span className="text-3xl md:text-4xl font-normal text-transparent bg-clip-text bg-[#d7c080] tracking-wide">
+                  <span className="text-3xl md:text-4xl font-normal text-foreground tracking-wide">
                     Sephira
                   </span>
                 </div>
 
                 <div className="flex items-center space-x-3">
+                  <ThemeToggle />
                   <Sheet>
                     <SheetTrigger asChild>
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-[#e6d3a3] hover:bg-black/30 w-8 h-8 sm:w-10 sm:h-10"
+                        className="text-foreground hover:bg-muted w-8 h-8 sm:w-10 sm:h-10"
                       >
                         <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
                       </Button>
                     </SheetTrigger>
                     <SheetContent
                       side="right"
-                      className="w-[250px] sm:w-[300px] bg-black/90 border-l border-[#e6d3a3]/30 backdrop-blur-xl"
+                      className="w-[250px] sm:w-[300px] bg-background/90 border-l border-border backdrop-blur-xl"
                     >
                       <SheetHeader>
-                        <SheetTitle className="text-[#e6d3a3]">Menu</SheetTitle>
+                        <SheetTitle className="text-foreground">
+                          Menu
+                        </SheetTitle>
                       </SheetHeader>
                       <div className="flex flex-col space-y-4">
                         <SignUpSheet inline={true} />
@@ -419,32 +369,10 @@ const Header: React.FC<{
                 </div>
               </div>
 
-              {/* Second row: Theme, News, and Prayer buttons OR Search for Prayer page */}
-              <div className="flex items-center justify-center gap-x-3 w-full pt-2 border-t border-[#e6d3a3]/10 flex-1">
+              {/* Second row: News and Prayer buttons OR Search for Prayer page */}
+              <div className="flex items-center justify-center gap-x-3 w-full pt-2 border-t border-border flex-1">
                 {!isPrayerPage ? (
                   <>
-                    {/* Theme button */}
-                    <button
-                      onClick={() => toggleSubHeader("theme")}
-                      className={`${headerActionButton} ${
-                        expandedSection === "theme"
-                          ? "bg-[#1c2434] border-[#e6d3a3]/60"
-                          : ""
-                      }`}
-                      aria-expanded={expandedSection === "theme"}
-                      aria-controls="theme-subheader"
-                    >
-                      <Sparkles className="h-4 w-4" />
-                      <span className="font-medium text-sm">Theme</span>
-                      <RefreshCw
-                        size={14}
-                        className="ml-1"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          selectNewTheme();
-                        }}
-                      />
-                    </button>
                     {/* News button */}
                     <div>
                       <NewsSheet />
@@ -463,7 +391,7 @@ const Header: React.FC<{
                         value={prayerSearch}
                         onChange={(e) => onPrayerSearch?.(e.target.value)}
                         placeholder="Search prayers using natural language (e.g. 'healing morning Jewish', 'gratitude before meals')..."
-                        className="w-full bg-[#0c1320] rounded-full border border-[#e6d3a3]/30 text-[#e6d3a3] px-5 py-2.5 focus:outline-none focus:border-[#e6d3a3]/70 focus:ring-2 focus:ring-[#e6d3a3]/20 text-base placeholder:text-[#e6d3a3]/40 transition-all duration-200"
+                        className="w-full bg-card rounded-full border border-border text-foreground px-5 py-2.5 focus:outline-none focus:border-ring focus:ring-2 focus:ring-ring/20 text-base placeholder:text-muted-foreground transition-all duration-200"
                       />
                     </div>
                     {/* Category filter dropdown for desktop */}
@@ -471,23 +399,23 @@ const Header: React.FC<{
                       Object.entries(counts).length > 0 && (
                         <div className="flex justify-center mt-2">
                           <DropdownMenu>
-                            <DropdownMenuTrigger className="flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-200 bg-[#0c1320] border-[#e6d3a3]/20 text-[#e6d3a3]/70 hover:border-[#e6d3a3]/30 hover:bg-[#1c2434] focus:outline-none focus:ring-2 focus:ring-[#e6d3a3]/20">
+                            <DropdownMenuTrigger className="flex items-center gap-2 px-4 py-2 rounded-full border transition-all duration-200 bg-card border-border text-muted-foreground hover:border-border hover:bg-muted focus:outline-none focus:ring-2 focus:ring-ring/20">
                               <Filter className="w-4 h-4" />
                               <span className="text-sm">
                                 Categories
                                 {selectedCategories.size > 0 && (
-                                  <span className="ml-1 text-xs bg-[#e6d3a3]/20 text-[#e6d3a3] px-1.5 py-0.5 rounded-full">
+                                  <span className="ml-1 text-xs bg-muted text-foreground px-1.5 py-0.5 rounded-full">
                                     {selectedCategories.size}
                                   </span>
                                 )}
                               </span>
                               <ChevronDown className="w-4 h-4" />
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent className="w-[220px] bg-[#121927] border-[#e6d3a3]/20 text-[#e6d3a3]">
-                              <DropdownMenuLabel className="text-[#e6d3a3]/90">
+                            <DropdownMenuContent className="w-[220px] bg-popover border-border text-popover-foreground">
+                              <DropdownMenuLabel className="text-foreground">
                                 Filter by Category
                               </DropdownMenuLabel>
-                              <DropdownMenuSeparator className="bg-[#e6d3a3]/20" />
+                              <DropdownMenuSeparator className="bg-border" />
                               {Object.entries(counts).map(
                                 ([category, count]) => (
                                   <DropdownMenuCheckboxItem
@@ -496,7 +424,7 @@ const Header: React.FC<{
                                     onCheckedChange={() =>
                                       togglePrayerCategory?.(category)
                                     }
-                                    className="text-[#e6d3a3]/80 hover:bg-[#1c2434] hover:text-[#e6d3a3] focus:bg-[#1c2434] focus:text-[#e6d3a3] data-[state=checked]:text-[#e6d3a3]"
+                                    className="text-muted-foreground hover:bg-muted hover:text-foreground focus:bg-muted focus:text-foreground data-[state=checked]:text-foreground"
                                   >
                                     <div className="flex items-center justify-between w-full">
                                       <span className="text-sm capitalize">
@@ -511,7 +439,7 @@ const Header: React.FC<{
                               )}
                               {selectedCategories.size > 0 && (
                                 <>
-                                  <DropdownMenuSeparator className="bg-[#e6d3a3]/20" />
+                                  <DropdownMenuSeparator className="bg-border" />
                                   <div className="px-2 py-1.5">
                                     <button
                                       onClick={() => {
@@ -526,7 +454,7 @@ const Header: React.FC<{
                                           }
                                         );
                                       }}
-                                      className="text-xs text-[#e6d3a3]/60 hover:text-[#e6d3a3] transition-colors"
+                                      className="text-xs text-muted-foreground hover:text-foreground transition-colors"
                                     >
                                       Clear all filters
                                     </button>
@@ -543,156 +471,81 @@ const Header: React.FC<{
             </div>
           </div>
 
-          {/* Theme Subheader */}
+          {/* Overlay that appears when subheader is expanded */}
           <div
-            id="theme-subheader"
-            ref={subHeaderRef}
-            className={`relative border-t border-[#e6d3a3]/10 transition-all duration-500 ease-in-out ${
+            className={`fixed inset-0 bg-background transition-all duration-500 z-40 ${
               subHeaderExpanded
-                ? "opacity-100 pointer-events-auto bg-[#101827]"
-                : "max-h-0 opacity-0 pointer-events-none overflow-hidden"
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
             }`}
             style={{
-              maxHeight: subHeaderExpanded
-                ? showingPrompts
-                  ? "700px" // More space when showing prompts
-                  : `${subHeaderHeight}px`
-                : "0px",
+              top: overlayTop,
             }}
-          >
-            <div className="py-3 px-3 sm:py-4 sm:px-4 md:px-8">
-              {expandedSection === "theme" && (
-                <>
-                  <div className="flex items-center justify-between mb-2 sm:mb-3">
-                    <h3 className="text-xs sm:text-sm md:text-base font-medium text-[#e6d3a3]">
-                      Theme Explorer
-                    </h3>
-                    <div className="flex items-center gap-1.5 sm:gap-2">
-                      <span className="text-[10px] sm:text-xs md:text-sm text-[#e6d3a3]/70">
-                        Currently:{" "}
-                        <span className="italic text-[#e6d3a3] text-[11px] sm:text-xs">
-                          {currentTheme}
-                        </span>
-                      </span>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          selectNewTheme();
-                        }}
-                        className="text-[10px] sm:text-xs px-1.5 py-0.5 sm:px-2 sm:py-1 bg-[#1c2434] rounded-full border border-[#e6d3a3]/30 text-[#e6d3a3] hover:bg-[#232d3f] hover:border-[#e6d3a3]/60 transition-all flex items-center gap-1"
-                      >
-                        <RefreshCw size={8} className="sm:hidden" />
-                        <RefreshCw size={10} className="hidden sm:block" />
-                        <span>New</span>
-                      </button>
-                    </div>
-                  </div>
-                  <div className="text-[11px] sm:text-xs text-[#e6d3a3]/60 mb-2.5 sm:mb-3">
-                    Select a category to explore themes or view prompts related
-                    to the current theme
-                  </div>
-                  <div
-                    className={`${
-                      showingPrompts ? "max-h-[550px]" : "max-h-[300px]"
-                    } overflow-y-auto transition-all duration-300`}
-                  >
-                    <ThemePopoverContent
-                      isMobileSheet={false}
-                      onShowPromptsChange={handleShowPromptsChange}
-                    />
-                  </div>
-                </>
-              )}
+            onClick={() => {
+              setSubHeaderExpanded(false);
+              setExpandedSection(null);
+            }}
+            aria-hidden="true"
+          />
 
-              {expandedSection === "need-prayer" && (
-                <div className="flex flex-col items-center justify-center h-60 px-4">
-                  <div className="inline-block p-6 bg-[#121927] rounded-full mb-4 border border-[#e6d3a3]/20">
-                    <Sparkles className="h-8 w-8 text-[#e6d3a3]/60" />
-                  </div>
-                  <p className="text-[#e6d3a3]/70 text-center max-w-md">
-                    Prayer request feature coming soon. You&apos;ll be able to
-                    request personalized prayers from the community.
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
+          {/* Add some custom animations to enhance the UI */}
+          <style jsx global>{`
+            .animate-subtle-glow {
+              animation: subtle-glow 3s ease-in-out infinite;
+            }
+
+            .animate-breathing {
+              animation: breathing 4s ease-in-out infinite;
+            }
+
+            @keyframes subtle-glow {
+              0%,
+              100% {
+                opacity: 0.8;
+                filter: brightness(1);
+              }
+              50% {
+                opacity: 1;
+                filter: brightness(1.2);
+              }
+            }
+
+            @keyframes breathing {
+              0%,
+              100% {
+                transform: scale(1);
+              }
+              50% {
+                transform: scale(1.02);
+              }
+            }
+
+            /* Hide scrollbar but allow scrolling */
+            .scrollbar-hide {
+              -ms-overflow-style: none; /* IE and Edge */
+              scrollbar-width: none; /* Firefox */
+            }
+
+            .scrollbar-hide::-webkit-scrollbar {
+              display: none; /* Chrome, Safari, Opera */
+            }
+
+            @keyframes fade-in {
+              from {
+                opacity: 0;
+                transform: translateY(8px);
+              }
+              to {
+                opacity: 1;
+                transform: translateY(0);
+              }
+            }
+            .animate-fade-in {
+              animation: fade-in 0.4s ease;
+            }
+          `}</style>
         </div>
       </header>
-
-      {/* Overlay that appears when subheader is expanded */}
-      <div
-        className={`fixed inset-0 bg-[#080d14] transition-all duration-500 z-40 ${
-          subHeaderExpanded
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
-        style={{
-          top: overlayTop,
-        }}
-        onClick={() => {
-          setSubHeaderExpanded(false);
-          setExpandedSection(null);
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Add some custom animations to enhance the UI */}
-      <style jsx global>{`
-        .animate-subtle-glow {
-          animation: subtle-glow 3s ease-in-out infinite;
-        }
-
-        .animate-breathing {
-          animation: breathing 4s ease-in-out infinite;
-        }
-
-        @keyframes subtle-glow {
-          0%,
-          100% {
-            opacity: 0.8;
-            filter: brightness(1);
-          }
-          50% {
-            opacity: 1;
-            filter: brightness(1.2);
-          }
-        }
-
-        @keyframes breathing {
-          0%,
-          100% {
-            transform: scale(1);
-          }
-          50% {
-            transform: scale(1.02);
-          }
-        }
-
-        /* Hide scrollbar but allow scrolling */
-        .scrollbar-hide {
-          -ms-overflow-style: none; /* IE and Edge */
-          scrollbar-width: none; /* Firefox */
-        }
-
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none; /* Chrome, Safari, Opera */
-        }
-
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(8px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .animate-fade-in {
-          animation: fade-in 0.4s ease;
-        }
-      `}</style>
     </>
   );
 };

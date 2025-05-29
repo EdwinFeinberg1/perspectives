@@ -23,8 +23,8 @@ export default function SharedConversationPage() {
     typeof params.id === "string"
       ? params.id
       : Array.isArray(params.id)
-      ? params.id[0]
-      : "";
+        ? params.id[0]
+        : "";
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -66,7 +66,7 @@ export default function SharedConversationPage() {
   };
 
   return (
-    <div className="absolute inset-0 bg-black text-[#e6d3a3] flex flex-col">
+    <div className="absolute inset-0 bg-background text-foreground flex flex-col">
       <div className="fixed inset-0 pointer-events-none">
         <StarsBackground
           starDensity={0.0004}
@@ -75,8 +75,8 @@ export default function SharedConversationPage() {
           className="z-0"
         />
         <ShootingStars
-          starColor="#e6d3a3"
-          trailColor="#d4b978"
+          starColor="rgb(51, 34, 17)"
+          trailColor="rgb(51, 34, 17)"
           minDelay={1500}
           maxDelay={4000}
           className="z-0"
@@ -98,7 +98,7 @@ export default function SharedConversationPage() {
 
           {loading ? (
             <div className="flex items-center justify-center py-16">
-              <Loader2 className="h-10 w-10 animate-spin mr-4 text-[#e6d3a3]" />
+              <Loader2 className="h-10 w-10 animate-spin mr-4 text-foreground" />
               <span className="text-xl">Loading conversation...</span>
             </div>
           ) : error ? (
@@ -117,21 +117,21 @@ export default function SharedConversationPage() {
                 return (
                   <div
                     key={idx}
-                    className={`$${
+                    className={`${
                       isUser
-                        ? "bg-black/70 border-2 border-[#ddc39a]/40 text-[#ddc39a] rounded-[20px_20px_0_20px] ml-auto"
-                        : "bg-black/60 border-2 border-[#ddc39a]/20 text-[#ddc39a]/90 rounded-[20px_20px_20px_0]"
-                    } mx-2 my-3 p-5 text-[16px] shadow-lg backdrop-blur-sm max-w-[92%] text-left relative`}
+                        ? "bg-white border-2 border-amber-900 text-[#8B4513] rounded-[20px_20px_0_20px] ml-auto"
+                        : "bg-gray-50 border-2 border-amber-900 text-[#8B4513] rounded-[20px_20px_20px_0]"
+                    } mx-2 my-3 p-5 text-[16px] max-w-[92%] text-left relative`}
                   >
                     {!isUser && modelName && (
-                      <div className="font-medium mb-3 text-[#ddc39a] flex items-center gap-2">
+                      <div className="font-medium mb-3 text-[#8B4513] flex items-center gap-2">
                         <span>{modelName}</span>
                       </div>
                     )}
                     {isUser ? (
                       <div className="whitespace-pre-line">{content}</div>
                     ) : (
-                      <div className="markdown-content prose prose-invert prose-headings:text-[#ddc39a] prose-p:text-[#ddc39a]/90 prose-li:text-[#ddc39a]/90 max-w-none">
+                      <div className="markdown-content prose dark:prose-invert prose-headings:text-[#8B4513] prose-p:text-[#8B4513] prose-li:text-[#8B4513] prose-strong:text-[#8B4513] max-w-none">
                         <ReactMarkdown
                           components={{
                             h1: (props) => (
@@ -162,13 +162,13 @@ export default function SharedConversationPage() {
                             li: (props) => <li className="ml-5" {...props} />,
                             blockquote: (props) => (
                               <blockquote
-                                className="border-l-4 border-[#ddc39a]/30 pl-4 italic my-4"
+                                className="border-l-4 border-amber-900/30 pl-4 italic my-4"
                                 {...props}
                               />
                             ),
                             a: (props) => (
                               <a
-                                className="text-[#ddc39a] underline hover:text-[#ddc39a]/80"
+                                className="text-amber-900 underline hover:text-amber-900/80"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 {...props}
@@ -188,26 +188,26 @@ export default function SharedConversationPage() {
         </motion.div>
       </div>
 
-      <footer className="relative z-20 w-full bg-black/50 backdrop-blur-md border-t border-[#e6d3a3]/30">
+      <footer className="relative z-20 w-full bg-background/50 backdrop-blur-md border-t border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-6">
               <Link
                 href="/"
-                className="flex items-center gap-2 text-[#e6d3a3]/80 hover:text-[#e6d3a3] transition-colors duration-300 hover:scale-105 transform"
+                className="flex items-center gap-2 text-[#8B4513] dark:text-muted-foreground hover:text-foreground transition-colors duration-300 hover:scale-105 transform"
               >
                 <Home className="h-5 w-5" />
                 <span className="font-medium">Return Home</span>
               </Link>
               <button
                 onClick={handleShare}
-                className="flex items-center gap-2 text-[#e6d3a3]/80 hover:text-[#e6d3a3] transition-colors duration-300 hover:scale-105 transform"
+                className="flex items-center gap-2 text-[#8B4513] dark:text-muted-foreground hover:text-foreground transition-colors duration-300 hover:scale-105 transform"
               >
                 <Share2 className="h-5 w-5" />
                 <span className="font-medium">Share Conversation</span>
               </button>
             </div>
-            <p className="text-[#e6d3a3]/70 text-sm font-medium">
+            <p className="text-[#8B4513] dark:text-muted-foreground text-sm font-medium">
               Sephira • Made with ❤️
             </p>
           </div>
@@ -220,7 +220,7 @@ export default function SharedConversationPage() {
           opacity: showShareToast ? 1 : 0,
           y: showShareToast ? 0 : 20,
         }}
-        className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-[#e6d3a3] text-black px-6 py-3 rounded-full shadow-lg z-50"
+        className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-foreground text-background px-6 py-3 rounded-full shadow-lg z-50"
       >
         <p className="font-medium">Link copied to clipboard!</p>
       </motion.div>

@@ -288,8 +288,8 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         className="comparison-message w-full"
       >
         <div className="flex flex-col">
-          <div className="bg-black/60 border-2 border-[#ddc39a]/20 text-[#ddc39a]/90 rounded-[20px] mx-2 sm:mx-4 my-2 sm:my-3 p-3 sm:p-5 text-[14px] sm:text-[16px] shadow-lg backdrop-blur-sm text-left">
-            <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#ddc39a]/20">
+          <div className="bg-muted border-2 border-border text-foreground rounded-[20px] mx-2 sm:mx-4 my-2 sm:my-3 p-3 sm:p-5 text-[14px] sm:text-[16px] text-left">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-border/20">
               <div className="flex items-center">
                 <span className="mr-2 text-xl">🔄</span>
                 <span className="font-medium text-sm sm:text-base">
@@ -300,7 +300,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
               {/* Share button */}
               <button
                 onClick={handleShare}
-                className="text-[#ddc39a]/70 hover:text-[#ddc39a] transition-colors"
+                className="text-muted-foreground hover:text-foreground transition-colors"
                 title="Share this response"
               >
                 <svg
@@ -323,14 +323,14 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
                 </svg>
               </button>
             </div>
-            <div className="markdown-content prose prose-invert prose-headings:text-[#ddc39a] prose-p:text-[#ddc39a]/90 prose-li:text-[#ddc39a]/90 max-w-none">
+            <div className="markdown-content prose prose-invert prose-headings:text-foreground prose-p:text-foreground/90 prose-li:text-foreground/90 max-w-none">
               <ReactMarkdown>{message.content}</ReactMarkdown>
             </div>
 
             {/* Follow-up suggestions section */}
             {!isLoading && followups.length > 0 && (
-              <div className="mt-5 pt-4 border-t border-[#ddc39a]/20">
-                <p className="text-[#ddc39a]/80 text-sm mb-3">
+              <div className="mt-5 pt-4 border-t border-border/20">
+                <p className="text-foreground/80 text-sm mb-3">
                   Follow-up questions:
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -338,7 +338,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
                     <button
                       key={`follow-up-${i}`}
                       onClick={() => handleSubmit(suggestion)}
-                      className="px-3 py-1.5 rounded-full bg-[#ddc39a]/10 text-[#ddc39a] text-sm hover:bg-[#ddc39a]/20 transition-colors border border-[#ddc39a]/30"
+                      className="px-4 py-2 rounded-full bg-primary/10 text-primary text-sm hover:bg-primary/20 hover:scale-[1.02] transition-all duration-200 border border-primary/30 shadow-sm hover:shadow-md cursor-pointer font-medium"
                     >
                       {suggestion}
                     </button>
@@ -544,6 +544,9 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
           isLoading={false}
           handleInputChange={() => {}}
           onModelSelect={handleModelSelect}
+          hasReceivedResponse={displayMessages.some(
+            (msg) => msg.role === "assistant"
+          )}
           handleSubmit={(e) => {
             e.preventDefault();
             if (activeChat) {
@@ -557,7 +560,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
               // Add text element with the same style as in LoadingBubble
               const text = document.createElement("p");
-              text.className = "text-[#ddc39a] text-sm mt-2";
+              text.className = "text-foreground text-sm mt-2";
               text.textContent = "Letting the wise ones chew on this...";
 
               // Create a wrapper for loader and text
@@ -696,6 +699,9 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
         isLoading={isLoading}
         handleInputChange={activeChat?.handleInputChange || (() => {})}
         onModelSelect={handleModelSelect}
+        hasReceivedResponse={displayMessages.some(
+          (msg) => msg.role === "assistant"
+        )}
         handleSubmit={(e) => {
           e.preventDefault();
           if (activeChat) {
@@ -709,7 +715,7 @@ const MultiModelChat: React.FC<MultiModelChatProps> = ({
 
             // Add text element with the same style as in LoadingBubble
             const text = document.createElement("p");
-            text.className = "text-[#ddc39a] text-sm mt-2";
+            text.className = "text-foreground text-sm mt-2";
             text.textContent = "Letting the wise ones chew on this...";
 
             // Create a wrapper for loader and text

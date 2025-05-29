@@ -22,19 +22,19 @@ module.exports = {
         DEFAULT: {
           css: {
             maxWidth: "100%",
-            color: "#ddc39a",
+            color: "hsl(var(--foreground))",
             h1: {
-              color: "#ddc39a",
+              color: "hsl(var(--foreground))",
               marginTop: "1.5rem",
               marginBottom: "1rem",
             },
             h2: {
-              color: "#ddc39a",
+              color: "hsl(var(--foreground))",
               marginTop: "1.5rem",
               marginBottom: "1rem",
             },
             h3: {
-              color: "#ddc39a",
+              color: "hsl(var(--foreground))",
               marginTop: "1.25rem",
               marginBottom: "0.75rem",
             },
@@ -55,16 +55,16 @@ module.exports = {
               marginBottom: "1rem",
             },
             strong: {
-              color: "#ddc39a",
+              color: "hsl(var(--foreground))",
               fontWeight: "600",
             },
             blockquote: {
-              color: "#ddc39a",
-              borderLeftColor: "#ddc39a",
+              color: "hsl(var(--foreground))",
+              borderLeftColor: "hsl(var(--border))",
             },
             code: {
-              color: "#ddc39a",
-              backgroundColor: "rgba(221, 195, 154, 0.1)",
+              color: "hsl(var(--foreground))",
+              backgroundColor: "hsl(var(--muted))",
               padding: "0.2em 0.4em",
               borderRadius: "0.25rem",
             },

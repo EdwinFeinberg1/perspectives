@@ -3,10 +3,10 @@ import { Inter } from "next/font/google";
 import { IM_Fell_English } from "next/font/google";
 import { ConversationsProvider } from "./context/ConversationsContext";
 import { FavoritesProvider } from "./context/FavoritesContext";
-import { ThemeProvider } from "./features/theme";
 import { Analytics } from "@vercel/analytics/next";
 import { SafeArea } from "./components/SafeArea";
 import { ToastProvider } from "./components/ui/toast";
+import { ThemeProvider } from "./providers/theme-provider";
 
 // Keep Inter as fallback
 const inter = Inter({
@@ -31,17 +31,23 @@ const RootLayout = ({ children }) => {
     <html
       lang="en"
       className={`${inter.variable} ${imFellEnglish.variable} h-full`}
+      suppressHydrationWarning
     >
-      <body className="min-h-screen w-full bg-slate-950 flex flex-col overflow-hidden overscroll-none font-[var(--font-sans)]">
-        <ConversationsProvider>
-          <FavoritesProvider>
-            <ThemeProvider>
+      <body className="min-h-screen w-full bg-background text-foreground flex flex-col overflow-hidden overscroll-none font-[var(--font-sans)]">
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <ConversationsProvider>
+            <FavoritesProvider>
               <ToastProvider>
                 <SafeArea>{children}</SafeArea>
               </ToastProvider>
-            </ThemeProvider>
-          </FavoritesProvider>
-        </ConversationsProvider>
+            </FavoritesProvider>
+          </ConversationsProvider>
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>

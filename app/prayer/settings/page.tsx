@@ -44,7 +44,7 @@ export default function PrayerSettingsPage() {
 
       {/* Fixed footer with safe area padding */}
       <div
-        className="bg-[#0c1320] border-t border-[#e6d3a3]/10"
+        className="bg-background border-t border-border"
         style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       >
         <Footer />

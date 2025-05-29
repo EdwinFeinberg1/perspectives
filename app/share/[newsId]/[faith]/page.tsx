@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import { use } from "react";
 import { FaithType } from "@/app/types";
 import { FAITH_LABELS } from "@/app/constants/faith";
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles, Heart } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { StarsBackground } from "@/components/ui/stars-background";
 import { ShootingStars } from "@/components/ui/shooting-stars";
 import Link from "next/link";
-import { Home, Share2, Heart } from "lucide-react";
+import { Home, Share2 } from "lucide-react";
 import { motion } from "framer-motion";
 import { createClient } from "@/utils/supabase/client";
 
@@ -84,7 +84,7 @@ export default function SharedPerspectivePage({
   };
 
   return (
-    <div className="absolute inset-0 bg-black text-[#e6d3a3] flex flex-col">
+    <div className="absolute inset-0 bg-background text-foreground flex flex-col">
       {/* Enhanced background with more stars and faster shooting stars */}
       <div className="fixed inset-0 pointer-events-none">
         <StarsBackground
@@ -94,8 +94,8 @@ export default function SharedPerspectivePage({
           className="z-0"
         />
         <ShootingStars
-          starColor="#e6d3a3"
-          trailColor="#d4b978"
+          starColor="rgb(51, 34, 17)"
+          trailColor="rgb(51, 34, 17)"
           minDelay={1500}
           maxDelay={4000}
           className="z-0"
@@ -138,15 +138,15 @@ export default function SharedPerspectivePage({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="mt-8 space-y-4 bg-[#1c2434] p-6 rounded-lg border border-[#e6d3a3]/20"
+              className="mt-8 space-y-4 bg-card p-6 rounded-lg border border-border"
             >
               {newsTitle && (
-                <h2 className="text-[#e6d3a3] text-2xl sm:text-3xl font-medium">
+                <h2 className="text-foreground text-2xl sm:text-3xl font-medium">
                   {newsTitle}
                 </h2>
               )}
               {newsDescription && (
-                <p className="text-[#e6d3a3]/80 text-lg sm:text-xl leading-relaxed">
+                <p className="text-muted-foreground text-lg sm:text-xl leading-relaxed">
                   {newsDescription}
                 </p>
               )}
@@ -160,16 +160,16 @@ export default function SharedPerspectivePage({
                 animate={{ opacity: 1 }}
                 className="flex items-center justify-center py-20"
               >
-                <Loader2 className="h-10 w-10 animate-spin mr-4 text-[#e6d3a3]" />
-                <span className="text-[#e6d3a3]/90 text-xl font-medium">
-                  Loading perspective...
+                <Loader2 className="h-10 w-10 animate-spin mr-4 text-foreground" />
+                <span className="text-foreground/90 text-xl font-medium">
+                  Loading spiritual perspective...
                 </span>
               </motion.div>
             ) : error ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="text-red-400 py-20 text-xl"
+                className="text-destructive py-20 text-xl"
               >
                 {error}
               </motion.div>
@@ -178,33 +178,36 @@ export default function SharedPerspectivePage({
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
-                className="prose prose-xl w-full text-[#e6d3a3] prose-headings:text-left prose-p:text-left prose-ul:text-left"
+                className="prose prose-xl w-full text-foreground prose-headings:text-left prose-p:text-left prose-ul:text-left"
               >
                 <ReactMarkdown
                   components={{
                     h1: ({ ...props }) => (
                       <h1
-                        className="text-3xl font-playfair text-[#e6d3a3] mt-16 mb-8 font-bold tracking-tight text-left"
+                        className="text-3xl font-playfair text-foreground mt-16 mb-8 font-bold tracking-tight text-left"
                         {...props}
                       />
                     ),
                     h2: ({ ...props }) => (
                       <h2
-                        className="text-2xl font-playfair text-[#e6d3a3] mt-12 mb-6 font-semibold tracking-tight text-left"
+                        className="text-2xl font-playfair text-foreground mt-12 mb-6 font-semibold tracking-tight text-left"
                         {...props}
                       />
                     ),
                     h3: ({ ...props }) => (
                       <h3
-                        className="text-xl font-playfair text-[#e6d3a3] mt-10 mb-4 font-medium tracking-tight text-left"
+                        className="text-xl font-playfair text-foreground mt-10 mb-4 font-medium tracking-tight text-left"
                         {...props}
                       />
                     ),
                     strong: ({ ...props }) => (
-                      <strong className="text-[#e6d3a3] font-bold" {...props} />
+                      <strong
+                        className="text-foreground font-bold"
+                        {...props}
+                      />
                     ),
                     em: ({ ...props }) => (
-                      <em className="text-[#e6d3a3]/90 italic" {...props} />
+                      <em className="text-foreground/90 italic" {...props} />
                     ),
                     ul: ({ ...props }) => (
                       <ul
@@ -226,7 +229,7 @@ export default function SharedPerspectivePage({
                     ),
                     blockquote: ({ ...props }) => (
                       <blockquote
-                        className="border-l-4 border-[#e6d3a3]/30 pl-4 my-6 italic text-[#e6d3a3]/90 text-left"
+                        className="border-l-4 border-muted-foreground/30 pl-4 my-6 italic text-muted-foreground text-left"
                         {...props}
                       />
                     ),
@@ -241,7 +244,7 @@ export default function SharedPerspectivePage({
       </div>
 
       {/* Enhanced Footer */}
-      <footer className="relative z-20 w-full bg-black/50 backdrop-blur-md border-t border-[#e6d3a3]/30">
+      <footer className="relative z-20 w-full bg-background/50 backdrop-blur-md border-t border-border">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-6">
@@ -249,23 +252,25 @@ export default function SharedPerspectivePage({
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-[#e6d3a3]/80 hover:text-[#e6d3a3] transition-colors duration-300 hover:scale-105 transform"
+                className="flex items-center gap-2 text-[#8B4513] dark:text-muted-foreground hover:text-foreground transition-colors duration-300 hover:scale-105 transform"
               >
                 <Home className="h-5 w-5" />
                 <span className="font-medium">Return Home</span>
               </Link>
               <button
                 onClick={handleShare}
-                className="flex items-center gap-2 text-[#e6d3a3]/80 hover:text-[#e6d3a3] transition-colors duration-300 hover:scale-105 transform"
+                className="flex items-center gap-2 text-[#8B4513] dark:text-muted-foreground hover:text-foreground transition-colors duration-300 hover:scale-105 transform"
               >
                 <Share2 className="h-5 w-5" />
                 <span className="font-medium">Share Perspective</span>
               </button>
             </div>
-            <p className="text-[#e6d3a3]/70 text-sm font-medium flex items-center gap-1">
+            <p className="text-[#8B4513] dark:text-muted-foreground text-sm font-medium flex items-center gap-1">
               {new Date().getFullYear()}{" "}
-               Sephira
-              <Heart className="h-3 w-3 md:h-4 md:w-4 text-[#e6d3a3]/80 fill-[#e6d3a3]/50 inline-block" />{" "}
+              <span>
+                <Heart className="h-3 w-3 md:h-4 md:w-4 text-[#8B4513] dark:text-muted-foreground fill-[#8B4513]/50 dark:fill-muted-foreground/50 inline-block" />{" "}
+              </span>
+              by Sephira
             </p>
           </div>
         </div>
@@ -278,7 +283,7 @@ export default function SharedPerspectivePage({
           opacity: showShareToast ? 1 : 0,
           y: showShareToast ? 0 : 20,
         }}
-        className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-[#e6d3a3] text-black px-6 py-3 rounded-full shadow-lg z-50"
+        className="fixed bottom-24 left-1/2 transform -translate-x-1/2 bg-foreground text-background px-6 py-3 rounded-full shadow-lg z-50"
       >
         <p className="font-medium">Link copied to clipboard!</p>
       </motion.div>

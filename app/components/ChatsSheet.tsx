@@ -49,13 +49,13 @@ const ChatsSheet: React.FC = () => {
   }, [editingId]);
 
   const onSelect = (id: string) => {
-    router.push(`/chat/${id}`);
+    router.push(`/chat/${id}?skipOnboarding=true`);
     setOpen(false); // Close sheet after selection
   };
 
   const onCreate = () => {
     const id = createConversation();
-    router.push(`/chat/${id}`);
+    router.push(`/chat/${id}?skipOnboarding=true`);
     setOpen(false); // Close sheet after creation
   };
 
@@ -101,23 +101,23 @@ const ChatsSheet: React.FC = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="p-2 bg-black/60 rounded-full border border-[#e6d3a3]/40 text-[#e6d3a3] hover:bg-black/80 hover:border-[#e6d3a3]/70 transition-all duration-300 hover:shadow-[0_0_15px_rgba(230,211,163,0.4)] hover:scale-105 animate-subtle-glow relative overflow-hidden group">
+        <button className="p-2 bg-background/60 rounded-full border border-border text-foreground hover:bg-background/80 hover:border-foreground/70 transition-all duration-300 hover:scale-105 relative overflow-hidden group">
           <MessageSquare size={20} className="relative z-10" />
-          <div className="absolute inset-0 bg-gradient-to-tr from-[#e6d3a3]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
         </button>
       </SheetTrigger>
 
       <SheetContent
         side="left"
-        className="bg-black/95 border-r border-[#ddc39a]/30 backdrop-blur-xl w-[320px] pt-[calc(20px+var(--safe-area-top))] pl-[var(--safe-area-left)] p-0 shadow-[5px_0_30px_rgba(0,0,0,0.7)]"
+        className="bg-background/95 border-r border-border backdrop-blur-xl w-[320px] pt-[calc(20px+var(--safe-area-top))] pl-[var(--safe-area-left)] p-0"
       >
-        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-transparent to-black/80 pointer-events-none opacity-40" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-transparent to-background/80 pointer-events-none opacity-40" />
 
         <SheetHeader className="px-6 pt-4 pb-6 relative z-10">
-          <SheetTitle className="text-[#e6d3a3] text-xl font-light tracking-wide">
+          <SheetTitle className="text-foreground text-xl font-light tracking-wide">
             Conversations
           </SheetTitle>
-          <SheetDescription className="text-[#e6d3a3]/70 text-sm mt-1">
+          <SheetDescription className="text-muted-foreground text-sm mt-1">
             View, edit, or start new conversations
           </SheetDescription>
         </SheetHeader>
@@ -127,8 +127,8 @@ const ChatsSheet: React.FC = () => {
           <div
             className={`group flex items-center justify-between px-6 py-3.5 cursor-pointer transition-all duration-200 relative ${
               isPrayerActive
-                ? "bg-[#e6d3a3]/10 border-l-2 border-[#e6d3a3]/60 pl-[22px]"
-                : "hover:bg-black/80 hover:border-l-2 hover:border-[#e6d3a3]/30 hover:pl-[22px]"
+                ? "bg-foreground/10 border-l-2 border-foreground/60 pl-[22px]"
+                : "hover:bg-muted hover:border-l-2 hover:border-foreground/30 hover:pl-[22px]"
             }`}
             onClick={() => {
               router.push("/prayer");
@@ -139,14 +139,14 @@ const ChatsSheet: React.FC = () => {
               <Sparkles
                 size={16}
                 className={`mr-2 flex-shrink-0 ${
-                  isPrayerActive ? "text-[#e6d3a3]" : "text-[#e6d3a3]/80"
+                  isPrayerActive ? "text-foreground" : "text-muted-foreground"
                 }`}
               />
               <span
                 className={`text-sm whitespace-normal truncate transition-colors ${
                   isPrayerActive
-                    ? "text-[#e6d3a3]"
-                    : "text-[#e6d3a3]/80 group-hover:text-[#e6d3a3]"
+                    ? "text-foreground"
+                    : "text-muted-foreground group-hover:text-foreground"
                 }`}
               >
                 Prayer
@@ -156,9 +156,14 @@ const ChatsSheet: React.FC = () => {
 
           {conversations.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-40 px-6 text-center">
-              <MessageSquare size={24} className="text-[#e6d3a3]/40 mb-3" />
-              <p className="text-[#e6d3a3]/60 text-sm">No conversations yet</p>
-              <p className="text-[#e6d3a3]/40 text-xs mt-1">
+              <MessageSquare
+                size={24}
+                className="text-muted-foreground/40 mb-3"
+              />
+              <p className="text-muted-foreground text-sm">
+                No conversations yet
+              </p>
+              <p className="text-muted-foreground/60 text-xs mt-1">
                 Start a new chat below
               </p>
             </div>
@@ -168,26 +173,26 @@ const ChatsSheet: React.FC = () => {
                 key={conv.id}
                 className={`group flex items-center justify-between px-6 py-3.5 cursor-pointer transition-all duration-200 relative ${
                   conv.id === activeId
-                    ? "bg-[#e6d3a3]/10 border-l-2 border-[#e6d3a3]/60 pl-[22px]"
-                    : "hover:bg-black/80 hover:border-l-2 hover:border-[#e6d3a3]/30 hover:pl-[22px]"
+                    ? "bg-foreground/10 border-l-2 border-foreground/60 pl-[22px]"
+                    : "hover:bg-muted hover:border-l-2 hover:border-foreground/30 hover:pl-[22px]"
                 }`}
                 onClick={() => onSelect(conv.id)}
               >
                 {editingId === conv.id ? (
                   <div
-                    className="flex-1 flex items-center relative bg-[#e6d3a3]/5 py-1.5 px-1.5 rounded-md"
+                    className="flex-1 flex items-center relative bg-muted py-1.5 px-1.5 rounded-md"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <MessageSquare
                       size={16}
-                      className="text-[#e6d3a3] mr-2 flex-shrink-0"
+                      className="text-foreground mr-2 flex-shrink-0"
                     />
                     <input
                       ref={editInputRef}
                       type="text"
                       value={editName}
                       onChange={(e) => setEditName(e.target.value)}
-                      className="flex-1 bg-transparent border-b border-[#e6d3a3]/40 text-[#e6d3a3] text-sm focus:outline-none focus:border-[#e6d3a3] transition-colors py-1 px-0"
+                      className="flex-1 bg-transparent border-b border-border text-foreground text-sm focus:outline-none focus:border-foreground transition-colors py-1 px-0"
                       autoFocus
                       onKeyDown={(e) => {
                         if (e.key === "Enter") saveEdit(conv.id);
@@ -201,7 +206,7 @@ const ChatsSheet: React.FC = () => {
                           e.stopPropagation();
                           saveEdit(conv.id);
                         }}
-                        className="text-[#e6d3a3] p-1.5 ml-1 hover:bg-[#e6d3a3]/10 rounded-full transition-colors group/save"
+                        className="text-foreground p-1.5 ml-1 hover:bg-muted rounded-full transition-colors group/save"
                         title="Save"
                       >
                         <Check
@@ -214,7 +219,7 @@ const ChatsSheet: React.FC = () => {
                           e.stopPropagation();
                           cancelEdit();
                         }}
-                        className="text-[#e6d3a3]/70 p-1.5 hover:bg-[#e6d3a3]/10 rounded-full transition-colors group/cancel"
+                        className="text-muted-foreground p-1.5 hover:bg-muted rounded-full transition-colors group/cancel"
                         title="Cancel"
                       >
                         <X
@@ -226,15 +231,15 @@ const ChatsSheet: React.FC = () => {
                   </div>
                 ) : deletingId === conv.id ? (
                   <div
-                    className="flex-1 flex items-center justify-between py-1 px-2 bg-[#e6d3a3]/5 rounded-md border border-[#e6d3a3]/20 animate-fadeIn"
+                    className="flex-1 flex items-center justify-between py-1 px-2 bg-muted rounded-md border border-border animate-fadeIn"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className="flex items-center">
                       <AlertCircle
                         size={16}
-                        className="text-[#e6d3a3]/80 mr-2 animate-pulse"
+                        className="text-muted-foreground mr-2 animate-pulse"
                       />
-                      <span className="text-[#e6d3a3] text-sm">
+                      <span className="text-foreground text-sm">
                         Delete this chat?
                       </span>
                     </div>
@@ -244,7 +249,7 @@ const ChatsSheet: React.FC = () => {
                           e.stopPropagation();
                           onDelete(conv.id);
                         }}
-                        className="bg-[#e6d3a3]/10 hover:bg-[#e6d3a3]/20 text-[#e6d3a3] text-xs py-1 px-2 rounded transition-colors"
+                        className="bg-muted hover:bg-muted/80 text-foreground text-xs py-1 px-2 rounded transition-colors"
                       >
                         Yes
                       </button>
@@ -253,7 +258,7 @@ const ChatsSheet: React.FC = () => {
                           e.stopPropagation();
                           cancelDelete();
                         }}
-                        className="text-[#e6d3a3]/70 hover:text-[#e6d3a3] text-xs py-1 px-2 rounded hover:bg-[#e6d3a3]/10 transition-colors"
+                        className="text-muted-foreground hover:text-foreground text-xs py-1 px-2 rounded transition-colors"
                       >
                         No
                       </button>
@@ -266,32 +271,32 @@ const ChatsSheet: React.FC = () => {
                         size={16}
                         className={`mr-2 flex-shrink-0 ${
                           conv.id === activeId
-                            ? "text-[#e6d3a3]"
-                            : "text-[#e6d3a3]/80"
+                            ? "text-foreground"
+                            : "text-muted-foreground"
                         }`}
                       />
                       <span
                         className={`text-sm whitespace-normal truncate transition-colors ${
                           conv.id === activeId
-                            ? "text-[#e6d3a3]"
-                            : "text-[#e6d3a3]/80 group-hover:text-[#e6d3a3]"
+                            ? "text-foreground"
+                            : "text-muted-foreground group-hover:text-foreground"
                         }`}
                       >
                         {conv.name}
                       </span>
                     </div>
-                    <div className="flex items-center">
+                    <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           startEdit(conv.id, conv.name);
                         }}
-                        className="text-[#e6d3a3]/70 hover:text-[#e6d3a3] p-1.5 rounded-full hover:bg-[#e6d3a3]/10 transition-all opacity-0 group-hover:opacity-100 mr-1"
-                        title="Rename"
+                        className="text-muted-foreground p-1.5 hover:bg-muted rounded-full transition-colors group/edit"
+                        title="Edit name"
                       >
                         <Edit
                           size={14}
-                          className="hover:scale-110 transition-transform"
+                          className="group-hover/edit:scale-110 transition-transform"
                         />
                       </button>
                       <button
@@ -299,40 +304,32 @@ const ChatsSheet: React.FC = () => {
                           e.stopPropagation();
                           confirmDelete(conv.id);
                         }}
-                        className="text-[#e6d3a3]/70 hover:text-[#e6d3a3] p-1.5 rounded-full hover:bg-[#e6d3a3]/10 transition-all opacity-0 group-hover:opacity-100"
-                        title="Delete"
+                        className="text-muted-foreground p-1.5 hover:bg-muted rounded-full transition-colors group/delete"
+                        title="Delete chat"
                       >
                         <Trash
                           size={14}
-                          className="hover:scale-110 transition-transform"
+                          className="group-hover/delete:scale-110 transition-transform"
                         />
                       </button>
                     </div>
                   </>
                 )}
-                {conv.id === activeId && !deletingId && !editingId && (
-                  <div className="absolute inset-y-0 right-0 w-1 bg-gradient-to-b from-[#e6d3a3]/0 via-[#e6d3a3]/20 to-[#e6d3a3]/0" />
-                )}
               </div>
             ))
           )}
         </div>
-        <button
-          onClick={onCreate}
-          className="flex items-center justify-center gap-2 text-[#e6d3a3] py-5 px-6 border-t border-[#e6d3a3]/20 hover:bg-[#e6d3a3]/10 transition-all text-sm w-full sticky bottom-[env(safe-area-inset-bottom)] left-0 z-10 bg-gradient-to-t from-black via-black/95 to-transparent backdrop-blur-md shadow-[0_-10px_30px_rgba(0,0,0,0.5)] group"
-          style={{ width: "320px" }}
-        >
-          <div className="relative">
-            <Plus
-              size={18}
-              className="group-hover:scale-110 transition-transform duration-300"
-            />
-            <div className="absolute inset-0 bg-[#e6d3a3]/30 blur-md scale-0 group-hover:scale-100 rounded-full transition-transform duration-300 opacity-0 group-hover:opacity-70" />
-          </div>
-          <span className="relative tracking-wide font-light group-hover:tracking-wider transition-all duration-300">
-            New Chat
-          </span>
-        </button>
+
+        {/* New Chat Button */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/95 to-transparent">
+          <button
+            onClick={onCreate}
+            className="w-full flex items-center justify-center gap-2 bg-foreground/10 hover:bg-foreground/20 text-foreground py-2 px-4 rounded-full transition-colors"
+          >
+            <Plus size={18} />
+            <span className="text-sm font-medium">New Chat</span>
+          </button>
+        </div>
       </SheetContent>
     </Sheet>
   );

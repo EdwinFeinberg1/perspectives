@@ -2,11 +2,12 @@
 "use client";
 
 import React, { useRef, useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import LandingChatbot from "../../components/LandingChatbot";
 import PersonalitiesSection from "../../components/PersonalitiesSection";
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
+import OnboardingFlow, { UserIntent } from "../../components/OnboardingFlow";
 import { ModelName } from "../../types";
 import { useConversations } from "../../context/ConversationsContext";
 import { ShootingStars } from "@/components/ui/shooting-stars";
@@ -15,11 +16,17 @@ import { StarsBackground } from "@/components/ui/stars-background";
 export default function ChatPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const conversationId =
     typeof params.conversationId === "string" ? params.conversationId : "";
   const [messagesSent, setMessagesSent] = useState(false);
   const [headerOffset, setHeaderOffset] = useState(150);
   const [chatLoading, setChatLoading] = useState(false);
+
+  // Check if we should skip onboarding (e.g., when creating new chat from sheet)
+  const shouldSkipOnboarding = searchParams.get("skipOnboarding") === "true";
+  const [showOnboarding, setShowOnboarding] = useState(!shouldSkipOnboarding);
+  const [userIntent, setUserIntent] = useState<UserIntent | null>(null);
 
   const chatbotRef = useRef<HTMLDivElement>(null);
   const personalitiesRef = useRef<HTMLDivElement>(null);
@@ -29,6 +36,15 @@ export default function ChatPage() {
     useConversations();
 
   const conversation = conversations.find((c) => c.id === conversationId);
+
+  // Clear the query parameter after checking it
+  useEffect(() => {
+    if (shouldSkipOnboarding) {
+      // Remove the query parameter from the URL without triggering a navigation
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, "", newUrl);
+    }
+  }, [shouldSkipOnboarding]);
 
   // Listen for theme subheader toggle events
   useEffect(() => {
@@ -95,6 +111,45 @@ export default function ChatPage() {
     updateConversation(conversationId, { hasStarted: true, name: newName });
     setMessagesSent(true);
   };
+
+  const handleOnboardingComplete = (intent: UserIntent) => {
+    setUserIntent(intent);
+    setShowOnboarding(false);
+
+    // Update conversation with selected model from onboarding
+    if (intent.suggestedModel) {
+      setSelectedModels([intent.suggestedModel]);
+    }
+  };
+
+  const handleOnboardingSkip = () => {
+    setShowOnboarding(false);
+  };
+
+  // If onboarding is active, show it and nothing else
+  if (showOnboarding) {
+    return (
+      <>
+        <StarsBackground
+          starDensity={0.0002}
+          allStarsTwinkle={true}
+          twinkleProbability={0.8}
+          className="z-0"
+        />
+        <ShootingStars
+          starColor="#e6d3a3"
+          trailColor="#d4b978"
+          minDelay={2000}
+          maxDelay={6000}
+          className="z-0"
+        />
+        <OnboardingFlow
+          onComplete={handleOnboardingComplete}
+          onSkip={handleOnboardingSkip}
+        />
+      </>
+    );
+  }
 
   // ----- Sharing logic -----
   const handleShareConversation = async () => {
@@ -213,6 +268,7 @@ export default function ChatPage() {
                     markConversationStarted(name);
                   }}
                   onLoadingChange={setChatLoading}
+                  userIntent={userIntent}
                 />
               </div>
             </div>

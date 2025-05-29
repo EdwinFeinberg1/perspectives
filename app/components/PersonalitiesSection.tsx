@@ -28,11 +28,11 @@ const PersonalityCard: React.FC<PersonalityCardProps> = ({
   isSelected,
   onClick,
 }) => {
-  const cardClassName = `border-2 transition-all duration-300 overflow-hidden cursor-pointer bg-black/60 card
+  const cardClassName = `border-2 transition-all duration-300 overflow-hidden cursor-pointer bg-card dark:bg-black/60 card
     ${
       isSelected
-        ? "border-[#e6d3a3] shadow-[0_0_20px_rgba(230,211,163,0.5)] scale-[1.02] bg-gradient-to-b from-black/70 to-[#e6d3a3]/10 animate-subtle-pulse"
-        : "border-[#e6d3a3]/40 hover:shadow-[0_0_15px_rgba(230,211,163,0.4)] hover:scale-[1.02] hover:border-[#e6d3a3] hover:bg-gradient-to-b hover:from-black/60 hover:to-black/70"
+        ? "border-foreground dark:border-white dark:shadow-[0_0_20px_rgba(255,255,255,0.5)] scale-[1.02] bg-card dark:bg-gradient-to-b dark:from-black/70 dark:to-white/10 animate-subtle-pulse"
+        : "border-foreground/40 dark:border-white/40 dark:hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] hover:scale-[1.02] hover:border-foreground dark:hover:border-white hover:bg-card/90 dark:hover:bg-gradient-to-b dark:hover:from-black/60 dark:hover:to-black/70"
     }`;
 
   return (
@@ -47,19 +47,19 @@ const PersonalityCard: React.FC<PersonalityCardProps> = ({
           priority
         />
         {isSelected && (
-          <div className="absolute top-2 right-2 flex items-center px-2 py-1 md:py-2 bg-[#e6d3a3]/20 rounded-full border border-[#e6d3a3]/40">
-            <span className="text-[10px] md:text-xs font-medium text-[#e6d3a3]">
+          <div className="absolute top-2 right-2 flex items-center px-2 py-1 md:py-2 bg-foreground/10 dark:bg-white/20 rounded-full border border-foreground/40 dark:border-white/40">
+            <span className="text-[10px] md:text-xs font-medium text-foreground">
               Selected
             </span>
           </div>
         )}
       </div>
-      <CardHeader className="text-[#f0e4c3] flex flex-row items-center gap-1 md:gap-2 pt-2 md:pt-3 pb-0 md:pb-1 text-left">
+      <CardHeader className="text-card-foreground flex flex-row items-center gap-1 md:gap-2 pt-2 md:pt-3 pb-0 md:pb-1 text-left">
         <span className="text-base md:text-lg">{emoji}</span>
         <span className="text-sm md:text-base font-medium">{title}</span>
       </CardHeader>
       <CardContent className="pt-1 pb-3 md:pb-4 text-left">
-        <p className="text-xs md:text-sm text-[#e6d3a3] leading-tight">
+        <p className="text-xs md:text-sm text-muted-foreground leading-tight">
           {description}
         </p>
       </CardContent>
