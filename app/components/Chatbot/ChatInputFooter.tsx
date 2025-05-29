@@ -18,6 +18,7 @@ interface ChatInputFooterProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onModelSelect?: (model: string) => void;
+  hasReceivedResponse?: boolean;
 }
 
 // Avatar button component for model selection
@@ -31,8 +32,8 @@ const AvatarButton: React.FC<{
       onClick={onClick}
       className={`relative rounded-full overflow-hidden transition-all duration-300 hover:scale-110 ${
         isActive
-          ? "ring-2 ring-[#e6d3a3] drop-shadow-[0_0_5px_rgba(230,211,163,0.6)]"
-          : "hover:ring-1 hover:ring-[#e6d3a3]/60"
+          ? "ring-2 ring-[#e6d3a3] dark:ring-white drop-shadow-[0_0_5px_rgba(230,211,163,0.6)] dark:drop-shadow-[0_0_5px_rgba(255,255,255,0.6)]"
+          : "hover:ring-1 hover:ring-[#e6d3a3]/60 dark:hover:ring-white/60"
       }`}
       title={`Switch to ${personality.title}`}
       aria-label={`Switch to ${personality.title}`}
@@ -64,6 +65,7 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
   handleInputChange,
   handleSubmit,
   onModelSelect,
+  hasReceivedResponse = false,
 }) => {
   const [isFocused, setIsFocused] = useState(false);
   const [hoverModel, setHoverModel] = useState<string | null>(null);
@@ -126,32 +128,34 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
   return (
     <CardFooter className="flex flex-col p-0 sticky bottom-[env(safe-area-inset-bottom)] left-0 right-0 z-20 py-4 sm:py-4 sm:px-4">
       <div className="w-full max-w-3xl mx-auto px-6 sm:px-8 flex flex-col items-center">
-        {/* Avatar selection row */}
-        <div className="flex justify-center gap-3 sm:gap-4 mb-4 pb-2 w-[92%] sm:w-full bg-black/30 backdrop-blur-sm rounded-full px-2 sm:px-4 py-2">
-          <div className="text-[#e6d3a3]/80 text-xs mr-1 self-center hidden sm:block">
-            Switch:
-          </div>
-          {PERSONALITIES.map((personality) => (
-            <div
-              key={personality.model}
-              className="relative group"
-              onMouseEnter={() => setHoverModel(personality.model)}
-              onMouseLeave={() => setHoverModel(null)}
-            >
-              <AvatarButton
-                personality={personality}
-                isActive={activeModel === personality.model}
-                onClick={() => handleAvatarClick(personality.model)}
-              />
-              {hoverModel === personality.model &&
-                personality.model !== activeModel && (
-                  <div className="absolute top-14 left-1/2 transform -translate-x-1/2 bg-black/90 text-[#e6d3a3] text-xs px-2 py-1 rounded whitespace-nowrap hidden sm:block">
-                    Switch to {personality.title}
-                  </div>
-                )}
+        {/* Avatar selection row - only show after receiving responses */}
+        {hasReceivedResponse && (
+          <div className="flex justify-center gap-3 sm:gap-4 mb-4 pb-2 w-[92%] sm:w-full bg-black/30 backdrop-blur-sm rounded-full px-2 sm:px-4 py-2">
+            <div className="text-[#e6d3a3]/80 text-xs mr-1 self-center hidden sm:block">
+              Switch:
             </div>
-          ))}
-        </div>
+            {PERSONALITIES.map((personality) => (
+              <div
+                key={personality.model}
+                className="relative group"
+                onMouseEnter={() => setHoverModel(personality.model)}
+                onMouseLeave={() => setHoverModel(null)}
+              >
+                <AvatarButton
+                  personality={personality}
+                  isActive={activeModel === personality.model}
+                  onClick={() => handleAvatarClick(personality.model)}
+                />
+                {hoverModel === personality.model &&
+                  personality.model !== activeModel && (
+                    <div className="absolute top-14 left-1/2 transform -translate-x-1/2 bg-black/90 text-[#e6d3a3] text-xs px-2 py-1 rounded whitespace-nowrap hidden sm:block">
+                      Switch to {personality.title}
+                    </div>
+                  )}
+              </div>
+            ))}
+          </div>
+        )}
 
         <form
           onSubmit={handleSubmit}
@@ -173,7 +177,7 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
                 ? `Ask ${activeModel}...`
                 : "Select a perspective to begin..."
             }
-            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-sm sm:text-lg mr-2 sm:mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none font-light tracking-wide min-h-[40px] py-1 sm:py-2 px-2 sm:px-8"
+            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-sm sm:text-lg mr-2 sm:mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none focus-visible:ring-0 font-light tracking-wide min-h-[40px] py-1 sm:py-2 px-2 sm:px-8"
             disabled={isLoading || !activeModel}
           />
           <Button

@@ -12,6 +12,7 @@ import {
   removeFollowUpSection,
 } from "../constants/message-utils";
 import { useConversations } from "../context/ConversationsContext";
+import { UserIntent } from "./OnboardingFlow";
 
 interface LandingChatbotProps {
   conversationId: string;
@@ -24,6 +25,7 @@ interface LandingChatbotProps {
   setSelectedModels: (models: ModelName[]) => void;
   onFirstMessage?: (models: ModelName[]) => void;
   onLoadingChange?: (loading: boolean) => void;
+  userIntent?: UserIntent | null;
 }
 
 const LandingChatbot: React.FC<LandingChatbotProps> = ({
@@ -32,6 +34,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
   setSelectedModels,
   onFirstMessage,
   onLoadingChange,
+  userIntent,
 }) => {
   const selectedModel = selectedModels.length > 0 ? selectedModels[0] : null;
   const chatInputRef = useRef<HTMLDivElement>(null);
@@ -42,6 +45,8 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
     {}
   );
   const [hasNotifiedFirst, setHasNotifiedFirst] = React.useState(false);
+  const [hasSentInitialPrompt, setHasSentInitialPrompt] = React.useState(false);
+  const hasSentInitialPromptRef = useRef(false);
 
   // Add state to track pending model changes for immediate UI feedback
   const [pendingModelChange, setPendingModelChange] =
@@ -212,6 +217,47 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
     }
   }, [error]);
 
+  // Reset the initial prompt ref when conversation changes
+  useEffect(() => {
+    hasSentInitialPromptRef.current = false;
+    setHasSentInitialPrompt(false);
+  }, [conversationId]);
+
+  const sendPrompt = useCallback(
+    (p: string) => {
+      // Use pendingModelChange if available, otherwise use the selected model
+      const modelToUse = pendingModelChange || selectedModel;
+      if (modelToUse) {
+        // Generate a unique ID for the user message
+        const userMessageId = crypto.randomUUID();
+
+        // Generate a predictable ID for the expected assistant response
+        // This helps us associate the correct model with the response before it arrives
+        const predictedAssistantId = `assistant-${Date.now()}`;
+
+        // Pre-emptively update the messageModels with the model that will respond
+        setMessageModels((prev) => ({
+          ...prev,
+          [predictedAssistantId]: modelToUse,
+        }));
+
+        append(
+          { id: userMessageId, role: "user", content: p },
+          {
+            body: {
+              // Include the current model in the request body
+              selectedModel: modelToUse,
+            },
+          }
+        );
+
+        // Disabled auto-scroll after sending message
+        // smoothScrollToInput();
+      }
+    },
+    [pendingModelChange, selectedModel, append]
+  );
+
   // Listen for direct prompt submission events
   useEffect(() => {
     const handleDirectPrompt = (e: Event) => {
@@ -232,39 +278,46 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
     window.addEventListener("sendPromptDirectly", handleDirectPrompt);
     return () =>
       window.removeEventListener("sendPromptDirectly", handleDirectPrompt);
-  }, [selectedModel, onFirstMessage]);
+  }, [selectedModel, onFirstMessage, sendPrompt]);
 
-  const sendPrompt = (p: string) => {
-    // Use pendingModelChange if available, otherwise use the selected model
-    const modelToUse = pendingModelChange || selectedModel;
-    if (modelToUse) {
-      // Generate a unique ID for the user message
-      const userMessageId = crypto.randomUUID();
+  // Send initial prompt from userIntent if available
+  useEffect(() => {
+    console.log("Initial prompt effect check:", {
+      hasUserIntent: !!userIntent,
+      hasSentRef: hasSentInitialPromptRef.current,
+      hasSelectedModel: !!selectedModel,
+      isLoading,
+      messagesLength: messages.length,
+      userIntentPrompt: userIntent?.initialPrompt,
+    });
 
-      // Generate a predictable ID for the expected assistant response
-      // This helps us associate the correct model with the response before it arrives
-      const predictedAssistantId = `assistant-${Date.now()}`;
-
-      // Pre-emptively update the messageModels with the model that will respond
-      setMessageModels((prev) => ({
-        ...prev,
-        [predictedAssistantId]: modelToUse,
-      }));
-
-      append(
-        { id: userMessageId, role: "user", content: p },
-        {
-          body: {
-            // Include the current model in the request body
-            selectedModel: modelToUse,
-          },
-        }
-      );
-
-      // Disabled auto-scroll after sending message
-      // smoothScrollToInput();
+    // Only proceed if we have everything we need and haven't sent yet
+    if (
+      !userIntent?.initialPrompt ||
+      hasSentInitialPromptRef.current ||
+      !selectedModel
+    ) {
+      return;
     }
-  };
+
+    // Wait a bit for the chat to be fully initialized
+    const timeoutId = setTimeout(() => {
+      // Final check before sending
+      if (
+        !hasSentInitialPromptRef.current &&
+        messages.length === 0 &&
+        !isLoading
+      ) {
+        console.log("Sending initial prompt:", userIntent.initialPrompt);
+        hasSentInitialPromptRef.current = true;
+        setHasSentInitialPrompt(true);
+        sendPrompt(userIntent.initialPrompt);
+      }
+    }, 500); // Give enough time for initialization
+
+    // Cleanup
+    return () => clearTimeout(timeoutId);
+  }, [userIntent, selectedModel, messages.length, isLoading, sendPrompt]); // Added back necessary dependencies
 
   // Handler for model selection from ChatInputFooter
   const handleModelSelect = (model: string) => {
@@ -304,6 +357,9 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
               e.preventDefault();
             }}
             onModelSelect={handleModelSelect}
+            hasReceivedResponse={messages.some(
+              (msg) => msg.role === "assistant"
+            )}
           />
         </div>
       </div>
@@ -379,6 +435,7 @@ const LandingChatbot: React.FC<LandingChatbotProps> = ({
             }
           }}
           onModelSelect={handleModelSelect}
+          hasReceivedResponse={messages.some((msg) => msg.role === "assistant")}
         />
       </div>
     </div>

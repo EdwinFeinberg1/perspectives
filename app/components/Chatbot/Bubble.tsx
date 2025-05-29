@@ -136,9 +136,9 @@ ${result.summary}
       <div
         className={`${
           role === "user"
-            ? "bg-black/70 border-2 border-[#ddc39a]/40 text-[#ddc39a] rounded-[20px_20px_0_20px] ml-auto"
-            : "bg-black/60 border-2 border-[#ddc39a]/20 text-[#ddc39a]/90 rounded-[20px_20px_20px_0]"
-        } mx-2 my-3 p-5 text-[16px] shadow-lg backdrop-blur-sm max-w-[92%] text-left relative`}
+            ? "bg-card border-2 border-border text-foreground rounded-[20px_20px_0_20px] ml-auto"
+            : "bg-muted border-2 border-border text-foreground rounded-[20px_20px_20px_0]"
+        } mx-2 my-3 p-5 text-[16px] max-w-[92%] text-left relative`}
       >
         {/* Add tools menu for assistant messages */}
         {role === "assistant" && (
@@ -147,8 +147,8 @@ ${result.summary}
               <button
                 onClick={toggleHighlightMode}
                 className={`p-1.5 rounded-full ${
-                  isHighlightMode ? "bg-[#ddc39a]/50" : "bg-[#ddc39a]/10"
-                } hover:bg-[#ddc39a]/30 transition-colors`}
+                  isHighlightMode ? "bg-amber-900/50" : "bg-amber-900/10"
+                } hover:bg-amber-900/30 transition-colors`}
                 aria-label="Highlight text to share"
               >
                 <svg
@@ -169,20 +169,20 @@ ${result.summary}
               </button>
 
               {/* Always visible tooltip */}
-              <div className="absolute right-0 top-full mt-2 px-3 py-1.5 bg-black/90 text-[#ddc39a] text-xs rounded-md whitespace-nowrap z-10 border border-[#ddc39a]/30">
+              <div className="absolute right-0 top-full mt-2 px-3 py-1.5 bg-black/90 text-white text-xs rounded-md whitespace-nowrap z-10 border border-gray-600">
                 {isHighlightMode
                   ? "Exit highlight mode"
                   : "Highlight text to share"}
-                <div className="absolute -top-1 right-2 w-2 h-2 bg-black/90 border-t border-l border-[#ddc39a]/30 transform rotate-45"></div>
+                <div className="absolute -top-1 right-2 w-2 h-2 bg-black/90 border-t border-l border-gray-600 transform rotate-45"></div>
               </div>
             </div>
           </div>
         )}
 
         {role === "assistant" && model && (
-          <div className="flex items-center mb-4 pb-2 border-b border-[#ddc39a]/20">
+          <div className="flex items-center mb-4 pb-2 border-b border-border/20">
             {personalityData?.image ? (
-              <div className="w-8 h-8 rounded-full overflow-hidden mr-2 bg-black/50 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full overflow-hidden mr-2 bg-background/50 flex items-center justify-center">
                 <Image
                   src={personalityData.image}
                   alt={model}
@@ -200,8 +200,8 @@ ${result.summary}
         {role === "assistant" ? (
           <>
             <div
-              className={`markdown-content prose prose-invert prose-headings:text-[#ddc39a] prose-p:text-[#ddc39a]/90 prose-li:text-[#ddc39a]/90 max-w-none ${
-                isHighlightMode ? "cursor-text selection:bg-[#ddc39a]/30" : ""
+              className={`markdown-content prose dark:prose-invert prose-headings:text-foreground prose-p:text-foreground/90 prose-li:text-foreground/90 prose-strong:text-foreground prose-a:text-primary max-w-none ${
+                isHighlightMode ? "cursor-text selection:bg-primary/30" : ""
               }`}
             >
               {/* If tools are being called but no result yet */}
@@ -210,7 +210,7 @@ ${result.summary}
                   (ti.state === "call" || ti.state === "partial-call") &&
                   !toolContent
               ) && (
-                <div className="text-[#ddc39a]/70 italic">
+                <div className="text-muted-foreground italic">
                   Gathering information about this week&apos;s Torah portion...
                 </div>
               )}
@@ -234,13 +234,13 @@ ${result.summary}
                     li: (props) => <li className="ml-5" {...props} />,
                     blockquote: (props) => (
                       <blockquote
-                        className="border-l-4 border-[#ddc39a]/30 pl-4 italic my-4"
+                        className="border-l-4 border-border/30 pl-4 italic my-4"
                         {...props}
                       />
                     ),
                     a: (props) => (
                       <a
-                        className="text-[#ddc39a] underline hover:text-[#ddc39a]/80"
+                        className="text-primary underline hover:text-primary/80"
                         target="_blank"
                         rel="noopener noreferrer"
                         {...props}
@@ -255,7 +255,7 @@ ${result.summary}
 
             {/* Highlight instruction */}
             {isHighlightMode && (
-              <div className="mt-2 text-sm text-[#ddc39a]/70 flex items-center p-2 bg-[#ddc39a]/10 rounded-md">
+              <div className="mt-2 text-sm text-muted-foreground flex items-center p-2 bg-muted/50 rounded-md">
                 <svg
                   className="w-4 h-4 mr-2"
                   viewBox="0 0 24 24"
@@ -276,8 +276,8 @@ ${result.summary}
 
             {/* Follow-up suggestions section */}
             {onFollowupClick && !isLoading && followups.length > 0 && (
-              <div className="mt-5 pt-4 border-t border-[#ddc39a]/20">
-                <p className="text-[#ddc39a]/80 text-sm mb-3">
+              <div className="mt-5 pt-4 border-t border-border/20">
+                <p className="text-muted-foreground text-sm mb-3">
                   Follow-up questions:
                 </p>
                 <div className="flex flex-wrap gap-2">
@@ -285,7 +285,7 @@ ${result.summary}
                     <button
                       key={`follow-up-${i}`}
                       onClick={() => onFollowupClick(suggestion)}
-                      className="px-3 py-1.5 rounded-full bg-[#ddc39a]/10 text-[#ddc39a] text-sm hover:bg-[#ddc39a]/20 transition-colors border border-[#ddc39a]/30"
+                      className="px-4 py-2 rounded-full bg-primary/10 text-primary text-sm hover:bg-primary/20 hover:scale-[1.02] transition-all duration-200 border border-primary/30 shadow-sm hover:shadow-md cursor-pointer font-medium"
                     >
                       {suggestion}
                     </button>

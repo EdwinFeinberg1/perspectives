@@ -15,13 +15,11 @@ export default function LoginLink({
   children = "Sign In",
 }: LoginLinkProps) {
   return (
-    <Link href="/login" passHref>
-      <Button
-        variant="ghost"
-        className={`text-[#e6d3a3] hover:bg-[#1c2434] text-sm ${className}`}
-      >
-        {children}
-      </Button>
+    <Link
+      href="/login"
+      className={`text-[#8B4513] dark:text-white hover:bg-muted text-sm ${className}`}
+    >
+      {children}
     </Link>
   );
 }

@@ -29,19 +29,23 @@ interface NewsItem {
 const FAITH_LABELS: Record<FaithType, { label: string; color: string }> = {
   rabbi: {
     label: "Rabbi GPT",
-    color: "bg-amber-500/10 text-amber-500 border-amber-500/20",
+    color:
+      "bg-amber-100 dark:bg-amber-500/10 text-amber-700 dark:text-amber-500 border-amber-200 dark:border-amber-500/20",
   },
   pastor: {
     label: "Pastor GPT",
-    color: "bg-blue-500/10 text-blue-500 border-blue-500/20",
+    color:
+      "bg-blue-100 dark:bg-blue-500/10 text-blue-700 dark:text-blue-500 border-blue-200 dark:border-blue-500/20",
   },
   buddha: {
     label: "Buddha GPT",
-    color: "bg-orange-500/10 text-orange-500 border-orange-500/20",
+    color:
+      "bg-orange-100 dark:bg-orange-500/10 text-orange-700 dark:text-orange-500 border-orange-200 dark:border-orange-500/20",
   },
   imam: {
     label: "Imam GPT",
-    color: "bg-green-500/10 text-green-500 border-green-500/20",
+    color:
+      "bg-green-100 dark:bg-green-500/10 text-green-700 dark:text-green-500 border-green-200 dark:border-green-500/20",
   },
 };
 
@@ -119,7 +123,7 @@ const NewsSheet = () => {
       <SheetTrigger asChild>
         <Button
           variant="ghost"
-          className="flex items-center gap-x-2 px-4 py-2 rounded-full border text-[#e6d3a3] bg-[#0c1320] border-[#e6d3a3]/30 hover:bg-[#1c2434] hover:border-[#e6d3a3]/60 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-[#e6d3a3]/30"
+          className="flex items-center gap-x-2 px-4 py-2 rounded-full border text-foreground bg-background border-border hover:bg-muted hover:border-foreground/60 transition-all duration-200 shadow-sm focus:outline-none focus:ring-2 focus:ring-ring/30"
         >
           <Newspaper className="h-5 w-5" />
           <span className="font-medium text-xs">News</span>
@@ -127,15 +131,15 @@ const NewsSheet = () => {
       </SheetTrigger>
       <SheetContent
         side={isMobile ? "bottom" : "right"}
-        className={`bg-[#080d14] ${
+        className={`bg-background ${
           isMobile
-            ? "h-[80vh] border-t border-[#e6d3a3]/30 rounded-t-[20px]"
-            : "w-[400px] border-l border-[#e6d3a3]/30"
+            ? "h-[80vh] border-t border-border rounded-t-[20px]"
+            : "w-[400px] border-l border-border"
         }`}
       >
         <SheetHeader className="pb-2">
-          <SheetTitle className="text-[#e6d3a3] text-xl">News</SheetTitle>
-          <SheetDescription className="text-[#e6d3a3]/70 text-lg">
+          <SheetTitle className="text-foreground text-xl">News</SheetTitle>
+          <SheetDescription className="text-muted-foreground text-lg">
             through the lens of religion.
           </SheetDescription>
         </SheetHeader>
@@ -146,13 +150,13 @@ const NewsSheet = () => {
         >
           {loading ? (
             <div className="flex items-center justify-center h-32">
-              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-[#e6d3a3]"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-foreground"></div>
             </div>
           ) : newsItems.length > 0 ? (
             newsItems.map((item) => (
               <div
                 key={item.id}
-                className="p-4 rounded-lg bg-[#1c2434] border border-[#e6d3a3]/20"
+                className="p-4 rounded-lg bg-card border border-border"
               >
                 {item.image_url && (
                   <div className="mb-3 rounded-lg overflow-hidden">
@@ -163,17 +167,19 @@ const NewsSheet = () => {
                     />
                   </div>
                 )}
-                <h3 className="text-[#e6d3a3] font-medium mb-2">
+                <h3 className="text-foreground font-medium mb-2">
                   {item.title}
                 </h3>
-                <p className="text-[#e6d3a3]/70 text-sm">{item.description}</p>
+                <p className="text-muted-foreground text-sm">
+                  {item.description}
+                </p>
                 <div className="mt-3 flex flex-wrap items-center gap-2">
                   {item.url && (
                     <a
                       href={item.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[#e6d3a3] text-sm hover:underline"
+                      className="text-foreground text-sm hover:underline"
                     >
                       Read more →
                     </a>
@@ -183,13 +189,13 @@ const NewsSheet = () => {
                     {renderFaithBadges(item.id)}
                   </div>
                 </div>
-                <span className="text-[#e6d3a3]/50 text-xs mt-2 block">
+                <span className="text-muted-foreground/50 text-xs mt-2 block">
                   {getRelativeTime(item.published_at)}
                 </span>
               </div>
             ))
           ) : (
-            <div className="text-center text-[#e6d3a3]/70 py-8">
+            <div className="text-center text-muted-foreground py-8">
               No news items available
             </div>
           )}

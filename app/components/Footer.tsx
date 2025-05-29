@@ -16,7 +16,7 @@ interface FooterProps {
 const Footer: React.FC<FooterProps> = ({ onShare, shareDisabled = false }) => {
   return (
     <footer className="sticky bottom-[env(safe-area-inset-bottom)] left-0 w-full z-40">
-      <div className="mx-auto max-w-[1400px] relative mb-2 px-4 sm:px-6">
+      <div className=" color-foreground mx-auto max-w-[1400px] relative mb-2 px-4 sm:px-6">
         {/* Main footer content with no background container */}
         <div className="relative h-[30px] px-6 md:px-8 flex items-center justify-between">
           {/* Left section with logo and name */}
@@ -35,11 +35,11 @@ const Footer: React.FC<FooterProps> = ({ onShare, shareDisabled = false }) => {
 
           {/* Center credits */}
           <div className="flex items-center space-x-1">
-            <span className="text-xs md:text-sm text-[#e6d3a3]/80">
+            <span className="text-xs md:text-sm text-[#8B4513] dark:text-white">
               Made with
             </span>
-            <Heart className="h-3 w-3 md:h-4 md:w-4 text-[#e6d3a3]/80 fill-[#e6d3a3]/50" />
-            <span className="text-xs md:text-sm text-[#e6d3a3]/80">
+            <Heart className="h-3 w-3 md:h-4 md:w-4 text-[#8B4513] dark:text-white fill-[#8B4513]/50 dark:fill-white/50" />
+            <span className="text-xs md:text-sm text-[#8B4513] dark:text-white">
               by spiritual seekers
             </span>
           </div>
@@ -53,14 +53,14 @@ const Footer: React.FC<FooterProps> = ({ onShare, shareDisabled = false }) => {
                 className={`flex items-center gap-1 transition-colors duration-200 ${
                   shareDisabled
                     ? "opacity-50 cursor-not-allowed"
-                    : "text-[#e6d3a3]/80 hover:text-[#e6d3a3]"
+                    : "text-[#8B4513] dark:text-white hover:text-[#8B4513]/80 dark:hover:text-white/80"
                 }`}
               >
                 <Share2 className="h-4 w-4" />
                 <span className="text-xs md:text-sm">Share</span>
               </button>
             )}
-            <span className="text-xs md:text-sm text-[#e6d3a3]/80">
+            <span className="text-xs md:text-sm text-[#8B4513] dark:text-white">
               {new Date().getFullYear()}
             </span>
           </div>

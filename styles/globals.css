@@ -6,8 +6,8 @@
   --safe-area-left: env(safe-area-inset-left, 0px);
   
   /* Theme colors */
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #F2EAD3; /* Warm beige background */
+  --foreground: #3F2305; /* Dark brown text */
 }
 
 @media (prefers-color-scheme: dark) {

@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import React, { useState, createContext, useContext } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Menu, X } from "lucide-react";
+import { IconArrowLeft, IconMenu2 } from "@tabler/icons-react";
 
 interface Links {
   label: string;
@@ -99,7 +100,7 @@ export const DesktopSidebar = ({
     <>
       <motion.div
         className={cn(
-          "h-full px-4 py-4 hidden md:flex md:flex-col bg-black/90 border-r border-[#ddc39a]/20 backdrop-blur-md w-[300px] shrink-0 fixed left-0 top-0 pt-24 z-50",
+          "h-full px-4 py-4 hidden md:flex md:flex-col bg-background/90 border-r border-border backdrop-blur-md w-[300px] shrink-0 fixed left-0 top-0 pt-24 z-50",
           className
         )}
         animate={{
@@ -108,7 +109,7 @@ export const DesktopSidebar = ({
         {...props}
       >
         <div
-          className="absolute top-24 right-3 cursor-pointer text-[#ddc39a] z-10"
+          className="absolute top-24 right-3 cursor-pointer text-foreground z-10"
           onClick={() => setOpen(!open)}
         >
           {open ? <X size={20} /> : <Menu size={20} />}
@@ -129,14 +130,14 @@ export const MobileSidebar = ({
     <>
       <div
         className={cn(
-          "h-16 px-4 flex flex-row md:hidden items-center justify-between bg-black/90 border-b border-[#ddc39a]/20 backdrop-blur-md w-full",
+          "h-16 px-4 flex flex-row md:hidden items-center justify-between bg-background/90 border-b border-border backdrop-blur-md w-full",
           className
         )}
         {...props}
       >
         <div className="flex justify-end z-20 w-full">
           <Menu
-            className="text-[#ddc39a] cursor-pointer"
+            className="text-foreground cursor-pointer"
             onClick={() => setOpen(!open)}
           />
         </div>
@@ -151,12 +152,12 @@ export const MobileSidebar = ({
                 ease: "easeInOut",
               }}
               className={cn(
-                "fixed h-full w-full inset-0 bg-black/90 p-10 z-[100] flex flex-col justify-between",
+                "fixed h-full w-full inset-0 bg-background/90 p-10 z-[100] flex flex-col justify-between",
                 className
               )}
             >
               <div
-                className="absolute right-10 top-10 z-50 text-[#ddc39a] cursor-pointer"
+                className="absolute right-10 top-10 z-50 text-foreground cursor-pointer"
                 onClick={() => setOpen(!open)}
               >
                 <X />
@@ -198,7 +199,7 @@ export const SidebarLink = ({
           display: animate ? (open ? "inline-block" : "none") : "inline-block",
           opacity: animate ? (open ? 1 : 0) : 1,
         }}
-        className="text-[#ddc39a] text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
+        className="text-foreground text-sm group-hover/sidebar:translate-x-1 transition duration-150 whitespace-pre inline-block !p-0 !m-0"
       >
         {link.label}
       </motion.span>

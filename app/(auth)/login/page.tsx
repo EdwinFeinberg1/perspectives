@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import styles from "./LoginPage.module.css";
-
+import Link from "next/link";
 
 export default function LoginPage() {
   return (
@@ -31,13 +31,13 @@ export default function LoginPage() {
         className={styles.card}
       >
         {/* title */}
-        <h1 className="text-center text-4xl font-normal text-[#d7c080]">
+        <h1 className="text-center text-4xl font-normal text-foreground">
           Welcome to Sephira
         </h1>
 
         {/* email */}
         <div className="flex flex-col gap-2">
-          <Label htmlFor="email" className="text-base text-[#e6d3a3]">
+          <Label htmlFor="email" className="text-base text-foreground">
             Email
           </Label>
           <Input
@@ -46,15 +46,16 @@ export default function LoginPage() {
             type="email"
             required
             placeholder="you@example.com"
-            className="h-12 bg-[#1c2434]/60 text-[#e6d3a3] border border-[#e6d3a3]/40
-                       placeholder:text-[#e6d3a3]/50
-                       focus:border-[#e6d3a3]/70 focus:ring-[#e6d3a3]/40"
+            className="h-12 bg-card/60 text-foreground border border-border
+                       placeholder:text-muted-foreground
+                       focus:border-ring
+                       transition-all duration-300"
           />
         </div>
 
         {/* password */}
         <div className="flex flex-col gap-2">
-          <Label htmlFor="password" className="text-base text-[#e6d3a3]">
+          <Label htmlFor="password" className="text-base text-foreground">
             Password
           </Label>
           <Input
@@ -63,9 +64,10 @@ export default function LoginPage() {
             type="password"
             required
             placeholder="••••••••"
-            className="h-12 bg-[#1c2434]/60 text-[#e6d3a3] border border-[#e6d3a3]/40
-                       placeholder:text-[#e6d3a3]/50
-                       focus:border-[#e6d3a3]/70 focus:ring-[#e6d3a3]/40"
+            className="h-12 bg-card/60 text-foreground border border-border
+                       placeholder:text-muted-foreground
+                       focus:border-ring
+                       transition-all duration-300"
           />
         </div>
 
@@ -73,21 +75,26 @@ export default function LoginPage() {
         <div className="flex flex-col gap-3 pt-2">
           <Button
             type="submit"
-            className="h-12 w-full bg-[#1c2434] text-[#e6d3a3] border border-[#e6d3a3]/50
-                       hover:bg-[#2a3447] hover:border-[#e6d3a3]/70"
+            className="h-12 w-full bg-primary text-primary-foreground border border-border
+                       hover:bg-primary/80 hover:border-border/70
+                       transition-all duration-300
+                       hover:shadow-lg"
           >
             Log in
           </Button>
 
-          <Button
-            type="submit"
-            formAction={signup}
-            variant="outline"
-            className="h-12 w-full bg-transparent text-[#e6d3a3] border border-[#e6d3a3]/50
-                       hover:bg-[#1c2434] hover:border-[#e6d3a3]/70"
-          >
-            Sign up
-          </Button>
+          <Link href="/signup" className="block">
+            <Button
+              type="submit"
+              variant="outline"
+              className="h-12 w-full bg-transparent text-foreground border border-border
+                         hover:bg-muted hover:border-border/70
+                         transition-all duration-300
+                         hover:shadow-lg"
+            >
+              Sign up
+            </Button>
+          </Link>
         </div>
       </form>
     </>

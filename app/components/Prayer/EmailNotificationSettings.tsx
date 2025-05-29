@@ -162,7 +162,7 @@ export default function EmailNotificationSettings() {
     return (
       <Card className="w-full max-w-2xl mx-auto">
         <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="h-8 w-8 animate-spin text-[#e6d3a3]" />
+          <Loader2 className="h-8 w-8 animate-spin text-foreground" />
         </CardContent>
       </Card>
     );
@@ -171,28 +171,28 @@ export default function EmailNotificationSettings() {
   const favoritesCount = favorites.size;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto bg-[#0c1320] border-[#e6d3a3]/20">
+    <Card className="w-full max-w-2xl mx-auto bg-card border-border">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-[#e6d3a3]">
+        <CardTitle className="flex items-center gap-2 text-foreground">
           <Bell className="h-5 w-5" />
           Prayer Email Notifications
         </CardTitle>
-        <CardDescription className="text-[#e6d3a3]/70">
+        <CardDescription className="text-muted-foreground">
           Get daily reminders of your favorite prayers delivered to your inbox
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Email Display */}
-        <div className="text-sm text-[#e6d3a3]/70">
+        <div className="text-sm text-muted-foreground">
           Notifications will be sent to:{" "}
-          <span className="font-medium text-[#e6d3a3]">{userEmail}</span>
+          <span className="font-medium text-foreground">{userEmail}</span>
         </div>
 
         {/* Favorites Count */}
-        <div className="bg-[#1c2434] p-4 rounded-lg border border-[#e6d3a3]/10">
-          <p className="text-sm text-[#e6d3a3]/70">
+        <div className="bg-muted p-4 rounded-lg border border-border">
+          <p className="text-sm text-muted-foreground">
             You have{" "}
-            <span className="font-semibold text-[#e6d3a3]">
+            <span className="font-semibold text-foreground">
               {favoritesCount}
             </span>{" "}
             favorited prayer{favoritesCount !== 1 ? "s" : ""} that will be
@@ -203,10 +203,10 @@ export default function EmailNotificationSettings() {
         {/* Enable/Disable Toggle */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label htmlFor="notifications-enabled" className="text-[#e6d3a3]">
+            <Label htmlFor="notifications-enabled" className="text-foreground">
               Enable Email Notifications
             </Label>
-            <p className="text-sm text-[#e6d3a3]/70">
+            <p className="text-sm text-muted-foreground">
               Receive your favorite prayers via email
             </p>
           </div>
@@ -214,18 +214,18 @@ export default function EmailNotificationSettings() {
             id="notifications-enabled"
             checked={settings.email_notifications_enabled}
             onCheckedChange={handleToggle}
-            className="data-[state=checked]:bg-[#e6d3a3]"
+            className="data-[state=checked]:bg-primary"
           />
         </div>
 
         {/* Settings (only show when enabled) */}
         {settings.email_notifications_enabled && (
-          <div className="space-y-4 pt-4 border-t border-[#e6d3a3]/10">
+          <div className="space-y-4 pt-4 border-t border-border">
             {/* Frequency */}
             <div className="space-y-2">
               <Label
                 htmlFor="frequency"
-                className="flex items-center gap-2 text-[#e6d3a3]"
+                className="flex items-center gap-2 text-foreground"
               >
                 <Calendar className="h-4 w-4" />
                 Frequency
@@ -236,18 +236,24 @@ export default function EmailNotificationSettings() {
               >
                 <SelectTrigger
                   id="frequency"
-                  className="bg-[#1c2434] border-[#e6d3a3]/20 text-[#e6d3a3]"
+                  className="bg-card border-border text-foreground"
                 >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1c2434] border-[#e6d3a3]/20">
-                  <SelectItem value="daily" className="text-[#e6d3a3]">
+                <SelectContent className="bg-popover border-border">
+                  <SelectItem value="daily" className="text-popover-foreground">
                     Daily
                   </SelectItem>
-                  <SelectItem value="weekly" className="text-[#e6d3a3]">
+                  <SelectItem
+                    value="weekly"
+                    className="text-popover-foreground"
+                  >
                     Weekly (Every Monday)
                   </SelectItem>
-                  <SelectItem value="monthly" className="text-[#e6d3a3]">
+                  <SelectItem
+                    value="monthly"
+                    className="text-popover-foreground"
+                  >
                     Monthly (1st of each month)
                   </SelectItem>
                 </SelectContent>
@@ -258,7 +264,7 @@ export default function EmailNotificationSettings() {
             <div className="space-y-2">
               <Label
                 htmlFor="time"
-                className="flex items-center gap-2 text-[#e6d3a3]"
+                className="flex items-center gap-2 text-foreground"
               >
                 <Clock className="h-4 w-4" />
                 Time
@@ -268,7 +274,7 @@ export default function EmailNotificationSettings() {
                 type="time"
                 value={settings.notification_time}
                 onChange={handleTimeChange}
-                className="bg-[#1c2434] border-[#e6d3a3]/20 text-[#e6d3a3]"
+                className="bg-card border-border text-foreground"
               />
             </div>
 
@@ -276,7 +282,7 @@ export default function EmailNotificationSettings() {
             <div className="space-y-2">
               <Label
                 htmlFor="timezone"
-                className="flex items-center gap-2 text-[#e6d3a3]"
+                className="flex items-center gap-2 text-foreground"
               >
                 <Globe className="h-4 w-4" />
                 Timezone
@@ -287,16 +293,16 @@ export default function EmailNotificationSettings() {
               >
                 <SelectTrigger
                   id="timezone"
-                  className="bg-[#1c2434] border-[#e6d3a3]/20 text-[#e6d3a3]"
+                  className="bg-card border-border text-foreground"
                 >
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent className="bg-[#1c2434] border-[#e6d3a3]/20">
+                <SelectContent className="bg-popover border-border">
                   {TIMEZONES.map((tz) => (
                     <SelectItem
                       key={tz.value}
                       value={tz.value}
-                      className="text-[#e6d3a3]"
+                      className="text-popover-foreground"
                     >
                       {tz.label}
                     </SelectItem>
@@ -311,7 +317,7 @@ export default function EmailNotificationSettings() {
         <Button
           onClick={saveSettings}
           disabled={isSaving}
-          className="w-full bg-[#e6d3a3] text-black hover:bg-[#d4b978]"
+          className="w-full bg-primary text-primary-foreground hover:bg-primary/80"
         >
           {isSaving ? (
             <>

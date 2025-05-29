@@ -9,6 +9,8 @@ import { FaXTwitter } from "react-icons/fa6";
 import { SiThreads, SiInstagram } from "react-icons/si";
 import html2canvas from "html2canvas";
 import { uploadQuoteCard } from "@/app/utils/uploadQuoteCard";
+import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
 
 interface QuoteCardProps {
   text: string;
@@ -68,11 +70,45 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
     link.click();
   };
 
-  const handleCopyToClipboard = () => {
-    navigator.clipboard
-      .writeText(`"${text}" — ${author}`)
-      .then(() => alert("Quote text copied to clipboard!"))
-      .catch((err) => console.error("Failed to copy text:", err));
+  const handleCopyToClipboard = async () => {
+    const textToCopy = `"${text}" — ${author}`;
+    
+    try {
+      // First, try to focus the document
+      if (document.hasFocus && !document.hasFocus()) {
+        window.focus();
+      }
+      
+      // Try the modern clipboard API
+      await navigator.clipboard.writeText(textToCopy);
+      alert("Quote text copied to clipboard!");
+    } catch (err) {
+      console.warn("Modern clipboard API failed, trying fallback:", err);
+      
+      // Fallback method using the older approach
+      try {
+        const textArea = document.createElement("textarea");
+        textArea.value = textToCopy;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-999999px";
+        textArea.style.top = "-999999px";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textArea);
+        
+        if (successful) {
+          alert("Quote text copied to clipboard!");
+        } else {
+          throw new Error("Fallback copy failed");
+        }
+      } catch (fallbackErr) {
+        console.error("Both clipboard methods failed:", fallbackErr);
+        alert(`Could not copy automatically. Please copy this text manually:\n\n${textToCopy}`);
+      }
+    }
   };
 
   const handleShare = async () => {
@@ -194,18 +230,18 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-black/90 backdrop-blur-md rounded-2xl shadow-2xl border border-[#ddc39a]/30 p-6 max-w-md w-full">
-        <h3 className="text-[#ddc39a] text-xl font-medium mb-4">
+    <div className="fixed inset-0 bg-background/70 flex items-center justify-center z-50 p-4">
+      <div className="bg-background/90 backdrop-blur-md rounded-2xl shadow-2xl border border-border p-6 max-w-md w-full">
+        <h3 className="text-foreground text-xl font-medium mb-4">
           Foster the Flame
         </h3>
         <div
           ref={cardRef}
-          className="bg-gradient-to-br from-[#1a1a1a] to-[#0a0a0a] p-6 rounded-lg border border-[#ddc39a]/20 mb-4"
+          className="bg-gradient-to-br from-card to-background p-6 rounded-lg border border-border mb-4"
         >
           <div className="flex items-center mb-4">
             {personalityData?.image ? (
-              <div className="w-10 h-10 rounded-full overflow-hidden mr-3 bg-black/50 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full overflow-hidden mr-3 bg-background/50 flex items-center justify-center">
                 <Image
                   src={personalityData.image}
                   alt={author}
@@ -216,47 +252,57 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
                 />
               </div>
             ) : (
-              <div className="w-10 h-10 rounded-full bg-[#ddc39a]/20 flex items-center justify-center mr-3">
-                <span className="text-xl text-[#ddc39a]">
+              <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center mr-3">
+                <span className="text-xl text-foreground">
                   {author === "RabbiGPT"
                     ? "✡️"
                     : author === "BuddhaGPT"
-                    ? "☸️"
-                    : author === "PastorGPT"
-                    ? "✝️"
-                    : author === "ImamGPT"
-                    ? "☪️"
-                    : author === "ComparisonGPT"
-                    ? "🔄"
-                    : "🔹"}
+                      ? "☸️"
+                      : author === "PastorGPT"
+                        ? "✝️"
+                        : author === "ImamGPT"
+                          ? "☪️"
+                          : author === "ComparisonGPT"
+                            ? "🔄"
+                            : "🔹"}
                 </span>
               </div>
             )}
-            <span className="text-[#ddc39a] font-medium">{author}</span>
+            <span className="text-foreground font-medium">{author}</span>
           </div>
           {html ? (
-            <div
-              className="markdown-content prose prose-invert prose-headings:text-[#ddc39a] prose-p:text-[#ddc39a]/90 max-w-none mb-3"
-              dangerouslySetInnerHTML={{ __html: html as string }}
-            />
+            <div className="markdown-content prose dark:prose-invert prose-headings:text-foreground prose-p:text-foreground/90 max-w-none mb-3">
+              <ReactMarkdown 
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  strong: (props) => <strong className="font-bold text-foreground" {...props} />,
+                  p: (props) => <p className="my-2 text-foreground/90" {...props} />,
+                  li: (props) => <li className="ml-4 my-1 text-foreground/90" {...props} />,
+                  ul: (props) => <ul className="list-disc pl-4 my-2" {...props} />,
+                  ol: (props) => <ol className="list-decimal pl-4 my-2" {...props} />
+                }}
+              >
+                {html}
+              </ReactMarkdown>
+            </div>
           ) : (
-            <blockquote className="text-[#ddc39a]/90 text-lg italic mb-3 leading-relaxed">
+            <blockquote className="text-foreground/90 text-lg italic mb-3 leading-relaxed">
               &quot;{text}&quot;
             </blockquote>
           )}
           <div className="flex justify-end">
-            <div className="text-xs text-[#ddc39a]/60">ask-sephira.com</div>
+            <div className="text-xs text-muted-foreground">ask-sephira.com</div>
           </div>
         </div>
 
         <div className="mb-4">
-          <h4 className="text-[#ddc39a] text-sm mb-2">Share to:</h4>
+          <h4 className="text-foreground text-sm mb-2">Share to:</h4>
           <div className="flex flex-wrap gap-3">
             <button
               onClick={shareToInstagramStory}
               disabled={isGeneratingImage}
               title="Share to Instagram Story"
-              className="p-2 rounded-full bg-gradient-to-br from-pink-500 to-yellow-400 text-white"
+              className="p-2 rounded-full bg-gradient-to-br from-pink-500 to-yellow-400 text-white hover:opacity-80"
             >
               <SiInstagram size={20} />
             </button>
@@ -287,7 +333,7 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
             <button
               onClick={shareToThreads}
               disabled={isGeneratingImage}
-              className="p-2 rounded-full bg-black/20 text-white hover:bg-grey/30"
+              className="p-2 rounded-full bg-muted text-foreground hover:bg-muted/80"
               title="Share to Threads"
             >
               <SiThreads size={20} />
@@ -295,7 +341,7 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
 
             <button
               onClick={copyShareLink}
-              className="p-2 rounded-full bg-[#ddc39a]/20 text-[#ddc39a] hover:bg-[#ddc39a]/30"
+              className="p-2 rounded-full bg-muted text-foreground hover:bg-muted/80"
               title="Copy share link"
             >
               <FaLink size={20} />
@@ -306,25 +352,25 @@ const QuoteCard: React.FC<QuoteCardProps> = ({
         <div className="flex gap-3 justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 rounded-lg border border-[#ddc39a]/30 text-[#ddc39a]/80 hover:bg-[#ddc39a]/10"
+            className="px-4 py-2 rounded-lg border border-border text-muted-foreground hover:bg-muted"
           >
             Cancel
           </button>
           <button
             onClick={handleCopyToClipboard}
-            className="px-4 py-2 rounded-lg border border-[#ddc39a]/30 text-[#ddc39a]/80 hover:bg-[#ddc39a]/10"
+            className="px-4 py-2 rounded-lg border border-border text-muted-foreground hover:bg-muted"
           >
             Copy
           </button>
           <button
             onClick={handleShare}
-            className="px-4 py-2 rounded-lg border border-[#ddc39a]/30 text-[#ddc39a]/80 hover:bg-[#ddc39a]/10"
+            className="px-4 py-2 rounded-lg border border-border text-muted-foreground hover:bg-muted"
           >
             Share
           </button>
           <button
             onClick={handleDownload}
-            className="px-4 py-2 rounded-lg bg-[#ddc39a]/20 text-[#ddc39a] hover:bg-[#ddc39a]/30"
+            className="px-4 py-2 rounded-lg bg-primary/20 text-primary hover:bg-primary/30"
             disabled={isGeneratingImage}
           >
             {isGeneratingImage ? "Generating..." : "Download"}
