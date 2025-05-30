@@ -183,11 +183,12 @@ const Header: React.FC<{
             <div className="w-full grid grid-cols-12 gap-2 items-center md:hidden">
               {/* First row */}
               <div className="col-span-12 flex justify-between items-center mb-1">
-                {/* Left: Chat bubble only */}
+                {/* Left: Chat bubble and theme toggle */}
                 <div className="flex items-center space-x-1">
                   <div className="w-12 h-12 flex items-center justify-center">
                     <ChatsSheet />
                   </div>
+                  <ThemeToggle />
                 </div>
 
                 {/* Center: Sephira wordmark */}
@@ -204,9 +205,9 @@ const Header: React.FC<{
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-foreground hover:bg-muted w-12 h-12"
+                        className="text-foreground hover:bg-muted w-9 h-9"
                       >
-                        <Menu className="h-6 w-6" />
+                        <Menu className="h-4 w-4" />
                       </Button>
                     </SheetTrigger>
                     <SheetContent
@@ -333,7 +334,6 @@ const Header: React.FC<{
                     variant="ghost"
                     className={`${headerActionButton} text-xs`}
                   />
-                  <ThemeToggle />
                 </div>
               ) : (
                 <div className="col-span-12 flex flex-col gap-2">
@@ -426,6 +426,7 @@ const Header: React.FC<{
               <div className="flex items-center justify-between pb-2 flex-1 relative">
                 <div className="flex items-center space-x-4">
                   <ChatsSheet />
+                  <ThemeToggle />
                 </div>
 
                 {/* Center: Sephira wordmark */}
@@ -441,9 +442,9 @@ const Header: React.FC<{
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-foreground hover:bg-muted w-8 h-8 sm:w-10 sm:h-10"
+                        className="text-foreground hover:bg-muted w-9 h-9"
                       >
-                        <Menu className="h-5 w-5 sm:h-6 sm:w-6" />
+                        <Menu className="h-4 w-4" />
                       </Button>
                     </SheetTrigger>
                     <SheetContent
@@ -571,7 +572,6 @@ const Header: React.FC<{
                       variant="ghost"
                       className={`${headerActionButton} text-sm`}
                     />
-                    <ThemeToggle />
                   </>
                 ) : (
                   <div className="w-full">

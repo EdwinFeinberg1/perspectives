@@ -21,6 +21,7 @@ import {
   SheetTrigger,
   SheetDescription,
 } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 const ChatsSheet: React.FC = () => {
   const {
@@ -54,7 +55,9 @@ const ChatsSheet: React.FC = () => {
   };
 
   const onCreate = () => {
+    console.log("New Chat button clicked!");
     const id = createConversation();
+    console.log("Created conversation with id:", id);
     router.push(`/chat/${id}?skipOnboarding=true`);
     setOpen(false); // Close sheet after creation
   };
@@ -101,15 +104,14 @@ const ChatsSheet: React.FC = () => {
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="p-2 bg-background/60 rounded-full border border-border text-foreground hover:bg-background/80 hover:border-foreground/70 transition-all duration-300 hover:scale-105 relative overflow-hidden group">
-          <MessageSquare size={20} className="relative z-10" />
-          <div className="absolute inset-0 bg-gradient-to-tr from-foreground/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-        </button>
+        <Button variant="ghost" size="icon" className="w-9 h-9">
+          <MessageSquare className="h-4 w-4" />
+        </Button>
       </SheetTrigger>
 
       <SheetContent
         side="left"
-        className="bg-background/95 border-r border-border backdrop-blur-xl w-[320px] pt-[calc(20px+var(--safe-area-top))] pl-[var(--safe-area-left)] p-0"
+        className="bg-background/95 border-r border-border backdrop-blur-xl w-[320px] pt-[calc(20px+var(--safe-area-top))] pl-[var(--safe-area-left)] p-0 flex flex-col"
       >
         <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-transparent to-background/80 pointer-events-none opacity-40" />
 
@@ -122,7 +124,7 @@ const ChatsSheet: React.FC = () => {
           </SheetDescription>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto h-full pb-24 relative z-10">
+        <div className="flex-1 overflow-y-auto relative z-10">
           {/* Permanent Prayer entry */}
           <div
             className={`group flex items-center justify-between px-6 py-3.5 cursor-pointer transition-all duration-200 relative ${
@@ -321,10 +323,10 @@ const ChatsSheet: React.FC = () => {
         </div>
 
         {/* New Chat Button */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-background via-background/95 to-transparent">
+        <div className="relative z-20 p-4 bg-gradient-to-t from-background via-background/95 to-transparent border-t border-border/50">
           <button
             onClick={onCreate}
-            className="w-full flex items-center justify-center gap-2 bg-foreground/10 hover:bg-foreground/20 text-foreground py-2 px-4 rounded-full transition-colors"
+            className="w-full flex items-center justify-center gap-2 bg-foreground/10 hover:bg-foreground/20 text-foreground py-2.5 px-4 rounded-full transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] shadow-sm hover:shadow-md"
           >
             <Plus size={18} />
             <span className="text-sm font-medium">New Chat</span>
