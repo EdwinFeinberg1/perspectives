@@ -98,7 +98,7 @@ const PersonalitiesSection = forwardRef<
   const sectionClassName =
     "px-2 sm:px-[5%] md:px-[7%] mb-0 sm:mb-0 relative transition-all duration-300";
   const gridClassName =
-    "grid grid-cols-2 sm:gap-3 lg:grid-cols-4 gap-3 md:gap-6 flex-wrap relative z-10 py-3";
+    "grid grid-cols-2 sm:gap-3 lg:grid-cols-4 gap-6 md:gap-6 flex-wrap relative z-10 py-3";
 
   return (
     <section ref={ref} className={sectionClassName} id="personalities-section">

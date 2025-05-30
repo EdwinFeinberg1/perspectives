@@ -58,8 +58,9 @@ export default function ChatPage() {
         ) || "0"
       );
 
-      // Base header offset (with no expanded subheader)
-      const baseOffset = 120;
+      // Base header offset depends on screen size
+      const isMobile = window.innerWidth < 640;
+      const baseOffset = isMobile ? 80 : 120;
 
       // Set new offset with a slight delay to match animations
       if (expanded) {
@@ -89,7 +90,18 @@ export default function ChatPage() {
 
   // Set initial header offset
   useEffect(() => {
-    setHeaderOffset(150);
+    // Use smaller offset on mobile
+    const isMobile = window.innerWidth < 640; // sm breakpoint
+    setHeaderOffset(isMobile ? 110 : 150);
+
+    // Update on window resize
+    const handleResize = () => {
+      const isMobile = window.innerWidth < 640;
+      setHeaderOffset(isMobile ? 110 : 150);
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   // If conversation not found, create a new one and redirect

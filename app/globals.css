@@ -61,21 +61,21 @@
   
   .dark {
     --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --foreground: 45 35% 96%;
     --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card-foreground: 45 35% 96%;
     --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
+    --popover-foreground: 45 35% 96%;
+    --primary: 45 35% 96%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: 45 35% 96%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
     --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 45 35% 96%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 45 35% 96%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 212.7 26.8% 83.9%;
@@ -338,7 +338,6 @@ input:focus {
        screen and (min-width: 375px) and (max-width: 428px) and (-webkit-device-pixel-ratio: 3) {
   /* iPhones 12/13/14 */
   #personalities-section .grid {
-    gap: 2px !important;
     padding: 2px 0 !important;
   }
   
