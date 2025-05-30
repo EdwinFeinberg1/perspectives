@@ -179,8 +179,12 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
                 ? `Ask ${activeModel}...`
                 : "Select a perspective to begin..."
             }
-            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-sm sm:text-lg mr-2 sm:mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none focus-visible:ring-0 font-light tracking-wide min-h-[40px] py-1 sm:py-2 px-2 sm:px-8"
+            className="flex-1 bg-transparent border-none text-[#f0e4c3] rounded-md text-base sm:text-lg mr-2 sm:mr-4 placeholder:text-[#e6d3a3]/60 focus:outline-none focus-visible:ring-0 font-light tracking-wide min-h-[40px] py-1 sm:py-2 px-2 sm:px-8"
             disabled={isLoading || !activeModel}
+            style={{
+              fontSize: "16px", // Prevent Safari mobile zoom
+              WebkitTextSizeAdjust: "100%", // Prevent text size adjustment
+            }}
           />
           <Button
             type="submit"
