@@ -22,7 +22,6 @@ export default function ChatPage() {
   const [messagesSent, setMessagesSent] = useState(false);
   const [headerOffset, setHeaderOffset] = useState(150);
   const [chatLoading, setChatLoading] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false);
 
   // Check if we should skip onboarding (e.g., when creating new chat from sheet)
   const shouldSkipOnboarding = searchParams.get("skipOnboarding") === "true";
@@ -103,20 +102,6 @@ export default function ChatPage() {
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Handle input focus/blur events to adjust layout
-  useEffect(() => {
-    const handleInputFocus = () => setIsInputFocused(true);
-    const handleInputBlur = () => setIsInputFocused(false);
-
-    window.addEventListener("inputFocus", handleInputFocus);
-    window.addEventListener("inputBlur", handleInputBlur);
-
-    return () => {
-      window.removeEventListener("inputFocus", handleInputFocus);
-      window.removeEventListener("inputBlur", handleInputBlur);
-    };
   }, []);
 
   // If conversation not found, create a new one and redirect
@@ -260,15 +245,11 @@ export default function ChatPage() {
         {/* Main scrollable content area between header and footer */}
         <div
           ref={contentRef}
-          className={`flex-1 overflow-y-auto transition-all duration-300 ${
-            isInputFocused ? "mobile-keyboard-active" : ""
-          }`}
+          className="flex-1 overflow-y-auto transition-all duration-300"
           style={{
-            height: isInputFocused ? "calc(100dvh - 210px)" : "calc(100vh - 210px)",
+            height: "calc(100vh - 210px)",
             marginTop: `${headerOffset}px`,
             marginBottom: "70px",
-            WebkitOverflowScrolling: "touch",
-            overscrollBehavior: "contain",
           }}
         >
           <div className="max-w-[1400px] mx-auto w-full pb-4">

@@ -172,14 +172,8 @@ const ChatInputFooter: React.FC<ChatInputFooterProps> = ({
           <Input
             value={input}
             onChange={handleInputChange}
-            onFocus={() => {
-              setIsFocused(true);
-              window.dispatchEvent(new CustomEvent("inputFocus"));
-            }}
-            onBlur={() => {
-              setIsFocused(false);
-              window.dispatchEvent(new CustomEvent("inputBlur"));
-            }}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             placeholder={
               activeModel
                 ? `Ask ${activeModel}...`
