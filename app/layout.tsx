@@ -23,6 +23,12 @@ export const metadata = {
   title: "Sephira",
   description:
     "It's for the seeker, the skeptic, the believer, and the curious.",
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 };
 
 const RootLayout = ({ children }) => {
