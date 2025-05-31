@@ -86,6 +86,117 @@ const TRADITIONS = [
   },
 ];
 
+const SPIRITUAL_TOPICS = {
+  judaism: [
+    {
+      name: "Shabbat",
+      description:
+        "The weekly day of rest and spiritual renewal that begins Friday at sunset and ends Saturday night.",
+    },
+    {
+      name: "Teshuvah",
+      description:
+        "The practice of repentance and return to one's higher self and to God, especially emphasized during the High Holy Days.",
+    },
+    {
+      name: "Kabbalah",
+      description:
+        "Jewish mystical tradition exploring the nature of God, creation, and the soul through symbols like the Sefirot.",
+    },
+    {
+      name: "Mussar",
+      description:
+        "A discipline of ethical self-improvement and character refinement rooted in classical Jewish texts.",
+    },
+  ],
+  buddhism: [
+    {
+      name: "Four Noble Truths",
+      description:
+        "Core teaching that diagnoses suffering (dukkha) and prescribes a path to its cessation.",
+    },
+    {
+      name: "Noble Eightfold Path",
+      description:
+        "Eight practical guidelines—ethical, mental, and wisdom training—leading to liberation.",
+    },
+    {
+      name: "Mindfulness (Sati)",
+      description:
+        "Present-moment, non-judgmental awareness cultivated through meditation and daily life.",
+    },
+    {
+      name: "Karma",
+      description:
+        "The law of intentional action and its consequences shaping present and future experiences.",
+    },
+    {
+      name: "Rebirth",
+      description:
+        "The continuing cycle of birth, death, and renewal conditioned by karma until enlightenment is achieved.",
+    },
+    {
+      name: "Loving-Kindness (Metta)",
+      description:
+        "Meditative practice of generating boundless friendliness toward oneself and all beings.",
+    },
+    {
+      name: "Compassion (Karuna)",
+      description:
+        "The heartfelt wish to relieve the suffering of others, a cornerstone of Mahayana practice.",
+    },
+    {
+      name: "Emptiness (Śūnyatā)",
+      description:
+        "Insight into the interdependent, non-self nature of all phenomena, dissolving attachment.",
+    },
+  ],
+  islam: [
+    {
+      name: "Tawḥīd",
+      description:
+        "The absolute oneness and uniqueness of God, the foundation of Islamic belief.",
+    },
+    {
+      name: "Five Pillars",
+      description:
+        "Core acts of worship: testimony of faith, prayer, almsgiving, fasting in Ramadan, and pilgrimage to Mecca.",
+    },
+    {
+      name: "Ṣūfism (Taṣawwuf)",
+      description:
+        "Islamic mysticism focused on inner purification and direct experiential knowledge of God.",
+    },
+    {
+      name: "Iḥsān",
+      description:
+        "Excellence in faith—worshiping God as though one sees Him, embodying virtue in every act.",
+    },
+  ],
+  christianity: [
+    {
+      name: "Trinity",
+      description:
+        "Belief in one God experienced as Father, Son, and Holy Spirit—three persons, one essence.",
+    },
+    {
+      name: "Grace",
+      description:
+        "Unmerited divine favor that heals human brokenness and empowers spiritual growth.",
+    },
+    {
+      name: "Salvation",
+      description:
+        "Deliverance from sin and its consequences through the life, death, and resurrection of Jesus Christ.",
+    },
+    {
+      name: "Beatitudes",
+      description:
+        "Teachings of Jesus in the Sermon on the Mount outlining the attitudes of kingdom living.",
+    },
+  ],
+};
+
 const SPECIFIC_NEEDS = {
   learning: [
     "What is the meaning of life?",
@@ -113,6 +224,77 @@ const SPECIFIC_NEEDS = {
   ],
 };
 
+const COMFORT_STORIES = {
+  judaism: [
+    {
+      title: "Rabbi Akiva Laughs at the Temple Ruins",
+      description:
+        "After seeing foxes roam the desolate Holy of Holies, three sages weep but Rabbi Akiva laughs—and then explains how the prophecy of future restoration turns devastation into hope.",
+    },
+    {
+      title: '"Comfort, Comfort My People" (Isaiah 40)',
+      description:
+        "Midrash on Isaiah's call 'Nachamu Ami' shows God urging double consolation after national tragedy, teaching that words and deeds of care can rekindle collective spirit.",
+    },
+    {
+      title: "Psalm 23 — The Lord Is My Shepherd",
+      description:
+        "King David's beloved psalm paints God as a shepherd who guides through 'the valley of the shadow of death,' offering enduring reassurance in times of fear.",
+    },
+  ],
+  buddhism: [
+    {
+      title: "Kisa Gotami and the Mustard Seed",
+      description:
+        "A grieving mother learns from the Buddha that no household is untouched by death, transforming personal loss into universal compassion.",
+    },
+    {
+      title: "The Second Arrow",
+      description:
+        "The Buddha compares unavoidable pain with the optional suffering we create by mentally striking ourselves with a 'second arrow,' pointing to mindful acceptance as relief.",
+    },
+    {
+      title: "The Parable of the Raft",
+      description:
+        "The Buddha likens the Dharma to a raft: essential for crossing turbulent waters but meant to be laid aside once safe on the farther shore.",
+    },
+  ],
+  islam: [
+    {
+      title: "Surah Yusuf — A Chapter of Consolation",
+      description:
+        "Joseph's saga of betrayal, patience, and reunion reassures believers that divine wisdom unfolds through hardship.",
+    },
+    {
+      title: "Prophet Ayyub (Job) and Beautiful Patience",
+      description:
+        "Stripped of health and wealth, Ayyub remains grateful; his eventual healing embodies ṣabr (patience) and Allah's promise that endurance is met with relief.",
+    },
+    {
+      title: 'Surah Ad-Duḥa — "Your Lord Has Not Forsaken You"',
+      description:
+        "Revealed after a pause in revelation, this short surah lifts the Prophet's spirits and offers timeless comfort to anyone who feels abandoned or anxious.",
+    },
+  ],
+  christianity: [
+    {
+      title: "Parable of the Lost Sheep",
+      description:
+        "Jesus depicts a shepherd leaving ninety-nine sheep to rescue one stray, illustrating God's relentless care for every person who feels lost.",
+    },
+    {
+      title: "Parable of the Prodigal Son",
+      description:
+        "A wayward son returns home expecting rejection but meets a father's embrace, showing unconditional forgiveness and restoration after failure.",
+    },
+    {
+      title: "Jesus Calms the Storm",
+      description:
+        "Amid a violent squall on the Sea of Galilee, Jesus speaks 'Peace, be still,' turning panic into awe and modeling trust when life's waves threaten.",
+    },
+  ],
+};
+
 export default function OnboardingFlow({
   onComplete,
   onSkip,
@@ -134,6 +316,57 @@ export default function OnboardingFlow({
     if (step > 1) {
       setStep(step - 1);
     }
+  };
+
+  const getRandomTopicFromEachTradition = () => {
+    const traditions = [
+      "judaism",
+      "buddhism",
+      "islam",
+      "christianity",
+    ] as const;
+    return traditions.map((tradition) => {
+      let topics;
+      if (selectedIntent === "learning") {
+        topics = SPIRITUAL_TOPICS[tradition];
+      } else if (selectedIntent === "comfort") {
+        topics = COMFORT_STORIES[tradition];
+      } else {
+        topics = SPIRITUAL_TOPICS[tradition]; // fallback
+      }
+      const randomIndex = Math.floor(Math.random() * topics.length);
+      return {
+        ...topics[randomIndex],
+        tradition: tradition.charAt(0).toUpperCase() + tradition.slice(1),
+      };
+    });
+  };
+
+  const getTopicsToShow = () => {
+    if (selectedIntent === "learning") {
+      if (selectedTradition === "none") {
+        return getRandomTopicFromEachTradition();
+      } else if (
+        selectedTradition &&
+        SPIRITUAL_TOPICS[selectedTradition as keyof typeof SPIRITUAL_TOPICS]
+      ) {
+        return SPIRITUAL_TOPICS[
+          selectedTradition as keyof typeof SPIRITUAL_TOPICS
+        ];
+      }
+    } else if (selectedIntent === "comfort") {
+      if (selectedTradition === "none") {
+        return getRandomTopicFromEachTradition();
+      } else if (
+        selectedTradition &&
+        COMFORT_STORIES[selectedTradition as keyof typeof COMFORT_STORIES]
+      ) {
+        return COMFORT_STORIES[
+          selectedTradition as keyof typeof COMFORT_STORIES
+        ];
+      }
+    }
+    return SPECIFIC_NEEDS[selectedIntent as keyof typeof SPECIFIC_NEEDS] || [];
   };
 
   const completeOnboarding = () => {
@@ -160,7 +393,28 @@ export default function OnboardingFlow({
 
     // Create initial prompt
     if (selectedNeed) {
-      initialPrompt = selectedNeed;
+      if (
+        (selectedIntent === "learning" || selectedIntent === "comfort") &&
+        (selectedNeed.includes("tradition:") ||
+          selectedNeed.includes("name:") ||
+          selectedNeed.includes("title:"))
+      ) {
+        // Handle spiritual topic or comfort story selection
+        const topicName =
+          selectedNeed.split("name:")[1]?.split(",")[0]?.trim() ||
+          selectedNeed.split("title:")[1]?.split(",")[0]?.trim();
+        if (topicName) {
+          if (selectedIntent === "learning") {
+            initialPrompt = `I'd like to learn about ${topicName}. Can you explain this concept and its significance?`;
+          } else if (selectedIntent === "comfort") {
+            initialPrompt = `I'm going through a difficult time and would find comfort in hearing about ${topicName}. Can you share this story and its meaning?`;
+          }
+        } else {
+          initialPrompt = selectedNeed;
+        }
+      } else {
+        initialPrompt = selectedNeed;
+      }
     } else {
       // Generate a default prompt based on intent
       const intentMap = {
@@ -210,7 +464,7 @@ export default function OnboardingFlow({
               </h2>
             </div>
             <p className="text-muted-foreground text-sm sm:text-base">
-              Let's help you find the right spiritual guidance
+              Let&apos;s help you find the right spiritual guidance
             </p>
           </div>
 
@@ -303,31 +557,109 @@ export default function OnboardingFlow({
                 </div>
               )}
 
-              {/* Step 3: Specific need */}
+              {/* Step 3: Learning Topics or Specific needs */}
               {step === 3 && (
                 <div>
-                  <h3 className="text-lg sm:text-xl text-foreground mb-4 sm:mb-6">
-                    Which of these resonates with you most?
-                  </h3>
-                  <div className="space-y-2 sm:space-y-3">
-                    {SPECIFIC_NEEDS[
-                      selectedIntent as keyof typeof SPECIFIC_NEEDS
-                    ]?.map((need) => (
-                      <button
-                        key={need}
-                        onClick={() => setSelectedNeed(need)}
-                        className={`w-full p-3 sm:p-4 rounded-lg border-2 transition-all text-left ${
-                          selectedNeed === need
-                            ? "border-foreground bg-foreground/5"
-                            : "border-border hover:border-foreground/20 active:border-foreground/30"
-                        }`}
-                      >
-                        <div className="text-foreground text-sm sm:text-base">
-                          {need}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                  {selectedIntent === "learning" ? (
+                    <div>
+                      <h3 className="text-lg sm:text-xl text-foreground mb-4 sm:mb-6">
+                        {selectedTradition === "none"
+                          ? "Here are some fascinating topics from different traditions:"
+                          : "Which topic would you like to explore?"}
+                      </h3>
+                      <div className="space-y-2 sm:space-y-3">
+                        {getTopicsToShow().map((topic, index) => (
+                          <button
+                            key={`${topic.name}-${index}`}
+                            onClick={() =>
+                              setSelectedNeed(
+                                `tradition:${selectedTradition}, name:${topic.name}, description:${topic.description}`
+                              )
+                            }
+                            className={`w-full p-3 sm:p-4 rounded-lg border-2 transition-all text-left ${
+                              selectedNeed.includes(topic.name)
+                                ? "border-foreground bg-foreground/5"
+                                : "border-border hover:border-foreground/20 active:border-foreground/30"
+                            }`}
+                          >
+                            <div className="text-foreground font-medium text-sm sm:text-base mb-1">
+                              {topic.name}
+                              {"tradition" in topic && (
+                                <span className="text-muted-foreground text-xs ml-2">
+                                  ({topic.tradition})
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-muted-foreground text-xs sm:text-sm">
+                              {topic.description}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : selectedIntent === "comfort" ? (
+                    <div>
+                      <h3 className="text-lg sm:text-xl text-foreground mb-4 sm:mb-6">
+                        {selectedTradition === "none"
+                          ? "Here are some comforting stories from different traditions:"
+                          : "Which story speaks to your heart?"}
+                      </h3>
+                      <div className="space-y-2 sm:space-y-3">
+                        {getTopicsToShow().map((story, index) => (
+                          <button
+                            key={`${story.title || story.name}-${index}`}
+                            onClick={() =>
+                              setSelectedNeed(
+                                `tradition:${selectedTradition}, title:${story.title || story.name}, description:${story.description}`
+                              )
+                            }
+                            className={`w-full p-3 sm:p-4 rounded-lg border-2 transition-all text-left ${
+                              selectedNeed.includes(story.title || story.name)
+                                ? "border-foreground bg-foreground/5"
+                                : "border-border hover:border-foreground/20 active:border-foreground/30"
+                            }`}
+                          >
+                            <div className="text-foreground font-medium text-sm sm:text-base mb-1">
+                              {story.title || story.name}
+                              {"tradition" in story && (
+                                <span className="text-muted-foreground text-xs ml-2">
+                                  ({story.tradition})
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-muted-foreground text-xs sm:text-sm">
+                              {story.description}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      <h3 className="text-lg sm:text-xl text-foreground mb-4 sm:mb-6">
+                        Which of these resonates with you most?
+                      </h3>
+                      <div className="space-y-2 sm:space-y-3">
+                        {SPECIFIC_NEEDS[
+                          selectedIntent as keyof typeof SPECIFIC_NEEDS
+                        ]?.map((need) => (
+                          <button
+                            key={need}
+                            onClick={() => setSelectedNeed(need)}
+                            className={`w-full p-3 sm:p-4 rounded-lg border-2 transition-all text-left ${
+                              selectedNeed === need
+                                ? "border-foreground bg-foreground/5"
+                                : "border-border hover:border-foreground/20 active:border-foreground/30"
+                            }`}
+                          >
+                            <div className="text-foreground text-sm sm:text-base">
+                              {need}
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
             </motion.div>

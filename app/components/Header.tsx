@@ -26,6 +26,7 @@ import SignOutButton from "./SignOutButton";
 import { createClient } from "@/utils/supabase/client";
 import type { User } from "@supabase/supabase-js";
 import { ThemeToggle } from "./theme-toggle";
+import { useRouter } from "next/navigation";
 //import Link from "next/link";
 
 const Header: React.FC<{
@@ -43,6 +44,7 @@ const Header: React.FC<{
   togglePrayerCategory,
   counts = {},
 }) => {
+  const router = useRouter();
   const [subHeaderExpanded, setSubHeaderExpanded] = useState(false);
   const [subHeaderHeight, setSubHeaderHeight] = useState(0);
   const [overlayTop, setOverlayTop] = useState("0px");
@@ -55,6 +57,11 @@ const Header: React.FC<{
   const [expandedSection, setExpandedSection] = useState<
     "need-pray" | "need-prayer" | "faq" | "about" | "contact" | null
   >(null);
+
+  // Function to handle navigation to home page
+  const handleLogoClick = () => {
+    router.push("/");
+  };
 
   // Calculate the header offset for the overlay
   const calculateHeaderOffset = useCallback(() => {
@@ -193,7 +200,10 @@ const Header: React.FC<{
 
                 {/* Center: Sephira wordmark */}
                 <div className="absolute left-1/2 transform -translate-x-1/2">
-                  <span className="text-2xl sm:text-3xl font-normal text-foreground tracking-wide">
+                  <span
+                    onClick={handleLogoClick}
+                    className="text-2xl sm:text-3xl font-normal text-foreground tracking-wide cursor-pointer hover:opacity-80 transition-opacity"
+                  >
                     Sephira
                   </span>
                 </div>
@@ -431,7 +441,10 @@ const Header: React.FC<{
 
                 {/* Center: Sephira wordmark */}
                 <div className="absolute left-1/2 transform -translate-x-1/2">
-                  <span className="text-3xl md:text-4xl font-normal text-foreground tracking-wide">
+                  <span
+                    onClick={handleLogoClick}
+                    className="text-3xl md:text-4xl font-normal text-foreground tracking-wide cursor-pointer hover:opacity-80 transition-opacity"
+                  >
                     Sephira
                   </span>
                 </div>
