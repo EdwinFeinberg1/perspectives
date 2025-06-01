@@ -295,6 +295,437 @@ const COMFORT_STORIES = {
   ],
 };
 
+const JOURNEY_ARCHETYPES = {
+  seeker: {
+    id: "seeker",
+    title: "The Seeker",
+    icon: "🧭",
+    description: "I want to find my purpose and meaning",
+    fullDescription:
+      "You're drawn to the big questions of existence and yearn to discover your unique path in life.",
+    wisdom: [
+      {
+        title: "The Parable of the Mustard Seed (Christianity)",
+        description:
+          "Small beginnings can lead to extraordinary growth when nurtured with faith and patience.",
+      },
+      {
+        title: "Buddha's Four Noble Truths (Buddhism)",
+        description:
+          "A roadmap for understanding suffering and finding the path to liberation and peace.",
+      },
+      {
+        title: "Abraham's Journey (Judaism/Islam)",
+        description:
+          "The call to leave the familiar and trust in a greater purpose, even when the destination is unknown.",
+      },
+    ],
+  },
+  contemplative: {
+    id: "contemplative",
+    title: "The Contemplative",
+    icon: "🧘",
+    description: "I'm drawn to meditation and inner peace",
+    fullDescription:
+      "You seek stillness, reflection, and the profound peace that comes from turning inward.",
+    wisdom: [
+      {
+        title: "Be Still and Know (Psalm 46:10)",
+        description:
+          "In quietude, we discover the divine presence that transcends all earthly concerns.",
+      },
+      {
+        title: "Vipassana Meditation (Buddhism)",
+        description:
+          "Clear seeing that reveals the impermanent nature of all experiences, bringing deep acceptance.",
+      },
+      {
+        title: "Sufi Breath Prayer (Islam)",
+        description:
+          "Sacred breathing practices that align the heart with divine remembrance and presence.",
+      },
+    ],
+  },
+  connector: {
+    id: "connector",
+    title: "The Connector",
+    icon: "🤝",
+    description: "I want to understand how we're all linked",
+    fullDescription:
+      "You sense the deep interconnectedness of all life and seek to understand our shared humanity.",
+    wisdom: [
+      {
+        title: "Indra's Net (Buddhism)",
+        description:
+          "A cosmic web where each being reflects all others, showing our fundamental interconnectedness.",
+      },
+      {
+        title: "Ubuntu Philosophy (African Spirituality)",
+        description:
+          "'I am because we are' - the recognition that our humanity is bound up in one another.",
+      },
+      {
+        title: "Body of Christ (Christianity)",
+        description:
+          "We are many parts of one body, each unique yet essential to the whole community.",
+      },
+    ],
+  },
+  creative: {
+    id: "creative",
+    title: "The Creative",
+    icon: "🎨",
+    description: "I find the sacred through beauty and art",
+    fullDescription:
+      "You discover the divine through creativity, beauty, and the artistic expression of the soul.",
+    wisdom: [
+      {
+        title: "Sacred Geometry (Islamic Art)",
+        description:
+          "Mathematical patterns in art that reflect the infinite creativity and order of the divine.",
+      },
+      {
+        title: "Bezalel the Craftsman (Judaism)",
+        description:
+          "God filling an artist with divine spirit to create beauty for sacred purposes.",
+      },
+      {
+        title: "Zen Gardens (Buddhism)",
+        description:
+          "Artful arrangements of stone and sand that invite contemplation and reveal hidden truths.",
+      },
+    ],
+  },
+};
+
+const ARCHETYPE_PRACTICES = {
+  seeker: {
+    key: "seeker",
+    label: "The Seeker",
+    religions: {
+      judaism: [
+        {
+          id: "genesis_purpose",
+          title: "Purpose in Genesis",
+          description:
+            "Explore how the creation narrative frames human purpose and responsibility.",
+        },
+        {
+          id: "covenant_calling",
+          title: "Covenant & Calling",
+          description:
+            "Unpack Abraham's journey and what it means to live a life of sacred mission.",
+        },
+        {
+          id: "pirkei_avot_wisdom",
+          title: "Pirkei Avot Wisdom",
+          description:
+            "Seek guidance from timeless ethical teachings on finding meaning.",
+        },
+      ],
+      buddhism: [
+        {
+          id: "four_noble_truths",
+          title: "Four Noble Truths",
+          description:
+            "Investigate the Buddha's diagnosis of suffering and the path to liberation.",
+        },
+        {
+          id: "eightfold_path_overview",
+          title: "Eightfold Path Overview",
+          description:
+            "Map out a practical roadmap toward a purposeful, awakened life.",
+        },
+        {
+          id: "story_of_siddhartha",
+          title: "Story of Siddhartha",
+          description:
+            "Follow the Buddha's own quest for meaning and how it speaks to yours.",
+        },
+      ],
+      islam: [
+        {
+          id: "fitra",
+          title: "Concept of Fitra",
+          description:
+            "Discover the Qur'anic view of humanity's innate purpose and goodness.",
+        },
+        {
+          id: "seeking_knowledge",
+          title: "Seeking Knowledge (ʿIlm)",
+          description:
+            "Learn why the pursuit of knowledge is central to a meaningful Muslim life.",
+        },
+        {
+          id: "life_as_test",
+          title: "Life as Test & Trust",
+          description:
+            "Reflect on verses framing life as a sacred trust and opportunity for growth.",
+        },
+      ],
+      christianity: [
+        {
+          id: "sermon_on_mount",
+          title: "Sermon on the Mount",
+          description:
+            "Examine Jesus' blueprint for purposeful living in the kingdom of God.",
+        },
+        {
+          id: "spiritual_gifts",
+          title: "Discovering Spiritual Gifts",
+          description:
+            "Identify personal callings through New-Testament teachings on vocation.",
+        },
+        {
+          id: "parable_talents",
+          title: "Parable of the Talents",
+          description:
+            "Explore stewardship and purposeful action through this classic parable.",
+        },
+      ],
+    },
+  },
+  contemplative: {
+    key: "contemplative",
+    label: "The Contemplative",
+    religions: {
+      judaism: [
+        {
+          id: "hitbodedut",
+          title: "Hitbodedut Practice",
+          description:
+            "Experience Rebbe Nachman's method of personal, meditative prayer.",
+        },
+        {
+          id: "shema_meditation",
+          title: "Meditation on the Shema",
+          description:
+            "Use the central prayer to cultivate unity and inner stillness.",
+        },
+        {
+          id: "psalms_contemplation",
+          title: "Psalms as Contemplation",
+          description:
+            "Turn to Tehillim for emotional release and mindful reflection.",
+        },
+      ],
+      buddhism: [
+        {
+          id: "anapanasati",
+          title: "Ānāpānasati (Breath)",
+          description:
+            "Anchor attention in the breath to develop calm and insight.",
+        },
+        {
+          id: "metta",
+          title: "Loving-Kindness (Mettā)",
+          description:
+            "Cultivate compassion for self and others through this heart practice.",
+        },
+        {
+          id: "zazen",
+          title: "Zazen",
+          description: "Sit in open awareness following the Zen tradition.",
+        },
+      ],
+      islam: [
+        {
+          id: "dhikr",
+          title: "Dhikr",
+          description:
+            "Engage in rhythmic remembrance of the Divine for inner peace.",
+        },
+        {
+          id: "salah_reflection",
+          title: "Reflective Salah",
+          description: "Deepen mindfulness within the five daily prayers.",
+        },
+        {
+          id: "sufi_whirling",
+          title: "Sufi Whirling",
+          description:
+            "Discover meditative movement aimed at union with the Beloved.",
+        },
+      ],
+      christianity: [
+        {
+          id: "lectio_divina",
+          title: "Lectio Divina",
+          description:
+            "Meditate on Scripture in four gentle, reflective steps.",
+        },
+        {
+          id: "centering_prayer",
+          title: "Centering Prayer",
+          description:
+            "Rest in silent consent to God's presence and action within.",
+        },
+        {
+          id: "gregorian_chant",
+          title: "Gregorian Chant",
+          description: "Let sacred music open the heart to contemplation.",
+        },
+      ],
+    },
+  },
+  connector: {
+    key: "connector",
+    label: "The Connector",
+    religions: {
+      judaism: [
+        {
+          id: "tikkun_olam",
+          title: "Tikkun Olam",
+          description: "Repair the world through social action and justice.",
+        },
+        {
+          id: "shabbat_community",
+          title: "Community in Shabbat",
+          description:
+            "Experience sacred togetherness around the Shabbat table.",
+        },
+        {
+          id: "hillel_rule",
+          title: "Hillel's Golden Rule",
+          description:
+            "Explore Judaism's core ethic of empathy and reciprocity.",
+        },
+      ],
+      buddhism: [
+        {
+          id: "sangha",
+          title: "Value of the Sangha",
+          description:
+            "Find support and wisdom in the community of practitioners.",
+        },
+        {
+          id: "interbeing",
+          title: "Interbeing",
+          description:
+            "Embrace Thích Nhất Hạnh's teaching on our deep interconnectedness.",
+        },
+        {
+          id: "bodhisattva_ideal",
+          title: "Bodhisattva Ideal",
+          description: "Commit to awakening for the benefit of all beings.",
+        },
+      ],
+      islam: [
+        {
+          id: "ummah",
+          title: "The Ummah",
+          description: "Explore the sense of global Muslim solidarity.",
+        },
+        {
+          id: "zakat_charity",
+          title: "Zakat & Sadaqah",
+          description:
+            "Live out compassion through obligatory and voluntary giving.",
+        },
+        {
+          id: "salam_brotherhood",
+          title: "Salām & Brotherhood",
+          description:
+            "Practice peace and fraternity in everyday interactions.",
+        },
+      ],
+      christianity: [
+        {
+          id: "body_of_christ",
+          title: "Body of Christ",
+          description:
+            "Understand the Church as a living, interconnected body.",
+        },
+        {
+          id: "love_thy_neighbor",
+          title: "Love Thy Neighbor",
+          description: "Put Jesus' core commandment into action.",
+        },
+        {
+          id: "acts_community",
+          title: "Community in Acts",
+          description: "Learn from the radical sharing of the early believers.",
+        },
+      ],
+    },
+  },
+  creative: {
+    key: "creative",
+    label: "The Creative",
+    religions: {
+      judaism: [
+        {
+          id: "nigunim",
+          title: "Chassidic Nigunim",
+          description: "Channel the soul through wordless spiritual melodies.",
+        },
+        {
+          id: "micro_calligraphy",
+          title: "Micro-Calligraphy",
+          description: "See Torah verses transform into intricate visual art.",
+        },
+        {
+          id: "mystical_poetry",
+          title: "Jewish Mystical Poetry",
+          description:
+            "Taste divine longing in medieval piyutim and modern verse.",
+        },
+      ],
+      buddhism: [
+        {
+          id: "zen_gardens",
+          title: "Designing a Zen Garden",
+          description: "Create tranquil spaces that mirror inner clarity.",
+        },
+        {
+          id: "mandalas",
+          title: "Mandalas",
+          description: "Use sacred geometry as a focus for meditation.",
+        },
+        {
+          id: "haiku",
+          title: "Haiku Meditation",
+          description: "Capture moments of satori in concise poetic form.",
+        },
+      ],
+      islam: [
+        {
+          id: "arabic_calligraphy",
+          title: "Arabic Calligraphy",
+          description: "Experience the Qur'an as flowing visual art.",
+        },
+        {
+          id: "rumi_poetry",
+          title: "Poetry of Rumi",
+          description: "Dive into ecstatic verses on divine love.",
+        },
+        {
+          id: "geometric_tiles",
+          title: "Geometric Tile Design",
+          description: "Discover God's order through intricate patterns.",
+        },
+      ],
+      christianity: [
+        {
+          id: "iconography",
+          title: "Iconography",
+          description: "Pray with images that are windows into the sacred.",
+        },
+        {
+          id: "sacred_music",
+          title: "Sacred Music & Hymns",
+          description: "Encounter the divine through harmonious sound.",
+        },
+        {
+          id: "stained_glass",
+          title: "Stained-Glass Narratives",
+          description: "See biblical stories come alive in light and color.",
+        },
+      ],
+    },
+  },
+};
+
 export default function OnboardingFlow({
   onComplete,
   onSkip,
@@ -303,18 +734,41 @@ export default function OnboardingFlow({
   const [selectedIntent, setSelectedIntent] = useState<string>("");
   const [selectedTradition, setSelectedTradition] = useState<string>("");
   const [selectedNeed, setSelectedNeed] = useState<string>("");
+  const [selectedArchetype, setSelectedArchetype] = useState<string>("");
 
   const handleNext = () => {
-    if (step < 3) {
-      setStep(step + 1);
+    if (selectedIntent === "exploration") {
+      // Exploration has 3 steps: intent -> archetype -> practice
+      if (step === 1) {
+        setStep(3); // Skip tradition selection
+      } else if (step === 3) {
+        setStep(4); // Go to practice selection
+      } else {
+        completeOnboarding();
+      }
     } else {
-      completeOnboarding();
+      // Other intents have 3 steps: intent -> tradition -> specific
+      if (step < 3) {
+        setStep(step + 1);
+      } else {
+        completeOnboarding();
+      }
     }
   };
 
   const handleBack = () => {
-    if (step > 1) {
-      setStep(step - 1);
+    if (selectedIntent === "exploration") {
+      // Exploration flow
+      if (step === 4) {
+        setStep(3); // Go back to archetype selection
+      } else if (step === 3) {
+        setStep(1); // Go back to intent selection
+      }
+    } else {
+      // Other intents
+      if (step > 1) {
+        setStep(step - 1);
+      }
     }
   };
 
@@ -365,8 +819,49 @@ export default function OnboardingFlow({
           selectedTradition as keyof typeof COMFORT_STORIES
         ];
       }
+    } else if (selectedIntent === "exploration") {
+      // For exploration, we show journey archetypes instead of tradition-specific content
+      return Object.values(JOURNEY_ARCHETYPES);
     }
     return SPECIFIC_NEEDS[selectedIntent as keyof typeof SPECIFIC_NEEDS] || [];
+  };
+
+  const getPracticesForArchetype = () => {
+    if (
+      !selectedArchetype ||
+      !ARCHETYPE_PRACTICES[
+        selectedArchetype as keyof typeof ARCHETYPE_PRACTICES
+      ]
+    ) {
+      return [];
+    }
+
+    const archetype =
+      ARCHETYPE_PRACTICES[
+        selectedArchetype as keyof typeof ARCHETYPE_PRACTICES
+      ];
+    const allPractices: Array<{
+      id: string;
+      title: string;
+      description: string;
+      tradition: string;
+      traditionKey: string;
+    }> = [];
+
+    // Combine practices from all traditions for this archetype
+    Object.entries(archetype.religions).forEach(([tradition, practices]) => {
+      practices.forEach(
+        (practice: { id: string; title: string; description: string }) => {
+          allPractices.push({
+            ...practice,
+            tradition: tradition.charAt(0).toUpperCase() + tradition.slice(1),
+            traditionKey: tradition,
+          });
+        }
+      );
+    });
+
+    return allPractices;
   };
 
   const completeOnboarding = () => {
@@ -381,14 +876,30 @@ export default function OnboardingFlow({
       tags.push("#moral-conflict", "#guidance");
     if (selectedIntent === "exploration") tags.push("#exploring", "#open");
 
-    // Determine model based on tradition
-    const tradition = TRADITIONS.find((t) => t.id === selectedTradition);
-    if (tradition && tradition.model) {
-      suggestedModel = tradition.model;
-      tags.push(`#${selectedTradition}`);
-    } else if (selectedIntent === "comfort") {
-      // Default to PastorGPT for comfort if no tradition selected
-      suggestedModel = "PastorGPT";
+    // Determine model based on tradition or selected practice
+    if (selectedIntent === "exploration" && selectedArchetype) {
+      // For exploration with practice selection, determine model from the practice's tradition
+      const practices = getPracticesForArchetype();
+      const selectedPractice = practices.find((p) => p.id === selectedNeed);
+
+      if (selectedPractice) {
+        const traditionKey = selectedPractice.traditionKey;
+        const tradition = TRADITIONS.find((t) => t.id === traditionKey);
+        if (tradition && tradition.model) {
+          suggestedModel = tradition.model;
+          tags.push(`#${traditionKey}`);
+        }
+      }
+    } else {
+      // For other flows, use the selected tradition
+      const tradition = TRADITIONS.find((t) => t.id === selectedTradition);
+      if (tradition && tradition.model) {
+        suggestedModel = tradition.model;
+        tags.push(`#${selectedTradition}`);
+      } else if (selectedIntent === "comfort") {
+        // Default to PastorGPT for comfort if no tradition selected
+        suggestedModel = "PastorGPT";
+      }
     }
 
     // Create initial prompt
@@ -409,6 +920,36 @@ export default function OnboardingFlow({
           } else if (selectedIntent === "comfort") {
             initialPrompt = `I'm going through a difficult time and would find comfort in hearing about ${topicName}. Can you share this story and its meaning?`;
           }
+        } else {
+          initialPrompt = selectedNeed;
+        }
+      } else if (
+        selectedIntent === "exploration" &&
+        selectedNeed.includes("archetype:")
+      ) {
+        // Handle journey archetype selection
+        const archetypeId = selectedNeed
+          .split("archetype:")[1]
+          ?.split(",")[0]
+          ?.trim();
+        const archetype = Object.values(JOURNEY_ARCHETYPES).find(
+          (a) => a.id === archetypeId
+        );
+        if (archetype) {
+          initialPrompt = `I resonate with being ${archetype.title}. ${archetype.fullDescription} Can you share some wisdom that speaks to this part of my spiritual journey?`;
+        } else {
+          initialPrompt = selectedNeed;
+        }
+      } else if (selectedIntent === "exploration" && selectedArchetype) {
+        // Handle specific practice selection for exploration
+        const practices = getPracticesForArchetype();
+        const selectedPractice = practices.find((p) => p.id === selectedNeed);
+        const archetype = Object.values(JOURNEY_ARCHETYPES).find(
+          (a) => a.id === selectedArchetype
+        );
+
+        if (selectedPractice && archetype) {
+          initialPrompt = `As ${archetype.title}, I'm drawn to exploring ${selectedPractice.title}. ${selectedPractice.description} Can you guide me in this practice?`;
         } else {
           initialPrompt = selectedNeed;
         }
@@ -447,7 +988,14 @@ export default function OnboardingFlow({
   const canProceed = () => {
     if (step === 1) return selectedIntent;
     if (step === 2) return selectedTradition;
-    if (step === 3) return selectedNeed;
+    if (step === 3) {
+      if (selectedIntent === "exploration") {
+        return selectedArchetype;
+      } else {
+        return selectedNeed;
+      }
+    }
+    if (step === 4) return selectedNeed;
     return false;
   };
 
@@ -471,14 +1019,29 @@ export default function OnboardingFlow({
           {/* Progress indicator */}
           <div className="flex justify-center mb-6 sm:mb-8">
             <div className="flex space-x-2">
-              {[1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className={`h-1.5 sm:h-2 w-12 sm:w-16 rounded-full transition-colors ${
-                    i <= step ? "bg-foreground" : "bg-muted"
-                  }`}
-                />
-              ))}
+              {selectedIntent === "exploration"
+                ? // 3 steps for exploration: intent, archetype, practice
+                  [1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className={`h-1.5 sm:h-2 w-12 sm:w-16 rounded-full transition-colors ${
+                        (i === 1 && step >= 1) ||
+                        (i === 2 && step >= 3) ||
+                        (i === 3 && step >= 4)
+                          ? "bg-foreground"
+                          : "bg-muted"
+                      }`}
+                    />
+                  ))
+                : // 3 steps for other intents
+                  [1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className={`h-1.5 sm:h-2 w-12 sm:w-16 rounded-full transition-colors ${
+                        i <= step ? "bg-foreground" : "bg-muted"
+                      }`}
+                    />
+                  ))}
             </div>
           </div>
 
@@ -634,6 +1197,47 @@ export default function OnboardingFlow({
                         ))}
                       </div>
                     </div>
+                  ) : selectedIntent === "exploration" ? (
+                    <div>
+                      <h3 className="text-lg sm:text-xl text-foreground mb-4 sm:mb-6">
+                        Which spiritual journey archetype resonates with you?
+                      </h3>
+                      <div className="grid grid-cols-1 gap-3 sm:gap-4">
+                        {getTopicsToShow().map((archetype, index) => (
+                          <button
+                            key={`${archetype.id}-${index}`}
+                            onClick={() => {
+                              setSelectedArchetype(archetype.id);
+                              setSelectedNeed(
+                                `archetype:${archetype.id}, title:${archetype.title}, description:${archetype.fullDescription}`
+                              );
+                            }}
+                            className={`p-4 sm:p-5 rounded-lg border-2 transition-all text-left ${
+                              selectedArchetype === archetype.id
+                                ? "border-foreground bg-foreground/5"
+                                : "border-border hover:border-foreground/20 active:border-foreground/30"
+                            }`}
+                          >
+                            <div className="flex items-start">
+                              <span className="text-2xl sm:text-3xl mr-4 flex-shrink-0">
+                                {archetype.icon}
+                              </span>
+                              <div className="min-w-0">
+                                <div className="text-foreground font-medium text-base sm:text-lg mb-2">
+                                  {archetype.title}
+                                </div>
+                                <div className="text-muted-foreground text-sm sm:text-base mb-3">
+                                  {archetype.description}
+                                </div>
+                                <div className="text-muted-foreground text-xs sm:text-sm italic">
+                                  {archetype.fullDescription}
+                                </div>
+                              </div>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   ) : (
                     <div>
                       <h3 className="text-lg sm:text-xl text-foreground mb-4 sm:mb-6">
@@ -662,13 +1266,49 @@ export default function OnboardingFlow({
                   )}
                 </div>
               )}
+
+              {/* Step 4: Practice Selection */}
+              {step === 4 && (
+                <div>
+                  <h3 className="text-lg sm:text-xl text-foreground mb-4 sm:mb-6">
+                    Which practice would you like to start with?
+                  </h3>
+                  <div className="space-y-2 sm:space-y-3">
+                    {getPracticesForArchetype().map((practice, index) => (
+                      <button
+                        key={`${practice.id}-${index}`}
+                        onClick={() => {
+                          setSelectedNeed(practice.id);
+                        }}
+                        className={`w-full p-3 sm:p-4 rounded-lg border-2 transition-all text-left ${
+                          selectedNeed === practice.id
+                            ? "border-foreground bg-foreground/5"
+                            : "border-border hover:border-foreground/20 active:border-foreground/30"
+                        }`}
+                      >
+                        <div className="text-foreground font-medium text-sm sm:text-base mb-1">
+                          {practice.title}
+                          <span className="text-muted-foreground text-xs ml-2">
+                            ({practice.tradition})
+                          </span>
+                        </div>
+                        <div className="text-muted-foreground text-xs sm:text-sm">
+                          {practice.description}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </motion.div>
           </AnimatePresence>
 
           {/* Navigation buttons */}
           <div className="flex justify-between items-center mt-6 sm:mt-8">
             <div>
-              {step > 1 ? (
+              {(step > 1 && selectedIntent !== "exploration") ||
+              (step === 3 && selectedIntent === "exploration") ||
+              (step === 4 && selectedIntent === "exploration") ? (
                 <Button
                   variant="ghost"
                   onClick={handleBack}
@@ -693,7 +1333,9 @@ export default function OnboardingFlow({
               disabled={!canProceed()}
               className="bg-foreground text-background hover:bg-foreground/80 disabled:opacity-50 text-sm sm:text-base px-4 sm:px-6"
             >
-              {step === 3 ? "Start Journey" : "Next"}
+              {(step === 3 && selectedIntent !== "exploration") || step === 4
+                ? "Start Journey"
+                : "Next"}
               <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4 ml-1" />
             </Button>
           </div>
