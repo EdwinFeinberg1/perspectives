@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import ChatsSheet from "./ChatsSheet";
 import NewsSheet from "./NewsSheet";
-import { Sparkles, Menu, Filter, ChevronDown } from "lucide-react";
+import { Menu, Filter, ChevronDown } from "lucide-react";
 import {
   Sheet,
   SheetTrigger,
@@ -116,28 +116,6 @@ const Header: React.FC<{
     };
   }, []);
 
-  const toggleSubHeader = (
-    section:
-      | "need-pray"
-      | "need-prayer"
-      | "faq"
-      | "about"
-      | "contact" = "need-pray"
-  ) => {
-    if (expandedSection === section) {
-      setSubHeaderExpanded(false);
-      setExpandedSection(null);
-    } else {
-      setSubHeaderExpanded(true);
-      setExpandedSection(section);
-    }
-
-    window.dispatchEvent(
-      new CustomEvent("themeSubheaderToggled", {
-        detail: { expanded: !subHeaderExpanded || expandedSection !== section },
-      })
-    );
-  };
 
   useEffect(() => {
     const getInitialSession = async () => {
@@ -285,10 +263,10 @@ const Header: React.FC<{
                               <div className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
                                 <p>
                                   We believe there is beauty in every religion.
-                                  It's about finding a perspective that speaks
+                                  It&apos;s about finding a perspective that speaks
                                   your language and resonates with your soul.
                                   Each tradition offers unique wisdom and
-                                  insights into life's deepest questions.
+                                  insights into life&apos;s deepest questions.
                                 </p>
                               </div>
                             )}
@@ -324,6 +302,15 @@ const Header: React.FC<{
                                 </p>
                               </div>
                             )}
+                          </div>
+
+                          <div className="border-b border-border">
+                            <button
+                              onClick={() => router.push("/privacy-policy")}
+                              className="w-full text-left px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            >
+                              <span>Privacy Policy</span>
+                            </button>
                           </div>
                         </div>
                       </div>
@@ -525,10 +512,10 @@ const Header: React.FC<{
                               <div className="px-4 py-3 text-sm text-muted-foreground bg-muted/30">
                                 <p>
                                   We believe there is beauty in every religion.
-                                  It's about finding a perspective that speaks
+                                  It&apos;s about finding a perspective that speaks
                                   your language and resonates with your soul.
                                   Each tradition offers unique wisdom and
-                                  insights into life's deepest questions.
+                                  insights into life&apos;s deepest questions.
                                 </p>
                               </div>
                             )}
@@ -564,6 +551,15 @@ const Header: React.FC<{
                                 </p>
                               </div>
                             )}
+                          </div>
+
+                          <div className="border-b border-border">
+                            <button
+                              onClick={() => router.push("/privacy-policy")}
+                              className="w-full text-left px-4 py-2.5 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors"
+                            >
+                              <span>Privacy Policy</span>
+                            </button>
                           </div>
                         </div>
                       </div>
